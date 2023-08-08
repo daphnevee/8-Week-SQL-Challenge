@@ -4,6 +4,10 @@ This repository contains my solutions for [Data With Danny](https://www.datawith
 ## What is the 8 Week SQL Challenge?
 The 8 Week SQL Challenge (#8WeekSQLChallenge) was created by Danny Ma and the Data With Danny virtual data apprenticeship program. The challenge consists of 8 case studies and aims to support all data professionals starting out on their SQL learning journey. 
 
+## Tools Used
+- DB Fiddle
+- PostgreSQL 13
+
 ## Table of Contents
 Case Study # | Title | Solution | Reference Link
 ------------ | ----- | -------- | --------

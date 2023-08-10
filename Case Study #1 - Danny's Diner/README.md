@@ -13,9 +13,29 @@ Danny wants to gather insights about his customers, pertaining to their visiting
 
 ## Case Study Questions and Answers
 1. What is the total amount each customer spent at the restaurant?
+#### Query:
 ```sql
-
+SELECT
+   x.customer_id,
+   SUM(y.price) AS total_amount
+FROM dannys_diner.sales x
+JOIN dannys_diner.menu y
+ON x.product_id=y.product_id
+GROUP BY x.customer_id
+ORDER BY x.customer_id;
 ```
+
+#### Output:
+customer_id | total_amount
+----------- | ------------
+A | 76
+B | 74
+C | 36
+
+#### Answer:
+Based from the output of the query, it can be observed that Customer A spent a total amount of $76, Customer B spent a total amount of $75, and Customer C spent a total amount of $36 on food at the restaurant.
+- - - -
+
 2. How many days has each customer visited the restaurant?
 ```sql
 

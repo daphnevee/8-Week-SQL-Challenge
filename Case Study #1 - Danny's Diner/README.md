@@ -24,6 +24,8 @@ ON x.product_id=y.product_id
 GROUP BY x.customer_id
 ORDER BY x.customer_id;
 ```
+#### Explanation:
+To determine the total amount each customer spent at the restaurant, first, a ```JOIN``` clause was used to combine the sales table and menu table in order to display the Customer ID and the prices of the products from each table, respectively. In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the menu table, so as to make the query more readable. Second, a ```SUM``` aggregate function was used on the prices column to calculate the total amount spent by each customer on the products. An *alias* of ```total_amount``` was given  
 
 #### Output:
 customer_id | total_amount
@@ -37,9 +39,27 @@ Based from the output of the query, it can be observed that Customer A spent a t
 - - - -
 
 2. How many days has each customer visited the restaurant?
+#### Query:
 ```sql
-
+SELECT 
+   customer_id,
+   COUNT(DISTINCT(order_date)) AS days_visited
+FROM dannys_diner.sales
+GROUP BY customer_id
+ORDER BY customer_id;
 ```
+
+#### Output:
+customer_id | days_visited
+----------- | ------------
+A | 4
+B | 6
+C | 2
+
+#### Answer:
+Based from the output of the query, it can be observed that Customer A visited the restaurant for 4 days, Customer B visited for 6 days, and Customer C visited for 2 days.
+
+- - - -
 3. What was the first item from the menu purchased by each customer?
 ```sql
 

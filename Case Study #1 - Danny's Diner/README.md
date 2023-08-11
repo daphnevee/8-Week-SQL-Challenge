@@ -25,7 +25,7 @@ GROUP BY x.customer_id
 ORDER BY x.customer_id;
 ```
 #### Explanation:
-To determine the total amount each customer spent at the restaurant, first, a ```JOIN``` clause was used to combine the sales table and menu table in order to display the Customer ID and the prices of the products from each table, respectively. In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the menu table, so as to make the query more readable. Second, a ```SUM``` aggregate function was used on the prices column to calculate the total amount spent by each customer on the products. An *alias* of ```total_amount``` was given  
+To determine the total amount each customer spent at the restaurant, first, a ```JOIN``` clause was used to combine the sales table and menu table based on their related column, ```product_id```, in order to display the Customer ID and the prices of the products from each table, respectively. In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the menu table, so as to make the query more readable. Second, a ```SUM``` aggregate function was used on the prices column to calculate the total amount spent by each customer on the products. This column was also given an *alias* of ```total_amount``` to provide a more descriptive column name for the results. Third, a ```GROUP BY``` statement was used to arrange the customers into groups in conjunction with the result of the ```SUM``` aggregate function to display the total amount that each customer spent on products at the restaurant. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order.
 
 #### Output:
 customer_id | total_amount
@@ -48,6 +48,8 @@ FROM dannys_diner.sales
 GROUP BY customer_id
 ORDER BY customer_id;
 ```
+#### Explanation:
+To determine the number of days each customer has visited the restaurant, first, a 
 
 #### Output:
 customer_id | days_visited

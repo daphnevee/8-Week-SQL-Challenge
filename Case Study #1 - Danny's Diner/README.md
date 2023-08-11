@@ -49,7 +49,7 @@ GROUP BY customer_id
 ORDER BY customer_id;
 ```
 #### Explanation:
-To determine the number of days each customer has visited the restaurant, first, a 
+To determine the number of days each customer has visited the restaurant, first, a ```COUNT``` aggregate function was used to count  each customer's number of visit times based on the dates they made an order at the restaurant. Second, a ```DISTINCT``` statement was also used together with the ```COUNT``` function to specifically count the number of unique visits each customer has made at the restaurant. A ```COUNT(DISTINCT)``` approach was used as opposed to ```SELECT DISTINCT``` because this would produce results based on unique rows in ```customer_id``` and not on ```order_date```. This column was also given an *alias* of ```days_visited``` to provide a more descriptive column name for the results. Third, a ```GROUP BY``` statement was used to arrange the customers into groups in conjunction with the result of the ```COUNT``` aggregate function to display the number of days each customer has visited the restaurant. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order.
 
 #### Output:
 customer_id | days_visited
@@ -63,39 +63,53 @@ Based from the output of the query, it can be observed that Customer A visited t
 
 - - - -
 3. What was the first item from the menu purchased by each customer?
+#### Query:
 ```sql
 
 ```
+#### Explanation:
+
+#### Output:
+
+#### Answer:
+
+- - - -
 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 ```sql
 
 ```
+- - - -
 5. Which item was the most popular for each customer?
 ```sql
 
 ```
+- - - -
 6. Which item was purchased first by the customer after they became a member?
 ```sql
 
 ```
+- - - -
 7. Which item was purchased just before the customer became a member?
 ```sql
 
 ```
+- - - -
 8. What is the total items and amount spent for each member before they became a member?
 ```sql
 
 ```
+- - - -
 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 ```sql
 
 ```
+- - - -
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 ```sql
 
 ```
-
+- - - -
 ## Bonus Questions
 1. Join All The Things
-   
+
 2. Rank All The Things

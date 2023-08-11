@@ -65,13 +65,55 @@ Based from the output of the query, it can be observed that Customer A visited t
 3. What was the first item from the menu purchased by each customer?
 #### Query:
 ```sql
+WITH ranked_rows AS 
+(
+    SELECT 
+        customer_id,
+        order_date,
+        product_id,
+        DENSE_RANK() OVER (PARTITION BY customer_id ORDER BY order_date) AS "rank_number" 
+    FROM dannys_diner.sales
+    ORDER BY customer_id
+),
 
+joined_tables AS
+(
+  	SELECT
+      x.customer_id,
+  		x.order_date,
+      x.product_id,
+      x.rank_number,
+  		y.product_name
+  	FROM ranked_rows x
+  	JOIN dannys_diner.menu y
+  	ON x.product_id=y.product_id
+   ORDER BY x.customer_id, x.order_date
+)
+
+SELECT 
+    customer_id,
+    order_date,
+    product_id,
+    product_name
+FROM joined_tables 
+WHERE rank_number = 1;
 ```
 #### Explanation:
+To determine the first items purchased from the menu by each customer, first, a ```DENSE_RANK()``` window function was used to assign ranks for each row partitioned by customer, with each partition sorted according to the dates they made an order from the restaurant. The ```DENSE_RANK()``` window function was used as opposed to the ```ROW_NUMBER()``` (which assigns continuous rank numbers) and ```RANK()``` (which similarly to ```DENSE_RANK()``` assigns the same rank number to duplicates but makes a jump in the sequence) because it has no gaps in ranking the values. Moreover, when ```ROW_NUMBER()``` is applied, it disregards results where the customer orders more than once on a particular date whereas ```DENSE_RANK()``` allows for duplicate rows. An *alias* of ```rank_number``` was also given to provide a more descriptive column name for the results.
+- MIN vs ROW_NUMBER vs RANK vs DENSE_RANK
+- 2 WITH CTE
 
 #### Output:
+customer_id | order_date | product_id | product_name
+----------- | ---------- | ---------- | ------------
+A | 2021-01-01T00:00:00.000Z | 1 | sushi
+A | 2021-01-01T00:00:00.000Z | 2 | curry
+B | 2021-01-01T00:00:00.000Z | 2 | curry
+C | 2021-01-01T00:00:00.000Z | 3 | ramen
+C | 2021-01-01T00:00:00.000Z | 3 | ramen
 
 #### Answer:
+Based from the output of the query, it can be observed that the first items purchased from the menu by Customer A were sushi and curry. As for Customer B, the first item they purchased was curry. Lastly, for Customer C, the first item they purchased from the menu was ramen.
 
 - - - -
 4. What is the most purchased item on the menu and how many times was it purchased by all customers?

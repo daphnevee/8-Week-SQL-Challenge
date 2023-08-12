@@ -6,7 +6,7 @@ The 8 Week SQL Challenge (#8WeekSQLChallenge) was created by Danny Ma and the Da
 
 ## Tools Used
 - DB Fiddle
-- MySQL v8.0
+- PostgreSQL v13
 
 ## Table of Contents
 Case Study # | Title | Solution | Reference Link

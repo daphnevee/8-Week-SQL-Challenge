@@ -29,7 +29,7 @@ To determine the total amount each customer spent at the restaurant, first, a ``
 
 #### Output:
 customer_id | total_amount
------------ | ------------
+:---------: | :----------:
 A | 76
 B | 74
 C | 36
@@ -53,7 +53,7 @@ To determine the number of days each customer has visited the restaurant, first,
 
 #### Output:
 customer_id | days_visited
------------ | ------------
+:---------: | :----------:
 A | 4
 B | 6
 C | 2
@@ -102,7 +102,7 @@ To determine the first items purchased from the menu by each customer, 2 CTEs we
 
 In the first CTE labeled as ```ranked_rows```, a ```DENSE_RANK()``` window function was applied on the sales table and was used to assign ranks for each row partitioned by customer, with each partition sorted according to the dates they made an order from the restaurant. The ```DENSE_RANK()``` window function was used as opposed to the ```ROW_NUMBER()``` (which assigns continuous rank numbers) and ```RANK()``` (which similarly to ```DENSE_RANK()``` assigns the same rank number to duplicates but makes a jump in the sequence) because it has no gaps in ranking the values. Moreover, when ```ROW_NUMBER()``` is applied, it disregards results where the customer orders more than once on a particular date whereas ```DENSE_RANK()``` allows for duplicate rows. An *alias* of ```rank_number``` was also given to provide a more descriptive column name for the results. The results were then sorted by default in ascending order according to the Customer ID. The query then produced the following results:
 customer_id | order_date | product_id | rank_number
------------ | ---------- | ---------- | -----------
+:---------: | :--------: | :--------: | :---------:
 A | 2021-01-01T00:00:00.000Z | 1 | 1
 A | 2021-01-01T00:00:00.000Z | 2 | 1
 A | 2021-01-07T00:00:00.000Z | 2 | 2
@@ -121,7 +121,7 @@ C | 2021-01-07T00:00:00.000Z | 3 | 2
 
 In the second CTE labeled as ```joined_tables```, a ```JOIN``` clause was used to combine the resulting table of the first CTE (i.e. ```ranked_rows```) and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the date they made the order, the ID of the product they ordered, and the name of the product they ordered from the menu table. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```ranked_rows``` table and ```y``` for the menu table, so as to make the query more readable. The results were then sorted by default in asceding order according to both the Customer ID and the Order Date. The query then produced the following results:
 customer_id | order_date | product_id | product_name
------------ | ---------- | ---------- | ------------
+:---------: | :--------: | :--------: | :----------:
 A | 2021-01-01T00:00:00.000Z | 2 | curry
 A | 2021-01-01T00:00:00.000Z | 1 | sushi
 A | 2021-01-07T00:00:00.000Z | 2 | curry
@@ -142,7 +142,7 @@ Finally, to determine the first items purchased by each customer, a ```WHERE``` 
 
 #### Output:
 customer_id | order_date | product_id | product_name
------------ | ---------- | ---------- | ------------
+:---------: | :--------: | :--------: | :----------:
 A | 2021-01-01T00:00:00.000Z | 1 | sushi
 A | 2021-01-01T00:00:00.000Z | 2 | curry
 B | 2021-01-01T00:00:00.000Z | 2 | curry
@@ -154,9 +154,28 @@ Based from the output of the query, it can be observed that the first items purc
 
 - - - -
 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+#### Query:
 ```sql
-
+SELECT
+   x.product_id,
+   y.product_name,
+   COUNT(x.product_id) AS num_of_orders
+FROM dannys_diner.sales x
+JOIN dannys_diner.menu y
+ON x.product_id=y.product_id
+GROUP BY x.product_id, y.product_name
+ORDER BY num_of_orders DESC
+LIMIT 1;
 ```
+#### Explanation:
+
+#### Output:
+product_id | product_name | num_of_orders
+:--------: | :----------: | :-----------:
+3 | ramen | 8
+
+#### Answer:
+Based from the output of the query, it can be observed that the most purchased item on the menu is ramen and it was purchased 8 times by all customers at the restaurant.
 - - - -
 5. Which item was the most popular for each customer?
 ```sql

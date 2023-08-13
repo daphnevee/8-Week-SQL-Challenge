@@ -168,6 +168,7 @@ ORDER BY num_of_orders DESC
 LIMIT 1;
 ```
 #### Explanation:
+To determine the most purchased item on the menu and the number of times it was purchased, first, a ```COUNT``` aggregate function was used to count the total number of each type of product sold based on the sales table. An *alias* of ```num_of_orders``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine the sales table and the menu table in order to display in the results both the Product ID and the name of the product. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```ranked_rows``` table and ```y``` for the menu table, so as to make the query more readable. Third, a ```GROUP BY``` statement was used to arrange the counted number of orders made for each product into groups according to the Product ID and the name of the product. Fourth, an ```ORDER BY``` statement was used to sort the results in descending order to put the highest value at the top. Lastly, a ```LIMIT``` clause was used to display only the first record which is the most purchased item on the menu from the results.
 
 #### Output:
 product_id | product_name | num_of_orders

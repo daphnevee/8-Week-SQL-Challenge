@@ -119,7 +119,7 @@ C | 2021-01-01T00:00:00.000Z | 3 | 1
 C | 2021-01-01T00:00:00.000Z | 3 | 1
 C | 2021-01-07T00:00:00.000Z | 3 | 2
 
-In the second CTE labeled as ```joined_tables```, a ```JOIN``` clause was used to combine the resulting table of the first CTE (i.e. ```ranked_rows```) and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the date they made the order, the ID of the product they ordered, and the name of the product they ordered from the menu table. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```ranked_rows``` table and ```y``` for the menu table, so as to make the query more readable. The results were then sorted by default in asceding order according to both the Customer ID and the Order Date. The query then produced the following results:
+In the second CTE labeled as ```joined_tables```, a ```JOIN``` clause was used to combine the resulting table of the first CTE (i.e. ```ranked_rows```) and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the date they made the order, the ID of the product they ordered, and the name of the product they ordered from the menu table. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```ranked_rows``` table and ```y``` for the menu table, so as to make the query more readable. The results were then sorted by default in ascending order according to both the Customer ID and the Order Date. The query then produced the following results:
 customer_id | order_date | product_id | product_name
 :---------: | :--------: | :--------: | :----------:
 A | 2021-01-01T00:00:00.000Z | 2 | curry
@@ -179,34 +179,137 @@ product_id | product_name | num_of_orders
 Based from the output of the query, it can be observed that the most purchased item on the menu is ramen and it was purchased 8 times by all customers at the restaurant.
 - - - -
 5. Which item was the most popular for each customer?
+#### Query:
 ```sql
+WITH ranked_rows AS (
+   SELECT
+      customer_id,
+      product_id,
+      COUNT(product_id) AS num_of_orders,
+      DENSE_RANK() OVER (PARTITION BY customer_id ORDER BY COUNT(product_id) DESC) AS "rank_number"
+   FROM dannys_diner.sales
+   GROUP BY customer_id, product_id
+),
 
+joined_tables AS (
+   SELECT
+      x.customer_id,
+      x.product_id,
+      y.product_name,
+      x.num_of_orders,
+      x.rank_number
+   FROM ranked_rows x
+   JOIN dannys_diner.menu y
+   ON x.product_id=y.product_id
+   ORDER BY x.customer_id, x.product_id
+)
+
+SELECT
+   customer_id,
+   product_id,
+   product_name,
+   num_of_orders
+FROM joined_tables
+WHERE rank_number = 1;
 ```
+#### Explanation:
+To determine the items that were most popular for each customer, 2 CTEs were written to separate the operations of assigning ranks for each row and joining two tables to produce the desired results. 
+
+In the first CTE labeled as ```ranked_rows```, first, a ```COUNT``` aggregate function was used to count the total number of orders each customer made for each item on the menu based on the sales table. An *alias* of ```num_of_orders``` was given to provide a more descriptive column name for the results. Second, a ```DENSE_RANK()``` window function was applied on the sales table and was used to assign ranks for each row partitioned by customer, with each partition sorted in descending order according to the total number of orders each customer made for each item on the menu in order to put the highest values at the top. Similarly with the approach taken in Question #3, the ```DENSE_RANK()``` window function was the most applicable in acquiring the desired results as there are no gaps in ranking the values and it allows for duplicate rows. An *alias* of ```rank_number``` was also given to provide a more descriptive column name for the results. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the Customer ID and the Product ID. The query then produced the following results:
+customer_id | product_id | num_of_orders | rank_number
+:---------: | :--------: | :-----------: | :---------:
+A | 3 | 3 | 1
+A | 2 | 2 | 2
+A | 1 | 1 | 3
+B | 3 | 2 | 1
+B | 1 | 2 | 1
+B | 2 | 2 | 1
+C | 3 | 3 | 1
+
+In the second CTE labeled as ```joined_tables```, a ```JOIN``` clause was used to combine the resulting table of the first CTE (i.e. ```ranked_rows```) and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the ID of the product they ordered, the name of the product from the menu table, the number of orders they made for a specific product, and the assigned rank numbers produced by the first CTE. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```ranked_rows``` table and ```y``` for the menu table, so as to make the query more readable. The results were then sorted by default in ascending order according to both the Customer ID and the Product ID. The query then produced the following results:
+customer_id | product_id | product_name | num_of_orders | rank_number
+:---------: | :--------: | :----------: | :-----------: | :---------:
+A | 1 | sushi | 1 | 3
+A | 2 | curry | 2 | 2
+A | 3 | ramen | 3 | 1
+B | 1 | sushi | 2 | 1
+B | 2 | curry | 2 | 1
+B | 3 | ramen | 2 | 1
+C | 3 | ramen | 3 | 1
+
+Finally, to determine the items that were most popular for each customer, a ```WHERE``` clause was used to filter the resulting records of the ```joined_tables``` CTE based on the condition where the rank number assigned to the row is equal to 1. This extracts the records concerning each customer's most ordered item from the menu.
+
+#### Output:
+customer_id | product_id | product_name | num_of_orders
+:---------: | :--------: | :----------: | :-----------:
+A | 3 | ramen | 3
+B | 1 | sushi | 2
+B | 2 | curry | 2
+B | 3 | ramen | 2
+C | 3 | ramen | 3
+
+#### Answer:
+Based from the output of the query, it can be observed that ramen was the most popular item from the menu for both Customer A and C, each having ordered it three times, while for Customer B, all items on the menu (i.e. sushi, curry, ramen) were equally popular and each were ordered twice.
 - - - -
 6. Which item was purchased first by the customer after they became a member?
+#### Query:
 ```sql
 
 ```
+#### Explanation:
+
+#### Output:
+
+#### Answer:
+
 - - - -
 7. Which item was purchased just before the customer became a member?
+#### Query:
 ```sql
 
 ```
+#### Explanation:
+
+#### Output:
+
+#### Answer:
+
 - - - -
 8. What is the total items and amount spent for each member before they became a member?
+#### Query:
 ```sql
 
 ```
+#### Explanation:
+
+#### Output:
+
+#### Answer:
+
 - - - -
 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
+#### Query:
 ```sql
 
 ```
+#### Explanation:
+
+#### Output:
+
+#### Answer:
+
 - - - -
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+#### Query:
 ```sql
 
 ```
+#### Explanation:
+
+#### Output:
+
+#### Answer:
+
 - - - -
 ## Bonus Questions
 1. Join All The Things

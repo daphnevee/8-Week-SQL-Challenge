@@ -289,14 +289,39 @@ FROM row_numbers_table
 WHERE row_number = 1;
 ```
 #### Explanation:
-To determine the first purchased item by each member of Danny's Diner loyalty program, 2 CTEs were writte to separate the operations of joining two tables and assigning row numbers for each row to produce the desired results.
+To determine the first purchased item by each member of Danny's Diner's loyalty program, 2 CTEs were writte to separate the operations of joining two tables and assigning row numbers for each row to produce the desired results.
 
+In the first CTE labeled as ```joined_tables```, a ```JOIN``` clause was used to combine the sales table and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the date they made an order, the ID of the product they ordered, and the name of the product from each table, respectively.  In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the menu table, so as to make the query more readable. The query then produced the following results:
+customer_id | order_date | product_id | product_name
+:---------: | :--------: | :--------: | :----------:
+B	| 2021-01-04T00:00:00.000Z | 1 | sushi
+A	| 2021-01-01T00:00:00.000Z	| 1 | sushi
+B	| 2021-01-11T00:00:00.000Z	| 1 | sushi
+B	| 2021-01-01T00:00:00.000Z	| 2 | curry
+B	| 2021-01-02T00:00:00.000Z	| 2 | curry
+A	| 2021-01-01T00:00:00.000Z	| 2 | curry
+A	| 2021-01-07T00:00:00.000Z	| 2 | curry
+A	| 2021-01-11T00:00:00.000Z	| 3 | ramen
+A	| 2021-01-11T00:00:00.000Z	| 3 | ramen
+A	| 2021-01-10T00:00:00.000Z	| 3 | ramen
+B	| 2021-01-16T00:00:00.000Z	| 3 | ramen
+B	| 2021-02-01T00:00:00.000Z	| 3 | ramen
+C	| 2021-01-01T00:00:00.000Z	| 3 | ramen
+C	| 2021-01-01T00:00:00.000Z	| 3 | ramen
+C	| 2021-01-07T00:00:00.000Z	| 3 | ramen
 
-In the first CTE labeled as ```ranked_rows```, first, a ```COUNT``` aggregate function was used to count the total number of orders each customer made for each item on the menu based on the sales table. An *alias* of ```num_of_orders``` was given to provide a more descriptive column name for the results. Second, a ```DENSE_RANK()``` window function was applied on the sales table and was used to assign ranks for each row partitioned by customer, with each partition sorted in descending order according to the total number of orders each customer made for each item on the menu in order to put the highest values at the top. Similarly with the approach taken in Question #3, the ```DENSE_RANK()``` window function was the most applicable in acquiring the desired results as there are no gaps in ranking the values and it allows for duplicate rows. An *alias* of ```rank_number``` was also given to provide a more descriptive column name for the results. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the Customer ID and the Product ID. The query then produced the following results:
+In the second CTE labeled as ```row_numbers_table```, first, a ```ROW_NUMBER()``` window function was applied on the resulting table of the first CTE (i.e. ```joined_tables```) and was used to assign sequential integers for each row partitioned by Customer ID, with each partition sorted by default in ascending order according to the Customer ID. The ```ROW_NUMBER()``` window function was more applicable in acquiring the desired results as it assigns row numbers and increments irrespective of duplicate values. An *alias* of ```row_number``` was also given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also used in this query to combine the resulting table of the first CTE and the members table, based on their related column ```customer_id```, in order to display the ID of the customer, the date they made an order, the date they joined as a member from the members table, the ID of the product as well as the name of the product they ordered. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```joined_tables``` table and ```y``` for the members table, so as to make the query more readable. Lastly, a ```WHERE``` clause was used to filter the records based on the condiition where the customer made an order *after* they joined as a member of the restaurant's loyalty program. The query then produced the following results:
+customer_id | order_date | join_date | product_id | product_name | row_number
+:---------: | :--------: | :-------: | :--------: | :----------: | :--------:
+A | 2021-01-07T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 2 | curry | 1
+A | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 3 | ramen | 2
+A | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 3 | ramen | 3
+A | 2021-01-10T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 3 | ramen | 4
+B | 2021-01-11T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 1 | sushi | 1
+B | 2021-01-16T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 3 | ramen | 2
+B | 2021-02-01T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 3 | ramen | 3
 
-In the second CTE labeled as ```joined_tables```, a ```JOIN``` clause was used to combine the resulting table of the first CTE (i.e. ```ranked_rows```) and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the ID of the product they ordered, the name of the product from the menu table, the number of orders they made for a specific product, and the assigned rank numbers produced by the first CTE. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```ranked_rows``` table and ```y``` for the menu table, so as to make the query more readable. The results were then sorted by default in ascending order according to both the Customer ID and the Product ID. The query then produced the following results:
-
-Finally, to determine the items that were most popular for each customer, a ```WHERE``` clause was used to filter the resulting records of the ```joined_tables``` CTE based on the condition where the rank number assigned to the row is equal to 1. This extracts the records concerning each customer's most ordered item from the menu.
+Finally, to determine the first purchased item by each member of Danny's Diner's loyalty program, a ```WHERE``` clause was also used to filter the resulting records of the ```row_numbers_table``` CTE based on the condition where the assigned row number is equal to 1. This extracts the records concerning each customer's first purchased item after they became a member of the restaurant's loyalty program.
 
 #### Output:
 customer_id | order_date | join_date | product_id | product_name

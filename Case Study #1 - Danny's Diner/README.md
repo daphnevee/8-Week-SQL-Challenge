@@ -120,6 +120,23 @@ C | 2021-01-01T00:00:00.000Z | 3 | 1
 C | 2021-01-07T00:00:00.000Z | 3 | 2
 
 In the second CTE labeled as ```joined_tables```, a ```JOIN``` clause was used to combine the resulting table of the first CTE (i.e. ```ranked_rows```) and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the date they made the order, the ID of the product they ordered, and the name of the product they ordered from the menu table. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```ranked_rows``` table and ```y``` for the menu table, so as to make the query more readable. The results were then sorted by default in asceding order according to both the Customer ID and the Order Date. The query then produced the following results:
+customer_id | order_date | product_id | product_name
+----------- | ---------- | ---------- | ------------
+A | 2021-01-01T00:00:00.000Z | 2 | curry
+A | 2021-01-01T00:00:00.000Z | 1 | sushi
+A | 2021-01-07T00:00:00.000Z | 2 | curry
+A | 2021-01-10T00:00:00.000Z | 3 | ramen
+A | 2021-01-11T00:00:00.000Z | 3 | ramen
+A | 2021-01-11T00:00:00.000Z | 3 | ramen
+B | 2021-01-01T00:00:00.000Z | 2 | curry
+B | 2021-01-02T00:00:00.000Z | 2 | curry
+B | 2021-01-04T00:00:00.000Z | 1 | sushi
+B | 2021-01-11T00:00:00.000Z | 1 | sushi
+B | 2021-01-16T00:00:00.000Z | 3 | ramen
+B | 2021-02-01T00:00:00.000Z | 3 | ramen
+C | 2021-01-01T00:00:00.000Z | 3 | ramen
+C | 2021-01-01T00:00:00.000Z | 3 | ramen
+C | 2021-01-07T00:00:00.000Z | 3 | ramen
 
 Finally, to determine the first items purchased by each customer, a ```WHERE``` clause was used to filter the resulting records of the ```joined_tables``` CTE based on the condition where the rank number assigned to the row is equal to 1. This extracts the records when the customer made their first purchase from the restaurant.
 

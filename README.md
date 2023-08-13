@@ -10,7 +10,7 @@ The 8 Week SQL Challenge (#8WeekSQLChallenge) was created by Danny Ma and the Da
 
 ## Table of Contents
 Case Study # | Title | Solution | Reference Link
------------- | ----- | -------- | --------
+:----------: | :---: | :------: | :------------:
 1 | Danny's Dinner | | [Link](https://8weeksqlchallenge.com/case-study-1/) 
 2 | Pizza Runner | | [Link](https://8weeksqlchallenge.com/case-study-2/) 
 3 | Foodie-Fi | | [Link](https://8weeksqlchallenge.com/case-study-3/) 

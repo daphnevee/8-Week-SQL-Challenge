@@ -254,14 +254,51 @@ Based from the output of the query, it can be observed that ramen was the most p
 6. Which item was purchased first by the customer after they became a member?
 #### Query:
 ```sql
+WITH joined_tables AS (
+   SELECT
+      x.customer_id,
+      x.order_date,
+      x.product_id,
+      y.product_name
+   FROM dannys_diner.sales x
+   JOIN dannys_diner.menu y
+   ON x.product_id=y.product_id
+),
 
+row_numbers_table AS (
+   SELECT
+      x.customer_id,
+      x.order_date,
+      y.join_date,
+      x.product_id,
+      x.product_name,
+      ROW_NUMBER() OVER (PARTITION BY x.customer_id ORDER BY x.customer_id) AS "row_number"
+   FROM joined_tables x
+   JOIN dannys_diner.members y
+   ON x.customer_id=y.customer_id
+   WHERE x.order_date >= y.join_date
+)
+
+SELECT
+   customer_id,
+   order_date,
+   join_date,
+   product_id,
+   product_name
+FROM row_numbers_table
+WHERE row_number = 1;
 ```
 #### Explanation:
+To determine the 
 
 #### Output:
+customer_id | order_date | join_date | product_id | product_name
+:---------: | :--------: | :-------: | :--------: | :----------:
+A | 2021-01-07T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 2 | curry
+B | 2021-01-11T00:00:00.000Z | 2021-01-09T00:00:00.000Z | 1 | sushi
 
 #### Answer:
-
+Based from the output of the query, it can be observed that since Customer A became a member of the beta version of Danny's Diner loyalty program, the item they first purchased from the menu was curry, which they ordered on the same day the joined. As for Customer B, the item the first purchased from the menu was sushi, which they ordered 2 days after they joined.
 - - - -
 7. Which item was purchased just before the customer became a member?
 #### Query:

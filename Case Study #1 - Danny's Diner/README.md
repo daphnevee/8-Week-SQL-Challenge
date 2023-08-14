@@ -529,5 +529,113 @@ Based from the output of the query, it can be observed that Customer A acquired 
 - - - -
 ## Bonus Questions
 1. Join All The Things
+#### Query:
+```sql
+WITH member_table AS (
+   SELECT
+      x.customer_id,
+      x.order_date,
+      y.join_date,
+      x.product_id,
+      CASE
+         WHEN x.order_date < y.join_date THEN 'N'
+         WHEN x.order_date >= y.join_date THEN 'Y'
+         ELSE 'N'
+      END AS membership
+   FROM dannys_diner.sales x
+   LEFT JOIN dannys_diner.members y
+   ON x.customer_id=y.customer_id
+)
 
+SELECT
+   x.customer_id,
+   x.order_date,
+   y.product_name,
+   y.price,
+   x.membership AS member
+FROM member_table AS x
+JOIN dannys_diner.menu y
+ON x.product_id=y.product_id
+ORDER BY x.customer_id, x.order_date;
+```
+#### Explanation:
+
+#### Output:
+| customer_id |        order_date        | product_name | price | member |
+|:-----------:|:------------------------:|:------------:|:-----:|:------:|
+| A           | 2021-01-01T00:00:00.000Z | sushi        | 10    | N      |
+| A           | 2021-01-01T00:00:00.000Z | curry        | 15    | N      |
+| A           | 2021-01-07T00:00:00.000Z | curry        | 15    | Y      |
+| A           | 2021-01-10T00:00:00.000Z | ramen        | 12    | Y      |
+| A           | 2021-01-11T00:00:00.000Z | ramen        | 12    | Y      |
+| A           | 2021-01-11T00:00:00.000Z | ramen        | 12    | Y      |
+| B           | 2021-01-01T00:00:00.000Z | curry        | 15    | N      |
+| B           | 2021-01-02T00:00:00.000Z | curry        | 15    | N      |
+| B           | 2021-01-04T00:00:00.000Z | sushi        | 10    | N      |
+| B           | 2021-01-11T00:00:00.000Z | sushi        | 10    | Y      |
+| B           | 2021-01-16T00:00:00.000Z | ramen        | 12    | Y      |
+| B           | 2021-02-01T00:00:00.000Z | ramen        | 12    | Y      |
+| C           | 2021-01-01T00:00:00.000Z | ramen        | 12    | N      |
+| C           | 2021-01-01T00:00:00.000Z | ramen        | 12    | N      |
+| C           | 2021-01-07T00:00:00.000Z | ramen        | 12    | N      |
+- - - - 
 2. Rank All The Things
+#### Query:
+```sql
+WITH member_table AS (
+   SELECT
+      x.customer_id,
+      x.order_date,
+      y.join_date,
+      x.product_id,
+      CASE
+         WHEN x.order_date < y.join_date THEN 'N'
+         WHEN x.order_date >= y.join_date THEN 'Y'
+         ELSE 'N'
+      END AS membership
+   FROM dannys_diner.sales x
+   LEFT JOIN dannys_diner.members y
+   ON x.customer_id=y.customer_id
+),
+
+joined_tables AS (
+   SELECT
+      x.customer_id,
+      x.order_date,
+      y.product_name,
+      y.price,
+      x.membership AS member
+   FROM member_table AS x
+   JOIN dannys_diner.menu y
+   ON x.product_id=y.product_id
+   ORDER BY x.customer_id, x.order_date
+)
+
+SELECT
+   *,
+   CASE
+      WHEN member = 'N' THEN NULL
+      ELSE DENSE_RANK() OVER (PARTITION BY customer_id, member ORDER BY order_date)
+   END AS "ranking"
+FROM joined_tables
+```
+#### Explanation:
+
+#### Output:
+| customer_id |        order_date        | product_name | price | member | ranking |
+|:-----------:|:------------------------:|:------------:|:-----:|:------:|:-------:|
+| A           | 2021-01-01T00:00:00.000Z | sushi        | 10    | N      | null    |
+| A           | 2021-01-01T00:00:00.000Z | curry        | 15    | N      | null    |
+| A           | 2021-01-07T00:00:00.000Z | curry        | 15    | Y      | 1       |
+| A           | 2021-01-10T00:00:00.000Z | ramen        | 12    | Y      | 2       |
+| A           | 2021-01-11T00:00:00.000Z | ramen        | 12    | Y      | 3       |
+| A           | 2021-01-11T00:00:00.000Z | ramen        | 12    | Y      | 3       |
+| B           | 2021-01-01T00:00:00.000Z | curry        | 15    | N      | null    |
+| B           | 2021-01-02T00:00:00.000Z | curry        | 15    | N      | null    |
+| B           | 2021-01-04T00:00:00.000Z | sushi        | 10    | N      | null    |
+| B           | 2021-01-11T00:00:00.000Z | sushi        | 10    | Y      | 1       |
+| B           | 2021-01-16T00:00:00.000Z | ramen        | 12    | Y      | 2       |
+| B           | 2021-02-01T00:00:00.000Z | ramen        | 12    | Y      | 3       |
+| C           | 2021-01-01T00:00:00.000Z | ramen        | 12    | N      | null    |
+| C           | 2021-01-01T00:00:00.000Z | ramen        | 12    | N      | null    |
+| C           | 2021-01-07T00:00:00.000Z | ramen        | 12    | N      | null    |

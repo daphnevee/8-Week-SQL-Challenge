@@ -391,7 +391,7 @@ C	| 2021-01-01T00:00:00.000Z	| 3 | ramen
 C	| 2021-01-01T00:00:00.000Z	| 3 | ramen
 C	| 2021-01-07T00:00:00.000Z	| 3 | ramen
 
-In the second CTE labeled as ```ranked_rows```, first, a ```DENSE_RANK()``` window function was applied on the resulting table of the first CTE (i.e. ```joined_tables```) and was used to assign ranks for each row partitioned by Customer ID, with each partition sorted in descending order according to the date they made the order to put the highest values (i.e. the latest order date) at the top. The ```DENSE_RANK()``` window function was more applicable in acquiring the desired results as there are no gaps in ranking the values and it allows for duplicate rows, especially with the ```order_date``` column since it only displays the date and not the specific time the order was made which would useful in uniquely distinguishing each record. An *alias* of ```rank_number``` was also given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also used in this query to combine the resulting table of the first CTE and the members table, based on their related column ```customer_id```, in order to display the ID of the customer, the date they made an order, the date they joined as a member from the members table, the ID of the product as well as the name of the product they ordered. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```joined_tables``` table and ```y``` for the members table, so as to make the query more readable. Lastly, a ```WHERE``` clause was used to filter the records based on the condiition where the customer made an order *before* they joined as a member of the restaurant's loyalty program. The query then produced the following results:
+In the second CTE labeled as ```ranked_rows```, first, a ```DENSE_RANK()``` window function was applied on the resulting table of the first CTE (i.e. ```joined_tables```) and was used to assign ranks for each row partitioned by Customer ID, with each partition sorted in descending order according to the date they made the order to put the highest values (i.e. the latest order date) at the top. The ```DENSE_RANK()``` window function was more applicable in acquiring the desired results as there are no gaps in ranking the values and it allows for duplicate rows, especially with the ```order_date``` column since it only displays the date and not the specific time the order was made which would useful in uniquely distinguishing each record. An *alias* of ```rank_number``` was also given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also used in this query to combine the resulting table of the first CTE and the members table, based on their related column ```customer_id```, in order to display the ID of the customer, the date they made an order, the date they joined as a member from the members table, the ID of the product as well as the name of the product they ordered. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```joined_tables``` table and ```y``` for the members table, so as to make the query more readable. Lastly, a ```WHERE``` clause was used to filter the records based on the condition where the customer made an order *before* they joined as a member of the restaurant's loyalty program. The query then produced the following results:
 customer_id | order_date | join_date | product_id | product_name | rank_number
 :---------: | :--------: | :-------: | :--------: | :----------: | :---------:
 A | 2021-01-01T00:00:00.000Z | 2021-01-07T00:00:00.000Z | 1 | sushi | 1
@@ -416,13 +416,60 @@ Based from the output of the query, it can be observed that Customer A ordered b
 8. What is the total items and amount spent for each member before they became a member?
 #### Query:
 ```sql
+WITH joined_tables AS (
+   SELECT
+      x.customer_id,
+      x.order_date,
+      x.product_id,
+      y.product_name,
+      y.price
+   FROM dannys_diner.sales x
+   JOIN dannys_diner.menu y
+   ON x.product_id=y.product_id
+)
 
+SELECT
+   x.customer_id,
+   COUNT(x.product_id) AS num_items_bought,
+   SUM(x.price) AS total_amount_spent
+FROM joined_tables x
+JOIN dannys_diner.members y
+ON x.customer_id=y.customer_id
+WHERE x.order_date < y.join_date
+GROUP BY x.customer_id
+ORDER BY x.customer_id;
 ```
 #### Explanation:
+To determine the total number of items and amount spent by each customer before they became a member of the restaurant's loyaly program, first, a CTE labeled as ```joined_tables``` consisting of a ```JOIN``` clause was used to combine the sales table and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the date they made an order, the ID of the product they ordered, the name of the product, and the price from each table, respectively. In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the menu table, so as to make the query more readable. The query then produced the following results:
+
+customer_id | order_date | product_id | product_name | price
+:---------: | :--------: | :--------: | :----------: | :---:
+B	| 2021-01-04T00:00:00.000Z | 1 | sushi | 10
+A	| 2021-01-01T00:00:00.000Z	| 1 | sushi | 10
+B	| 2021-01-11T00:00:00.000Z	| 1 | sushi | 10
+B	| 2021-01-01T00:00:00.000Z	| 2 | curry | 15
+B	| 2021-01-02T00:00:00.000Z	| 2 | curry | 15
+A	| 2021-01-01T00:00:00.000Z	| 2 | curry | 15
+A	| 2021-01-07T00:00:00.000Z	| 2 | curry | 15
+A	| 2021-01-11T00:00:00.000Z	| 3 | ramen | 12
+A	| 2021-01-11T00:00:00.000Z	| 3 | ramen | 12
+A	| 2021-01-10T00:00:00.000Z	| 3 | ramen | 12
+B	| 2021-01-16T00:00:00.000Z	| 3 | ramen | 12
+B	| 2021-02-01T00:00:00.000Z	| 3 | ramen | 12
+C	| 2021-01-01T00:00:00.000Z	| 3 | ramen | 12
+C	| 2021-01-01T00:00:00.000Z	| 3 | ramen | 12
+C	| 2021-01-07T00:00:00.000Z	| 3 | ramen | 12
+
+Following that, a ```COUNT``` aggregate function was used to calculate the total number of items each customer bought prior to becoming a member. An *alias* of ```num_items_bought``` was given to provide a more descriptive column name for the results. Second, a ```SUM``` aggregate function was also used to calculate the total amount spent by each customer on products prior to becoming a member. An *alias* of ```total_amount_spent``` was also given to provide a more descriptive column name for the results. Third, a ```JOIN``` clause was then used to combine the resulting table of the CTE and the members table, based on their related column ```customer_id```, in order to display the ID of the customer, the total number of items and the total amount spent by each customer prior to becoming a member. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```joined_tables``` table and ```y``` for the members table, so as to make the query more readable. Fourth, a ```WHERE``` clause was used to filter the records based on the condition where the customer made an order *before* they joined as a member of the restaurant's loyalty program. Fifth, a ```GROUP BY``` statement was used to arrange the results into groups according to the Customer ID. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order.
 
 #### Output:
+customer_id	| num_items_bought | total_amount_spent
+:---------: | :--------------: | :----------------:
+A | 2 | 25
+B | 3 | 40
 
 #### Answer:
+Based from the output of the query, it can observed that Customer A spent a total of $25 on 2 items before becoming a member of the restaurant's loyalty program, while Customer B spent a total of $40 on 3 items.
 
 - - - -
 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?

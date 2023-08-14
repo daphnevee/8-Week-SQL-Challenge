@@ -475,13 +475,44 @@ Based from the output of the query, it can observed that Customer A spent a tota
 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 #### Query:
 ```sql
+WITH points_table AS (
+   SELECT
+      product_id,
+      CASE
+         WHEN product_id = 1 THEN price * 20
+         ELSE price * 10
+      END AS points
+   FROM dannys_diner.menu
+)
 
+SELECT
+   x.customer_id,
+   SUM(y.points) AS total_points
+FROM dannys_diner.sales x
+JOIN points_table y
+ON x.product_id=y.product_id
+GROUP BY x.customer_id
+ORDER BY x.customer_id;
 ```
 #### Explanation:
+To determine the accumulated points of each customer based on products they bought, first, a CTE labeled ```points_table``` consisting of a ```CASE``` expression was used to set the conditions in calculating the points of each product based on the menu table. The first condition states that when the given product is sushi (i.e. having a Product ID of 1), then the calculated points would be equal to the price multiplied by 20 since sushi has a 2x points multiplier. Otherwise, if the given product is *not* sushi, the calculated points would be equal to the price multiplied only by 10 since each $1 spent equates to 10 points. An *alias* of ```points``` was given to provide a more descriptive column name for the results. The query then produced the following results:
+product_id | points
+:--------: | :----:
+1 | 200
+2 | 150
+3 | 120
+
+Following that, a ```SUM``` aggregate function was used to calculate the total points each customer has. An *alias* of ```total_points``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine the resulting table of the CTE, ```points_table```, and the sales table, based on their related column ```product_id```, in order to display the Customer ID and the total points they accumulated based on the products they bought. In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the ```points_table``` table, so as to make the query more readable. Third, a ```GROUP BY``` statement was also used to arrange the results into groups according to the Customer ID. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order.
 
 #### Output:
+customer_id	| total_points
+:---------: | :----------:
+A | 860
+B | 940
+C | 360
 
 #### Answer:
+Based from the output of the query, it can be observed that Customer A acquired a total of 860 points based from the products he bought, Customer B acquired a total of 940 points, and Customer C acquired a total of 360 points.
 
 - - - -
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?

@@ -529,36 +529,46 @@ Based from the output of the query, it can be observed that Customer A acquired 
 #### Query:
 ```sql
 WITH member_table AS (
-   SELECT
-      x.customer_id,
-      x.order_date,
-      y.join_date,
-      x.product_id,
-      CASE
-         WHEN x.order_date < y.join_date THEN 'N'
-         WHEN x.order_date >= y.join_date THEN 'Y'
-         ELSE 'N'
-      END AS membership
-   FROM dannys_diner.sales x
-   LEFT JOIN dannys_diner.members y
-   ON x.customer_id=y.customer_id
-)
-
--- points_table AS (
   SELECT
- 	x.customer_id,
-    x.order_date,
-    x.join_date,
+  	x.customer_id,
+  	x.order_date,
+  	y.join_date,
   	x.product_id,
   	CASE
-  		WHEN x.product_id = 1 THEN y.price * 20
-  		WHEN x.order_date >= x.join_date AND x.order_date <= (x.join_date + 6) THEN y.price * 20
-  		ELSE y.price * 10
-  	END AS points
+  		WHEN x.order_date < y.join_date  THEN 'before membership'
+  		WHEN x.order_date >= y.join_date AND x.order_date <= (y.join_date + 6) THEN 'first week'
+  		WHEN x.order_date >= y.join_date AND x.order_date <= '2021-01-31' THEN 'within membership'
+        ELSE 'not within range'
+     END AS member_status
+  FROM dannys_diner.sales x
+  JOIN dannys_diner.members y
+  ON x.customer_id=y.customer_id
+),
+
+points_table AS (
+  SELECT
+      x.customer_id,
+      x.product_id,
+      x.order_date,
+      x.join_date,
+      x.member_status,
+      CASE
+          WHEN x.member_status = 'first week' THEN y.price * 20
+          WHEN x.product_id = 1 AND (x.member_status = 'before membership' OR x.member_status = 'within membership') THEN y.price * 20
+          ELSE y.price * 10
+       END AS points
   FROM member_table x
   JOIN dannys_diner.menu y
   ON x.product_id=y.product_id
-  ORDER BY x.customer_id, x.order_date;
+  WHERE member_status IN ('first week', 'before membership', 'within membership')
+  ORDER BY x.customer_id;
+)
+
+SELECT
+	customer_id,
+    SUM(points)
+FROM points_table
+GROUP BY customer_id;
 ```
 #### Explanation:
 

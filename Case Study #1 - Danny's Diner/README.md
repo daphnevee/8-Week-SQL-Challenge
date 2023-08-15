@@ -715,3 +715,6 @@ Finally, to provide the ```ranking``` of Danny's Diner's products, first, a ```C
 | C           | 2021-01-01 | ramen        | 12    | N      | null    |
 | C           | 2021-01-01 | ramen        | 12    | N      | null    |
 | C           | 2021-01-07 | ramen        | 12    | N      | null    |
+
+#### Assumptions:
+Based from the output produced by both queries, it can be observed that Customer A must have enjoyed the curry item from the menu because a week later, they joined the restaurant's loyalty program as a member and ordered the curry item again. Customer A then must have also liked the ramen item from the menu because they consecutively ordered it at most three times in two days. As for Customer B, they must have enjoyed the sushi item because a week later, they joined the loyalty program as a member and ordered the sushi item again. Similar with Customer A, they also liked the ramen item from the menu as they ordered it twice. 

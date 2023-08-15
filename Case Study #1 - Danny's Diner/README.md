@@ -528,7 +528,37 @@ Based from the output of the query, it can be observed that Customer A acquired 
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 #### Query:
 ```sql
+WITH member_table AS (
+   SELECT
+      x.customer_id,
+      x.order_date,
+      y.join_date,
+      x.product_id,
+      CASE
+         WHEN x.order_date < y.join_date THEN 'N'
+         WHEN x.order_date >= y.join_date THEN 'Y'
+         ELSE 'N'
+      END AS membership
+   FROM dannys_diner.sales x
+   LEFT JOIN dannys_diner.members y
+   ON x.customer_id=y.customer_id
+)
 
+-- points_table AS (
+  SELECT
+ 	x.customer_id,
+    x.order_date,
+    x.join_date,
+  	x.product_id,
+  	CASE
+  		WHEN x.product_id = 1 THEN y.price * 20
+  		WHEN x.order_date >= x.join_date AND x.order_date <= (x.join_date + 6) THEN y.price * 20
+  		ELSE y.price * 10
+  	END AS points
+  FROM member_table x
+  JOIN dannys_diner.menu y
+  ON x.product_id=y.product_id
+  ORDER BY x.customer_id, x.order_date;
 ```
 #### Explanation:
 

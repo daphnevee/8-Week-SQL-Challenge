@@ -42,15 +42,50 @@ The data cleaning approach to be taken in this scenario would be to replace both
 
 #### Query:
 ```sql
-
+SELECT
+    order_id,
+    customer_id,
+    pizza_id,
+    CASE
+        WHEN exclusions IS NULL OR exclusions = 'null' THEN ''
+        ELSE exclusions
+    END AS exclusions,
+    CASE
+        WHEN extras IS NULL OR extras = 'null' THEN ''
+        ELSE extras
+    END AS extras,
+    order_time
+FROM pizza_runner.customer_orders;
 ```
+#### Explanation:
+<!--create a temporary table whose structure is based on the already available tables in the database.-->
 
 #### After Data Cleaning:
+| order_id | customer_id | pizza_id | exclusions | extras |        order_time        |
+|:--------:|:-----------:|:--------:|:----------:|:------:|:------------------------:|
+|     1    |     101     |     1    |            |        | 2020-01-01T18:05:02.000Z |
+|     2    |     101     |     1    |            |        | 2020-01-01T19:00:52.000Z |
+|     3    |     102     |     1    |            |        | 2020-01-02T23:51:23.000Z |
+|     3    |     102     |     2    |            |        | 2020-01-02T23:51:23.000Z |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |
+|     4    |     103     |     2    |      4     |        | 2020-01-04T13:23:46.000Z |
+|     5    |     104     |     1    |            |    1   | 2020-01-08T21:00:29.000Z |
+|     6    |     101     |     2    |            |        | 2020-01-08T21:03:13.000Z |
+|     7    |     105     |     2    |            |    1   | 2020-01-08T21:20:29.000Z |
+|     8    |     102     |     1    |            |        | 2020-01-09T23:54:33.000Z |
+|     9    |     103     |     1    |      4     |  1, 5  | 2020-01-10T11:22:59.000Z |
+|    10    |     104     |     1    |            |        | 2020-01-11T18:34:49.000Z |
+|    10    |     104     |     1    |    2, 6    |  1, 4  | 2020-01-11T18:34:49.000Z |
 
 - - - -
 
 ### Table 3: runner_orders
-1. Checking data types for each column
+
+In the ```runner_orders``` table, it can be observed that the ```pickup_time```, ```distance```, ```duration```, and ```cancellation``` columns contain several null and NaN values. Moreover, the ```distance``` column contains values with units of measurement of ```km``` and the ```duration``` column contains values with units of measurement of ```min``` or ```minutes```. Thus, these columns will need to be cleaned up before being used for queries.
+
+The data cleaning approach to be taken would be to, first, replace both the null and NaN vaues with empty strings. Empty strings are better suited in representing the data because these can imply that the customer either cancelled their order, which would no longer provide information in terms of pickup time, distance, and duration, or the customer received their order, which would no longer provide information in terms of cancellation. Second, remove the units of measurement (i.e. km, minute/mins) from both the distance and duration columns in order to maintain consistency in the data.
+
 #### Before Data Cleaning:
 | order_id | runner_id |     pickup_time     | distance |  duration  |       cancellation      |
 |:--------:|:---------:|:-------------------:|:--------:|:----------:|:-----------------------:|

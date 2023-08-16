@@ -44,6 +44,7 @@ Danny requires further assistance to clean the data he has collected and apply s
 
 #### After Data Cleaning:
 
+- - - -
 
 2. Removing ```NaN``` values from the ```extras``` table
 #### Before Data Cleaning: 
@@ -56,6 +57,7 @@ Danny requires further assistance to clean the data he has collected and apply s
 
 #### After Data Cleaning:
 
+- - - -
 
 ### Table 3: runner_orders
 1. Checking data types for each column
@@ -81,6 +83,7 @@ Danny requires further assistance to clean the data he has collected and apply s
 
 #### After Data Cleaning:
 
+- - - -
 
 ## Case Study Questions and Answers
 ### A. Pizza Metrics

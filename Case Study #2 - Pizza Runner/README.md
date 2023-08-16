@@ -17,7 +17,11 @@ Danny requires further assistance to clean the data he has collected and apply s
 
 ## Data Cleaning
 ### Table 2: customer_orders
-1. Removing ```null``` values from the ```exclusions``` table
+
+In the ```customer_orders``` table, it can be observed that both the ```exclusions``` and ```extras``` columns contain several null and NaN values. Thus, these columns will need to be cleaned up before being used for queries.
+
+The data cleaning approach to be taken in this scenario would be to replace both the null and NaN values with empty strings. Empty strings are better suited in representing the data because these can imply that the customer did not specifically request for any exclusions or extra toppings on the pizza they ordered, in comparison to null or NaN values which imply a more ambiguous unknown value. 
+
 #### Before Data Cleaning:
 | order_id | customer_id | pizza_id | exclusions | extras |      order_time     |
 |:--------:|:-----------:|:--------:|:----------:|:------:|:-------------------:|
@@ -40,20 +44,6 @@ Danny requires further assistance to clean the data he has collected and apply s
 ```sql
 
 ```
-#### Explanation:
-
-#### After Data Cleaning:
-
-- - - -
-
-2. Removing ```NaN``` values from the ```extras``` table
-#### Before Data Cleaning: 
-
-#### Query:
-```sql
-
-```
-#### Explanation:
 
 #### After Data Cleaning:
 

@@ -530,16 +530,16 @@ Based from the output of the query, it can be observed that Customer A acquired 
 ```sql
 WITH member_table AS (
   SELECT
-  	x.customer_id,
-  	x.order_date,
-  	y.join_date,
-  	x.product_id,
-  	CASE
-  		WHEN x.order_date < y.join_date  THEN 'before membership'
-  		WHEN x.order_date >= y.join_date AND x.order_date <= (y.join_date + 6) THEN 'first week'
-  		WHEN x.order_date >= y.join_date AND x.order_date <= '2021-01-31' THEN 'within membership'
-        ELSE 'not within range'
-     END AS member_status
+      x.customer_id,
+      x.order_date,
+      y.join_date,
+      x.product_id,
+      CASE
+	  WHEN x.order_date < y.join_date  THEN 'before membership'
+	  WHEN x.order_date >= y.join_date AND x.order_date <= (y.join_date + 6) THEN 'first week'
+	  WHEN x.order_date > (y.join_date + 6) AND x.order_date <= '2021-01-31' THEN 'within membership'
+	  ELSE 'not within range'
+      END AS member_status
   FROM dannys_diner.sales x
   JOIN dannys_diner.members y
   ON x.customer_id=y.customer_id
@@ -553,28 +553,69 @@ points_table AS (
       x.join_date,
       x.member_status,
       CASE
-          WHEN x.member_status = 'first week' THEN y.price * 20
-          WHEN x.product_id = 1 AND (x.member_status = 'before membership' OR x.member_status = 'within membership') THEN y.price * 20
-          ELSE y.price * 10
-       END AS points
+	WHEN x.member_status = 'first week' THEN y.price * 20
+	WHEN x.product_id = 1 AND (x.member_status = 'before membership' OR x.member_status = 'within membership') THEN y.price * 20
+	ELSE y.price * 10
+      END AS points
   FROM member_table x
   JOIN dannys_diner.menu y
   ON x.product_id=y.product_id
   WHERE member_status IN ('first week', 'before membership', 'within membership')
-  ORDER BY x.customer_id;
 )
 
 SELECT
-	customer_id,
-    SUM(points)
+    customer_id,
+    SUM(points) AS total_points
 FROM points_table
-GROUP BY customer_id;
+GROUP BY customer_id
+ORDER BY customer_id;
 ```
 #### Explanation:
+To determine the total amount of points both Customer A and B accumulated by the end of January, 2 CTEs were used to separate the operations of identifying when an order was made by a member of the restaurant's loyalty program and the total amount of accumulated points based on specific durations of time to produce the desired results.
+
+In the first CTE labeled as ```member_table```, first, a ```CASE``` expression was used to identify when an order was made by a member of the restaurant's loyalty program. The first condition checks whether an order was made before the customer joined as a member. If so, then it would return a result indicating that an order was made *before membership*. The second condition checks whether an order was made within the first week the customer joined as a member. As stated in the question, within the first week a customer joins the program, they earn 2x points on all items hence it is important to note this particular duration for calculating the points. If so, then it would return a result indicating that an order was made in the *first week*. The third condition checks whether an order was made *after* the first week the customer joined as a member up until the end of January (i.e. January 31, 2021). If so, then it would return a result indicating that an order was made *within membership* duration. Otherwise, if the order was made past January, then it would return a result of *not within range*. An *alias* of ```member_status``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine the sales table and the members table, based on their related column ```customer_id```, in order to display the ID of the Customer, the date they made the order, the date they joined as a member, and the ID of the product they ordered. In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the members table, so as to make the query more readable. The query then produced the following results:
+
+| customer_id |        order_date        |         join_date        | product_id |   member_status   |
+|:-----------:|:------------------------:|:------------------------:|:----------:|:-----------------:|
+|      A      | 2021-01-01T00:00:00.000Z | 2021-01-07T00:00:00.000Z |      1     | before membership |
+|      A      | 2021-01-01T00:00:00.000Z | 2021-01-07T00:00:00.000Z |      2     | before membership |
+|      A      | 2021-01-07T00:00:00.000Z | 2021-01-07T00:00:00.000Z |      2     |     first week    |
+|      A      | 2021-01-10T00:00:00.000Z | 2021-01-07T00:00:00.000Z |      3     |     first week    |
+|      A      | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z |      3     |     first week    |
+|      A      | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z |      3     |     first week    |
+|      B      | 2021-01-01T00:00:00.000Z | 2021-01-09T00:00:00.000Z |      2     | before membership |
+|      B      | 2021-01-02T00:00:00.000Z | 2021-01-09T00:00:00.000Z |      2     | before membership |
+|      B      | 2021-01-04T00:00:00.000Z | 2021-01-09T00:00:00.000Z |      1     | before membership |
+|      B      | 2021-01-11T00:00:00.000Z | 2021-01-09T00:00:00.000Z |      1     |     first week    |
+|      B      | 2021-01-16T00:00:00.000Z | 2021-01-09T00:00:00.000Z |      3     | within membership |
+|      B      | 2021-02-01T00:00:00.000Z | 2021-01-09T00:00:00.000Z |      3     |  not within range |
+
+In the second CTE labeled as ```points_table```, first, a ```CASE``` expression was used to calculate the points for each product based on when it was ordered. Based on the conditions set in the first CTE, the first condition checks whether an order was made in the first week. If so, then the member would then earn 2x points on all items within this duration. On the other hand, the second condition checks whether the item that was ordered was sushi and if it was ordered before the customer joined as a member or *after* the first week they joined as a member. If so, then the customer/member would earn 2x points on *only* sushi items ordered. Otherwise, if the ordered item was not sushi, the customer/member would earn 10 points for every $1 spent. An *alias* of ```points``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine the resulting table of the first CTE (i.e. ```member_table```) and the menu table, based on their related column ```product_id```, in order to display the ID of the Customer, the ID of the product they ordered, the date they made the order, the date they joined as a member, and the resulting status of the first CTE. In joining the two tables, *aliases* were also given, i.e. ```x``` for the sales table and ```y``` for the members table, so as to make the query more readable. Lastly, a ```WHERE``` clause was used to filter the records based on only the conditions of whether the order was made before the customer joined as a member, within the first week the customer joined as a member, or after the first week up until the end of January. This then disregards any records with a status of *not within range* because the only results needed should not exceed the end of January. The query then produced the following results:
+
+| customer_id | product_id |        order_date        |         join_date        |   member_status   | points |
+|:-----------:|:----------:|:------------------------:|:------------------------:|:-----------------:|:------:|
+|      B      |      1     | 2021-01-11T00:00:00.000Z | 2021-01-09T00:00:00.000Z |     first week    |   200  |
+|      B      |      1     | 2021-01-04T00:00:00.000Z | 2021-01-09T00:00:00.000Z | before membership |   200  |
+|      A      |      1     | 2021-01-01T00:00:00.000Z | 2021-01-07T00:00:00.000Z | before membership |   200  |
+|      B      |      2     | 2021-01-02T00:00:00.000Z | 2021-01-09T00:00:00.000Z | before membership |   150  |
+|      B      |      2     | 2021-01-01T00:00:00.000Z | 2021-01-09T00:00:00.000Z | before membership |   150  |
+|      A      |      2     | 2021-01-07T00:00:00.000Z | 2021-01-07T00:00:00.000Z |     first week    |   300  |
+|      A      |      2     | 2021-01-01T00:00:00.000Z | 2021-01-07T00:00:00.000Z | before membership |   150  |
+|      B      |      3     | 2021-01-16T00:00:00.000Z | 2021-01-09T00:00:00.000Z | within membership |   120  |
+|      A      |      3     | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z |     first week    |   240  |
+|      A      |      3     | 2021-01-11T00:00:00.000Z | 2021-01-07T00:00:00.000Z |     first week    |   240  |
+|      A      |      3     | 2021-01-10T00:00:00.000Z | 2021-01-07T00:00:00.000Z |     first week    |   240  |
+
+Finally, to determine the total amount of points both Customer A and B accumulated by the end of January, first, a ```SUM``` aggregate function was used to calculate the total points based on the conditions set in the second CTE (i.e. ```points_table```). An *alias* of ```total_points``` was given to provide a more descriptive column name for the results. Second, a ```GROUP BY``` statement was used to arrange the results into groups based on their Customer ID. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order based on the Customer ID.
 
 #### Output:
+| customer_id | total_points |
+|:-----------:|:------------:|
+|      A      |     1370     |
+|      B      |      820     |
 
 #### Answer:
+Based from the output of the query, it can be observed that Customer A accumulated a total of 1,370 points and Customer B accumulated a total of 820 points by the end of January.
 
 - - - -
 ## Bonus Questions

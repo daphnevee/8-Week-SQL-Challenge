@@ -42,6 +42,7 @@ The data cleaning approach to be taken in this scenario would be to replace both
 
 #### Query:
 ```sql
+CREATE TEMPORARY TABLE cleaned_customer_orders AS
 SELECT
     order_id,
     customer_id,
@@ -58,7 +59,7 @@ SELECT
 FROM pizza_runner.customer_orders;
 ```
 #### Explanation:
-<!--create a temporary table whose structure is based on the already available tables in the database.-->
+To replace both the null and NaN values with empty strings, first, a temporary table named ```cleaned_customer_orders``` was created whose structure is based on the already available ```customer_orders``` table in the database. Temporary tables are useful when processing and manipulating data without affecting the original data. Second, ```CASE``` expressions were used for replacing NULL values with empty strings in both the ```exclusions``` and ```extras``` columns. The first condition for both ```CASE``` expressions checks whether the specific data is a null value or is equal to the string "null" and if so, it would return an empty string. Otherwise, it would retain the original data. Initially, the condition only checks if the data **is** a null value however in producing the results, some of the "null" values were not registering as actual NULL values but rather as strings. Aliases of ```exclusions``` and ```extras``` were given for both ```CASE``` expressions to provide more descriptive column names for the results. 
 
 #### After Data Cleaning:
 | order_id | customer_id | pizza_id | exclusions | extras |        order_time        |
@@ -81,10 +82,11 @@ FROM pizza_runner.customer_orders;
 - - - -
 
 ### Table 3: runner_orders
+1. Cleaning the data in the table
 
-In the ```runner_orders``` table, it can be observed that the ```pickup_time```, ```distance```, ```duration```, and ```cancellation``` columns contain several null and NaN values. Moreover, the ```distance``` column contains values with units of measurement of ```km``` and the ```duration``` column contains values with units of measurement of ```min``` or ```minutes```. Thus, these columns will need to be cleaned up before being used for queries.
+In the ```runner_orders``` table, it can be observed that the ```pickup_time```, ```distance```, ```duration```, and ```cancellation``` columns contain several null and NaN values. Moreover, the ```distance``` column contains values with a unit of measurement of ```km``` and the ```duration``` column contains values with units of time of ```min``` or ```minutes```. Thus, these columns will need to be cleaned up before being used for queries.
 
-The data cleaning approach to be taken would be to, first, replace both the null and NaN vaues with empty strings. Empty strings are better suited in representing the data because these can imply that the customer either cancelled their order, which would no longer provide information in terms of pickup time, distance, and duration, or the customer received their order, which would no longer provide information in terms of cancellation. Second, remove the units of measurement (i.e. km, minute/mins) from both the distance and duration columns in order to maintain consistency in the data.
+The data cleaning approach to be taken would be to, first, collectively re-format the null data in the ```pickup_time```, ```distance```, and ```duration``` columns into consistent NULL values. As opposed to the data cleaning approach taken in the ```customer_orders``` table, NULL values are more applicable in representing data in terms of pickup time, distance, and duration, because there are varying instances when an existing order can later be cancelled by the customer or the restaurant itself and in the meantime, placeholder values can be indicated. Second, for the ```cancellation``` column however, the null and NaN values would have to be replaced with empty strings. For this particular column, empty strings are better suited in representing the data because these can imply that the customer successfully received their order which would no longer provide information in terms of cancellation. Third, remove the units of measurement (i.e. km, minute/mins) from both the ```distance``` and ```duration``` columns in order to maintain consistency in the data.
 
 #### Before Data Cleaning:
 | order_id | runner_id |     pickup_time     | distance |  duration  |       cancellation      |
@@ -102,11 +104,110 @@ The data cleaning approach to be taken would be to, first, replace both the null
 
 #### Query:
 ```sql
-
+CREATE TEMPORARY TABLE cleaned_runner_orders AS
+SELECT
+    order_id,
+    runner_id,
+    CASE
+        WHEN pickup_time IS NULL OR pickup_time = 'null' THEN NULL
+        ELSE pickup_time
+    END AS pickup_time,
+    CASE
+        WHEN distance IS NULL OR distance = 'null' THEN NULL
+        WHEN distance LIKE '%km' THEN TRIM('km' FROM distance)
+        ELSE distance
+    END AS distance,
+    CASE
+        WHEN duration IS NULL OR duration = 'null' THEN NULL
+        WHEN duration LIKE '%minutes' THEN TRIM('minutes' FROM duration)
+        WHEN duration LIKE '%mins' THEN TRIM('mins' FROM duration)
+        WHEN duration LIKE '%minute' THEN TRIM('minute' FROM duration)
+        ELSE duration
+    END AS duration,
+    CASE
+        WHEN cancellation IS NULL OR cancellation = 'null' THEN ''
+        ELSE cancellation
+    END AS cancellation
+FROM pizza_runner.runner_orders;
 ```
+
 #### Explanation:
+To perform data cleaning on the table, first, a temporary table named ```cleaned_runner_orders``` was created whose structure is also based on the already available ```runner_orders``` table in the database. Second, to collectively re-format the null data in the ```pickup_time```, ```distance```, and ```duration``` columns into consistent NULL values, ```CASE``` expressions were used to set the condition of checking whether the specific data is a null value or is equal to the string "null". If so, it would return a NULL value. Otherwise, it would retain the original data. Similar with the ```customer_orders``` table, some of the "null" values were not registering as actual NULL values but rather as strings. On the other hand, for the ```cancellation``` column, the condition set in the ```CASE``` expression replaces the null and NaN values with empty strings. Third, to remove the units of measurement (i.e. km, minute/mins) from both the ```distance``` and ```duration``` columns, ```CASE``` expressions were also used to set the condition of checking of whether the specific data contains either a unit of measurement (i.e. kilometer) or time (i.e. minute) through the use of the ```LIKE``` operator. If so, a ```TRIM``` function was used to remove the unit of measurement or time from the given data. Otherwise, it would retain the original data. Aliases of ```pickup_time```, ```distance```, ```duration```, and ```cancellation``` were given for each of the ```CASE``` expressions applied for each of the columns to provide more descriptive column names in the results.
 
 #### After Data Cleaning:
+| order_id | runner_id |     pickup_time     | distance | duration |       cancellation      |
+|:--------:|:---------:|:-------------------:|:--------:|:--------:|:-----------------------:|
+|     1    |     1     | 2020-01-01 18:15:34 |    20    |    32    |                         |
+|     2    |     1     | 2020-01-01 19:10:54 |    20    |    27    |                         |
+|     3    |     1     | 2020-01-03 00:12:37 |   13.4   |    20    |                         |
+|     4    |     2     | 2020-01-04 13:53:03 |   23.4   |    40    |                         |
+|     5    |     3     | 2020-01-08 21:10:57 |    10    |    15    |                         |
+|     6    |     3     |                     |          |          | Restaurant Cancellation |
+|     7    |     2     | 2020-01-08 21:30:45 |    25    |    25    |                         |
+|     8    |     2     | 2020-01-10 00:15:02 |   23.4   |    15    |                         |
+|     9    |     2     |                     |          |          |  Customer Cancellation  |
+|    10    |     1     | 2020-01-11 18:50:20 |    10    |    10    |                         |
+
+- - - -
+
+2. Checking and modifying incorrect data types in the schema
+
+It was mentioned that there were some known data issues with the ```runner_orders``` table and upon checking the schema, it can be observed that the columns ```pickup_time```, ```distance```, and ```duration``` have incorrect data types assigned. Therefore, it is important that the data types of these columns must be modified in order to improve data integrity and ensure that the correct data is stored within the database.
+
+#### Before Data Cleaning:
+* #### Query for Checking Data Types:
+  
+    ```sql
+    SELECT
+        column_name,
+        data_type AS data_typ
+    FROM
+        information_schema.columns
+    WHERE
+        table_name = 'cleaned_runner_orders' AND
+        column_name IN ('pickup_time', 'distance', 'duration');
+    ```
+
+* #### Output:
+  
+    | column_name |     data_type     |
+    |:-----------:|:-----------------:|
+    |   distance  | character varying |
+    |   duration  | character varying |
+    | pickup_time | character varying |
+
+#### Query:
+```sql
+ALTER TABLE cleaned_runner_orders
+ALTER COLUMN pickup_time TYPE TIMESTAMP USING pickup_time::TIMESTAMP,
+ALTER COLUMN distance TYPE FLOAT USING distance::FLOAT,
+ALTER COLUMN duration TYPE INT USING duration::INT;
+```
+
+#### Explanation:
+To modify the incorrect data types in the schema, the ```ALTER``` keyword was applied. First, the ```ALTER TABLE``` command modifies the previously created temporary table named ```cleaned_runner_orders```. Second, the ```ALTER COLUMN``` command modifies the data type of each of the columns. For the ```pickup_time``` column, its original data type of ```VARCHAR(19)``` was changed to the type ```TIMESTAMP``` (also known as ```TIMESTAMP WITHOUT TIME ZONE```) because it consists of data representing the timestamp at which the runner arrives at the Pizza Runner headquarters to pick up the ordered pizzas. As for the ```distance``` column, its original data type of ```VARCHAR(7)``` was changed to the type ```FLOAT``` because it consists of continuous data representing the distance the runner had to travel to deliver the order to the customer. Lastly, for the ```duration``` column, its original data type of ```VARCHAR(10)``` was changed to the type ```INT``` because it consists of discrete data representing the runner's travel time in delivering the customer's order.
+
+#### After Data Cleaning:
+* #### Query for Checking Data Types:
+  
+    ```sql
+    SELECT
+        column_name,
+        data_type
+    FROM
+        information_schema.columns
+    WHERE
+        table_name = 'cleaned_runner_orders' AND
+        column_name IN ('pickup_time', 'distance', 'duration');
+    ```
+    
+* #### Output:
+  
+    | column_name |          data_type          |
+    |:-----------:|:---------------------------:|
+    |   distance  |       double precision      |
+    |   duration  |           integer           |
+    | pickup_time | timestamp without time zone |
 
 - - - -
 

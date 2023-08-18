@@ -238,7 +238,7 @@ Based from the output of the query, it can be observed that a total of 14 pizzas
 ```sql
 SELECT
     COUNT(DISTINCT order_id) AS num_of_unique_customer_orders
-FROM pizza_runner.customer_orders;
+FROM cleaned_customer_orders;
 ```
 #### Explanation:
 To deermine the number of unique customer orders, a ```COUNT``` aggregate function was used in conjunction with the ```DISTINCT``` clause in order to extract and count only the unique order records from the ```cleaned_customer_orders``` table. An *alias* of ```num_of_unique_customer_orders``` was given to provide a more descriptive column name for the results.

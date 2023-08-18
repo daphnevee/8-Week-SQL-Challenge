@@ -212,6 +212,61 @@ To modify the incorrect data types in the schema, the ```ALTER``` keyword was ap
 - - - -
 
 ## Case Study Questions and Answers
+<!--
+CREATE TEMPORARY TABLE cleaned_customer_orders AS
+SELECT
+    order_id,
+    customer_id,
+    pizza_id,
+    CASE
+        WHEN exclusions IS NULL OR exclusions = 'null' THEN ''
+        ELSE exclusions
+    END AS exclusions,
+    CASE
+        WHEN extras IS NULL OR extras = 'null' THEN ''
+        ELSE extras
+    END AS extras,
+    order_time
+FROM pizza_runner.customer_orders;
+
+CREATE TEMPORARY TABLE cleaned_runner_orders AS
+SELECT
+    order_id,
+    runner_id,
+    CASE
+        WHEN pickup_time IS NULL OR pickup_time = 'null' THEN NULL
+        ELSE pickup_time
+    END AS pickup_time,
+    CASE
+        WHEN distance IS NULL OR distance = 'null' THEN NULL
+        WHEN distance LIKE '%km' THEN TRIM('km' FROM distance)
+        ELSE distance
+    END AS distance,
+    CASE
+        WHEN duration IS NULL OR duration = 'null' THEN NULL
+        WHEN duration LIKE '%minutes' THEN TRIM('minutes' FROM duration)
+        WHEN duration LIKE '%mins' THEN TRIM('mins' FROM duration)
+        WHEN duration LIKE '%minute' THEN TRIM('minute' FROM duration)
+        ELSE duration
+    END AS duration,
+    CASE
+        WHEN cancellation IS NULL OR cancellation = 'null' THEN ''
+        ELSE cancellation
+    END AS cancellation
+FROM pizza_runner.runner_orders;
+
+ALTER TABLE cleaned_runner_orders
+ALTER COLUMN pickup_time TYPE TIMESTAMP USING pickup_time::TIMESTAMP,
+ALTER COLUMN distance TYPE FLOAT USING distance::FLOAT,
+ALTER COLUMN duration TYPE INT USING duration::INT;
+
+SELECT
+	pizza_id,
+	pizza_name,
+FROM cleaned_runner_orders
+WHERE cancellation = ''
+GROUP BY runner_id;
+-->
 ### A. Pizza Metrics
 1. How many pizzas were ordered?
 #### Query:

@@ -216,36 +216,65 @@ To modify the incorrect data types in the schema, the ```ALTER``` keyword was ap
 1. How many pizzas were ordered?
 #### Query:
 ```sql
+SELECT
+    COUNT(pizza_id) AS num_of_ordered_pizzas
+FROM cleaned_customer_orders;
 ```
 #### Explanation:
+To determine the number of pizzas ordered, a ```COUNT``` aggregate function was used to count the total number of pizza orders at Pizza Runner in the ```cleaned_customer_orders``` table. An *alias* of ```num_of_ordered_pizzas``` was also given to provide a more descriptive column name in the results.
 
 #### Output:
+| num_of_ordered_pizzas |
+|:---------------------:|
+|           14          |
 
 #### Answer:
+Based from the output of the query, it can be observed that a total of 14 pizzas were ordered by customers from Pizza Runner.
 
 - - - -
 
 2. How many unique customer orders were made?
 #### Query:
 ```sql
+SELECT
+    COUNT(DISTINCT order_id) AS num_of_unique_customer_orders
+FROM pizza_runner.customer_orders;
 ```
 #### Explanation:
+To deermine the number of unique customer orders, a ```COUNT``` aggregate function was used in conjunction with the ```DISTINCT``` clause in order to extract and count only the unique order records from the ```cleaned_customer_orders``` table. An *alias* of ```num_of_unique_customer_orders``` was given to provide a more descriptive column name for the results.
 
 #### Output:
+| num_of_unique_customer_orders |
+|:-----------------------------:|
+|               10              |
 
 #### Answer:
+Based from the output of the query, it can be observed that there was a total number of 10 unique customer orders made at Pizza Runner.
 
 - - - -
 
 3. How many successful orders were delivered by each runner?
 #### Query:
 ```sql
+SELECT
+	runner_id,
+    COUNT(order_id) AS num_of_successful_deliveries
+FROM cleaned_runner_orders
+WHERE cancellation = ''
+GROUP BY runner_id;
 ```
 #### Explanation:
+To determine the number of successful orders delivered by each runner, first, a ```COUNT``` aggregate function was used to count the total number of successful deliveries. An *alias* of ```num_of_successful_deliveries``` was given to provide a more descriptive column name for the results. Second, a ```WHERE``` clause was used to filter the resulting records based on the condition when the order was *not* cancelled by either the customer or the restaurant. Lastly, a ```GROUP BY``` statement was used to arrange the counted number of successful deliveries made by each runner into groups according to the Runner ID.
 
 #### Output:
+| runner_id | num_of_successful_deliveries |
+|:---------:|:----------------------------:|
+|     1     |               4              |
+|     2     |               3              |
+|     3     |               1              |
 
 #### Answer:
+Based from the output of the query, it can be observed that Runner 1 was able to successfully deliver 4 pizzas, while Runner 2 was able to successfully deliver 3 pizzas. On the other hand, Runner 3 was able to successfully deliver only 1 pizza.
 
 - - - -
 

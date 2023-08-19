@@ -312,7 +312,7 @@ Based from the output of the query, it can be observed that there was a total nu
 #### Query:
 ```sql
 SELECT
-	runner_id,
+    runner_id,
     COUNT(order_id) AS num_of_successful_deliveries
 FROM cleaned_runner_orders
 WHERE cancellation = ''
@@ -336,6 +336,27 @@ Based from the output of the query, it can be observed that Runner 1 was able to
 4. How many of each type of pizza was delivered?
 #### Query:
 ```sql
+WITH order_deliver_status AS (
+   SELECT
+      x.order_id,
+      x.pizza_id,
+      CASE
+	  WHEN y.cancellation = '' THEN 'successful'
+	  ELSE 'unsuccessful'
+      END AS status
+  FROM cleaned_customer_orders x
+  JOIN cleaned_runner_orders y
+  ON x.order_id=y.order_id
+)
+
+SELECT
+    y.pizza_name,
+    COUNT(x.pizza_id) AS num_of_successful_deliveries
+FROM order_deliver_status x
+JOIN pizza_runner.pizza_names y
+ON x.pizza_id=y.pizza_id
+WHERE x.status = 'successful'
+GROUP BY y.pizza_name;
 ```
 #### Explanation:
 

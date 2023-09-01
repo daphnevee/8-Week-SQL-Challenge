@@ -379,7 +379,7 @@ To determine the number of successful deliveries for each type of pizza, first, 
 |    10    |     1    |  successful  |
 |    10    |     1    |  successful  |
 
-Following that, 
+Following that, a ```COUNT``` aggregate function was used to count the number of orders made for each type of pizza based on the resulting table of the ```order_delivery_status``` CTE. Together with the ```COUNT``` aggregate function, a ```WHERE``` clause was then used to filter the records according to which order was delivered successfully. After that, a ```JOIN``` clause was used to combine the ```order_delivery_status``` table from the CTE and the ```pizza_names``` table to display the name of the ordered pizza rather than the ID and the total number of successful deliveries made for each type of pizza. An *alias* of ```num_of_successful_deliveries``` was given to provide a more descriptive column name for the results. Lastly, a ```GROUP BY``` statement was used to arrange the results into groups according to the type of pizza. 
 
 #### Output:
 | pizza_name | num_of_successful_deliveries |
@@ -388,7 +388,7 @@ Following that,
 | Meatlovers |               9              |
 
 #### Answer:
-
+Based from the results of the query, it can be observed that the there were 3 orders of the Vegetarian type of pizza from Pizza Runner that were successfully delivered to the customers. As for the Meatlovers type of pizza, 9 orders were made and successfully delivered to the customers.
 - - - -
 
 5. How many Vegetarian and Meatlovers were ordered by each customer?

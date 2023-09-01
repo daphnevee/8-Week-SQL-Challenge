@@ -394,12 +394,33 @@ Based from the results of the query, it can be observed that the there were 3 or
 5. How many Vegetarian and Meatlovers were ordered by each customer?
 #### Query:
 ```sql
+SELECT
+    x.customer_id,
+    y.pizza_name,
+    COUNT(x.pizza_id) AS total_orders
+FROM cleaned_customer_orders x
+JOIN pizza_runner.pizza_names y
+ON x.pizza_id=y.pizza_id
+GROUP BY x.customer_id, y.pizza_name
+ORDER BY x.customer_id, y.pizza_name;
 ```
 #### Explanation:
+To determine the number of Vegetarian and Meatlovers pizza ordered by each customer, first, a ```COUNT``` aggregate function was used to count the total number of orders made by each customer of both types of pizza. An *alias* of ```total_orders``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine the ```cleaned_customer_orders``` table and the ```pizza_names``` table based on their related column ```pizza_id``` in order to display the ID of the customer that made the order, the name of the pizza they ordered, and the number of times they made an order for that particular type of pizza. Third, a ```GROUP BY``` statement was used to arrange the results into group according to both the Customer ID and the name of the pizza. Lastly, an ```ORDER BY``` statement was also used to organize the results by default in ascending order according to the Customer ID and the name of the pizza.
 
 #### Output:
+| customer_id | pizza_name | total_orders |
+|:-----------:|:----------:|:------------:|
+|     101     | Meatlovers |       2      |
+|     101     | Vegetarian |       1      |
+|     102     | Meatlovers |       2      |
+|     102     | Vegetarian |       1      |
+|     103     | Meatlovers |       3      |
+|     103     | Vegetarian |       1      |
+|     104     | Meatlovers |       3      |
+|     105     | Vegetarian |       1      |
 
 #### Answer:
+Based from the output of the query, it can be observed that Customer 101 ordered 2 of the Meatlovers pizza and 1 of the Vegeterian pizza. As for Customer 102, they ordered 2 of the Meatlovers pizza as well and 1 of the Vegetarian pizza. Customer 103 on the other hand ordered 3 of the Meatlovers pizza and 1 of the Vegetarian pizza. Customer 104 only ordered 3 of the Meatlovers pizza and Customer 105 only ordered 1 of the Vegetarian pizza.
 
 - - - -
   

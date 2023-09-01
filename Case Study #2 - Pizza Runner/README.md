@@ -360,7 +360,32 @@ GROUP BY y.pizza_name;
 ```
 #### Explanation:
 
+To determine the number of successful deliveries for each type of pizza, first, a CTE labeled ```order_deliver_status``` consisting of a CASE expression was used to set the conditions in identifying whether an order was delivered successfully or not based on the ```cleaned_runner_orders``` table. The first condition states that when an order was not cancelled by either the customer or the restaurant, then the order was delivered successfully by the runner. Otherwise, if the cancellation column has a value for that particular order, then the order delivery was unsuccessful. An alias of ```status``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also used in the CTE to combine the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table based on their related column ```order_id``` in order to display the Order ID, the Pizza ID, and the status of the order delivery. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. The query then produced the following results:
+
+| order_id | pizza_id |    status    |
+|:--------:|:--------:|:------------:|
+|     1    |     1    |  successful  |
+|     2    |     1    |  successful  |
+|     3    |     2    |  successful  |
+|     3    |     1    |  successful  |
+|     4    |     2    |  successful  |
+|     4    |     1    |  successful  |
+|     4    |     1    |  successful  |
+|     5    |     1    |  successful  |
+|     6    |     2    | unsuccessful |
+|     7    |     2    |  successful  |
+|     8    |     1    |  successful  |
+|     9    |     1    | unsuccessful |
+|    10    |     1    |  successful  |
+|    10    |     1    |  successful  |
+
+Following that, 
+
 #### Output:
+| pizza_name | num_of_successful_deliveries |
+|:----------:|:----------------------------:|
+| Vegetarian |               3              |
+| Meatlovers |               9              |
 
 #### Answer:
 

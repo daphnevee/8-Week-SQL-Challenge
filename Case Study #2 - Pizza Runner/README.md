@@ -405,7 +405,7 @@ GROUP BY x.customer_id, y.pizza_name
 ORDER BY x.customer_id, y.pizza_name;
 ```
 #### Explanation:
-To determine the number of Vegetarian and Meatlovers pizza ordered by each customer, first, a ```COUNT``` aggregate function was used to count the total number of orders made by each customer of both types of pizza. An *alias* of ```total_orders``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine the ```cleaned_customer_orders``` table and the ```pizza_names``` table based on their related column ```pizza_id``` in order to display the ID of the customer that made the order, the name of the pizza they ordered, and the number of times they made an order for that particular type of pizza. Third, a ```GROUP BY``` statement was used to arrange the results into group according to both the Customer ID and the name of the pizza. Lastly, an ```ORDER BY``` statement was also used to organize the results by default in ascending order according to the Customer ID and the name of the pizza.
+To determine the number of Vegetarian and Meatlovers pizza ordered by each customer, first, a ```COUNT``` aggregate function was used to count the total number of orders made by each customer of both types of pizza. An *alias* of ```total_orders``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine the ```cleaned_customer_orders``` table and the ```pizza_names``` table based on their related column ```pizza_id``` in order to display the ID of the customer that made the order, the name of the pizza they ordered, and the number of times they made an order for that particular type of pizza. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to both the Customer ID and the name of the pizza. Lastly, an ```ORDER BY``` statement was also used to organize the results by default in ascending order according to the Customer ID and the name of the pizza.
 
 #### Output:
 | customer_id | pizza_name | total_orders |
@@ -447,7 +447,19 @@ ORDER BY max_deliveries DESC
 LIMIT 1;
 ```
 #### Explanation:
+To determine the maximum number of pizzas delivered in a single order, first, a CTE labeled ```successful_deliveries``` consisting of a ```COUNT``` aggregate function, a ```JOIN``` clause, a ```WHERE``` clause, a ```GROUP BY``` statement as well as an ```ORDER BY``` statement was used. The ```COUNT``` aggregate function was used to count the total number of deliveries made for each order in conjunction with a ```WHERE``` clause in order to filter the records according to only successful deliveries. The condition set was if the cancellation column has no record for a particular record, if the order was not cancelled by either the restaurant or the customer, then the order was delivered successfully to the customer. An *alias* of ```num_of_successful_deliveries``` was given to provide a more descriptive column name for the results. The ```JOIN``` clause was also applied to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table to display the Order ID and the total number of successful deliveries. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. The ```GROUP BY``` statement was then used to arrange the results into groups according to the Order ID. Lastly, the ```ORDER BY``` statement was used to organize the results by default in ascending order based on the Order ID. This query then produces the following results:
+| order_id | num_of_successful_deliveries |
+|:--------:|:----------------------------:|
+|     1    |               1              |
+|     2    |               1              |
+|     3    |               2              |
+|     4    |               3              |
+|     5    |               1              |
+|     7    |               1              |
+|     8    |               1              |
+|    10    |               2              |
 
+Following that, first, an *alias* of ```max_deliveries``` was given to provide a more descriptive column name for the results. Second, an ```ORDER BY``` statement was used to organize the total number of successful deliveries made in descending order and place the highest number of successful deliveries made at the top. Finally, the ```LIMIT``` clause was used to limit the results to only the first record. 
 
 #### Output:
 | order_id | max_deliveries |
@@ -455,6 +467,7 @@ LIMIT 1;
 |     4    |        3       |
 
 #### Answer:
+Based from the output of the query, it can be observed that the maximum number of pizzas delivered in a single order was for Order 4 with 3 successful deliveries made by Pizza Runner.
 
 - - - -
 

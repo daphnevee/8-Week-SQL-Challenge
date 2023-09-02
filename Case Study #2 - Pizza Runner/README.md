@@ -427,10 +427,32 @@ Based from the output of the query, it can be observed that Customer 101 ordered
 6. What was the maximum number of pizzas delivered in a single order?
 #### Query:
 ```sql
+WITH successful_deliveries AS (
+    SELECT
+	x.order_id,
+	COUNT(x.pizza_id) AS num_of_successful_deliveries
+    FROM cleaned_customer_orders x
+    JOIN cleaned_runner_orders y
+    ON x.order_id=y.order_id
+    WHERE y.cancellation = ''
+    GROUP BY x.order_id
+    ORDER BY x.order_id
+)
+
+SELECT
+    order_id,
+    num_of_successful_deliveries AS max_deliveries
+FROM successful_deliveries
+ORDER BY max_deliveries DESC
+LIMIT 1;
 ```
 #### Explanation:
 
+
 #### Output:
+| order_id | max_deliveries |
+|:--------:|:--------------:|
+|     4    |        3       |
 
 #### Answer:
 

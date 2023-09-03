@@ -474,12 +474,49 @@ Based from the output of the query, it can be observed that the maximum number o
 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 #### Query:
 ```sql
+WITH successful_deliveries AS (
+  SELECT
+      x.customer_id,
+      x.order_id,
+      x.exclusions,
+      x.extras
+  FROM cleaned_customer_orders x
+  JOIN cleaned_runner_orders y
+  ON x.order_id=y.order_id
+  WHERE y.cancellation = ''
+)
+
+SELECT
+    customer_id,
+    SUM(
+	CASE
+	  WHEN exclusions != '' OR extras != '' THEN 1
+	  ELSE 0
+	END
+    ) AS with_changes,
+    SUM(
+	CASE
+	  WHEN exclusions = '' AND extras = '' THEN 1
+	  ELSE 0
+	END
+    ) AS no_changes
+FROM successful_deliveries
+GROUP BY customer_id
+ORDER BY customer_id;
 ```
 #### Explanation:
 
 #### Output:
+| customer_id | with_changes | no_changes |
+|:-----------:|:------------:|:----------:|
+|     101     |       0      |      2     |
+|     102     |       0      |      3     |
+|     103     |       3      |      0     |
+|     104     |       2      |      1     |
+|     105     |       1      |      0     |
 
 #### Answer:
+Based from the output of the query, it can be observed that for Customer 101, both of their successfully delivered orders had no requested changes. Similarly, Customer 102 also had no changes on all 3 of their successfully delivered orders. On the other hand, Customer 103 requested changes in all 3 of their orders, while Customer 104 requested changes in only 2 of their orders and 1 without. Lastly, Customer 105 requested changes in their single order.
 
 - - - -
 

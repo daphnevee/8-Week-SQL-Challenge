@@ -523,22 +523,55 @@ Based from the output of the query, it can be observed that for Customer 101, bo
 8. How many pizzas were delivered that had both exclusions and extras?
 #### Query:
 ```sql
+WITH successful_deliveries AS (
+  SELECT
+      x.order_id,
+      x.exclusions,
+      x.extras
+  FROM cleaned_customer_orders x
+  JOIN cleaned_runner_orders y
+  ON x.order_id=y.order_id
+  WHERE y.cancellation = ''
+)
+
+SELECT
+    COUNT(order_id) AS with_exclusions_and_extras
+FROM successful_deliveries
+WHERE exclusions != '' AND extras != '';
 ```
 #### Explanation:
 
 #### Output:
+| with_exclusions_and_extras |
+|:--------------------------:|
+|              1             |
 
 #### Answer:
+Based from the output of the query, it can be observed that only 1 of the successfully delivered orders had both requested exclusions and extras in their pizza.
 
 - - - -
 
 9. What was the total volume of pizzas ordered for each hour of the day?
 #### Query:
 ```sql
+SELECT
+    EXTRACT(HOUR FROM order_time) AS hour_of_the_day,
+    COUNT(pizza_id) AS total_pizza_orders
+FROM cleaned_customer_orders
+GROUP BY hour_of_the_day
+ORDER BY hour_of_the_day
 ```
 #### Explanation:
 
 #### Output:
+| hour_of_the_day | total_pizza_orders |
+|:---------------:|:------------------:|
+|        11       |          1         |
+|        13       |          3         |
+|        18       |          3         |
+|        19       |          1         |
+|        21       |          3         |
+|        23       |          3         |
 
 #### Answer:
 

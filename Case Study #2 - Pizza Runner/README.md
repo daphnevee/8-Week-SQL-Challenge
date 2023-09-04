@@ -660,12 +660,30 @@ Based from the output, it can be observed that in Week 1 of January 2021, two pe
 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
 #### Query:
 ```sql
+SELECT
+    y.runner_id,
+    ROUND(
+       CAST(
+          AVG(DATE_PART('minute', y.pickup_time - x.order_time))
+       AS NUMERIC),
+    1) AS avg_delivery_time
+FROM cleaned_customer_orders x
+JOIN cleaned_runner_orders y
+ON x.order_id=y.order_id
+GROUP BY y.runner_id
+ORDER BY y.runner_id;
 ```
 #### Explanation:
 
 #### Output:
+| runner_id | avg_pickup_time |
+|:---------:|:---------------:|
+|     1     |        15       |
+|     2     |        23       |
+|     3     |        10       |
 
 #### Answer:
+Based from the output of the query, it can be observed that Runner 1 took an average time of 15 minutes to arrive at the Pizza Runner HQ to pickup the order. As for Runner 2, it took them an average time of 23 minutes, while Runner 3 took 10 minutes. 
 
 - - - -
 

@@ -663,17 +663,21 @@ Based from the output, it can be observed that in Week 1 of January 2021, two pe
 SELECT
     y.runner_id,
     ROUND(
-       CAST(
-          AVG(DATE_PART('minute', y.pickup_time - x.order_time))
-       AS NUMERIC),
-    1) AS avg_delivery_time
+	AVG(DATE_PART('minute', y.pickup_time - x.order_time))::NUMERIC,
+    0) AS avg_pickup_time
 FROM cleaned_customer_orders x
 JOIN cleaned_runner_orders y
 ON x.order_id=y.order_id
+WHERE y.cancellation = ''
 GROUP BY y.runner_id
 ORDER BY y.runner_id;
 ```
 #### Explanation:
+<!--
+PostgreSQL does not define round(double precision, integer). You must cast the value to be rounded to numeric to use the two-argument form of round. Just append ::numeric for the shorthand cast, like round(val::numeric,2).
+
+PostgreSQL does not provide DATEDIFF function similar to SQL Server DATEDIFF, but you can use various expressions or UDF to get the same results.
+-->
 
 #### Output:
 | runner_id | avg_pickup_time |

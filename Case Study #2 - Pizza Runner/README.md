@@ -694,12 +694,35 @@ Based from the output of the query, it can be observed that Runner 1 took an ave
 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 #### Query:
 ```sql
+WITH prep_time_per_order AS (
+  SELECT
+      x.order_id,
+      COUNT(x.pizza_id) AS num_of_pizza,
+      DATE_PART('minute', y.pickup_time - x.order_time) AS total_prep_time
+  FROM cleaned_customer_orders x
+  JOIN cleaned_runner_orders y
+  ON x.order_id=y.order_id
+  WHERE y.cancellation = ''
+  GROUP BY x.order_id, y.pickup_time, x.order_time
+)
+
+SELECT
+    num_of_pizza,
+    AVG(total_prep_time) AS avg_total_prep_time
+FROM prep_time_per_order
+GROUP BY num_of_pizza;
 ```
 #### Explanation:
 
 #### Output:
+| num_of_pizza | avg_total_prep_time |
+|:------------:|:-------------------:|
+|       3      |          29         |
+|       2      |          18         |
+|       1      |          12         |
 
 #### Answer:
+Based from the output of the query, it can be observed that the average total preparation time taken increases as the number of pizza orders increases. With 3 pizza orders, it takes an average total preparation time of 29 minutes. As for 2 pizza orders, it takes 18 minutes, while for 1 pizza order, it takes an average total preparation time of 12 minutes.
 
 - - - -
 

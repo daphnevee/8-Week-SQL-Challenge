@@ -780,12 +780,40 @@ Based from the output of the query, it can be observed that from the overall del
 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 #### Query:
 ```sql
+SELECT
+    y.runner_id,
+    x.order_id,
+    x.customer_id,
+    y.distance AS distance_km,
+    ROUND((y.duration / 60.0)::NUMERIC, 2) AS duration_hr,
+    ROUND((y.distance / (y.duration / 60.0))::NUMERIC, 2) AS avg_speed_kph
+FROM cleaned_customer_orders x
+JOIN cleaned_runner_orders y
+ON x.order_id=y.order_id
+WHERE y.cancellation = ''
+GROUP BY y.runner_id, x.order_id, x.customer_id, y.duration, y.distance
+ORDER BY y.runner_id
 ```
 #### Explanation:
 
 #### Output:
+| runner_id | order_id | customer_id | distance_km | duration_hr | avg_speed_kph |
+|:---------:|:--------:|:-----------:|:-----------:|:-----------:|:-------------:|
+|     1     |     1    |     101     |      20     |     0.53    |     37.50     |
+|     1     |     2    |     101     |      20     |     0.45    |     44.44     |
+|     1     |     3    |     102     |     13.4    |     0.33    |     40.20     |
+|     1     |    10    |     104     |      10     |     0.17    |     60.00     |
+|     2     |     4    |     103     |     23.4    |     0.67    |     35.10     |
+|     2     |     7    |     105     |      25     |     0.42    |     60.00     |
+|     2     |     8    |     102     |     23.4    |     0.25    |     93.60     |
+|     3     |     5    |     104     |      10     |     0.25    |     40.00     |
 
 #### Answer:
+Based from the output of the query, it can be observed that Runner 1 travels at a speed within the range of 37.50 to 60.00 kph in delivering orders to customers. Notice that for Runner 1, Customer 101 was the farthest distance they had to travel to deliver their order compared to the two other customers and the maximum speed he was able to travel to deliver their second order was 44.44 kph, increasing from the first order. Customer 102, on the other hand, is a little bit closer in location to the headquarters and so Runner 1 was able to travel at a speed of 40.20 kph in delivering their order. For Customer 104, considering that they are the closest to the headquarters, Runner 1 was able to travel at the fastest speed of 60.00 kph in delivering their order. 
+
+For Runner 2, it can be observed that they travel at a speed within the range of 35.10 to 93.60 kph in delivering orders to customers. Notice that for Runner 2, both Customer 103 and 102 cover the same distance yet Runner 2 had varying speed in delivering their orders. Runner 2 probably had slower delivery time for Customer 103's order due to several factors such as traffic, weather conditions, etc. while in delivering Customer 102's order, Runner 2 was able to travel faster at a maximum speed of 93.60 kph. On the other hand, Customer 105 had the farthest distance to be travelled compared to the other two customers and Runner 2 was able to travel at a speed of 60.00 kph in delivering their order. 
+
+For Runner 3, they only have one record so far in delivering orders to customers which denotes that they were able to travel at a speed of 40.00 kph in delivering the order to Customer 104, who appears to be located nearby the headquarters given the distance travelled by the runner.
 
 - - - -
 

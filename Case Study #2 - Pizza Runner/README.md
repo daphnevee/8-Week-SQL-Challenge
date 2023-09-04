@@ -562,6 +562,9 @@ GROUP BY hour_of_the_day
 ORDER BY hour_of_the_day
 ```
 #### Explanation:
+<!--
+PostgreSQL provides a built-in date function named the EXTRACT() function that extracts a specific field from a date, time, or timestamp. It allows us to pull out any date/time field, such as a day, month, hour, minute, etc., from any specific DateTime. 
+-->
 
 #### Output:
 | hour_of_the_day | total_pizza_orders |
@@ -580,12 +583,30 @@ Based from the output of the query, it can be observed that there is only a smal
 10. What was the volume of orders for each day of the week?
 #### Query:
 ```sql
+SELECT
+    TO_CHAR(order_time, 'Day') AS day_of_the_week,
+    COUNT(pizza_id) AS total_pizza_orders
+FROM cleaned_customer_orders
+GROUP BY day_of_the_week
+ORDER BY day_of_the_week;
 ```
 #### Explanation:
+<!--
+In PostgreSQL, the EXTRACT() function is used to get a day, month, year, etc., from a DATE, TIME, or TIMESTAMP. We can use this function to get/extract the day from the specified date or time stamp. However, it retrieves the specific part/field from the specified date as a number. If we have to get/extract the day names from a specific date, then we must use the TO_CHAR() function.
+
+valid day format -- "Day"
+-->
 
 #### Output:
+| day_of_the_week | total_pizza_orders |
+|:---------------:|:------------------:|
+|      Friday     |          1         |
+|     Saturday    |          5         |
+|     Thursday    |          3         |
+|    Wednesday    |          5         |
 
 #### Answer:
+Based from the output of the query, it can be observed that Pizza Runner received only 1 order on Friday, 5 orders on Saturday, 3 orders on Thursday, and 5 orders on Wednesday. 
 
 - - - -
 

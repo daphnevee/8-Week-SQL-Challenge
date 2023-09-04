@@ -758,12 +758,22 @@ Based from the output of the query, it can be observed that for Customer 101, an
 5. What was the difference between the longest and shortest delivery times for all orders?
 #### Query:
 ```sql
+SELECT
+    MAX(duration) AS max_delivery_time,
+    MIN(duration) AS min_delivery_time,
+    MAX(duration) - MIN(duration) AS delivery_time_difference
+FROM cleaned_runner_orders
+WHERE cancellation = '';
 ```
 #### Explanation:
 
 #### Output:
+| max_delivery_time | min_delivery_time | delivery_time_difference |
+|:-----------------:|:-----------------:|:------------------------:|
+|         40        |         10        |            30            |
 
 #### Answer:
+Based from the output of the query, it can be observed that from the overall delivery times of all the orders delivered by runners, there is a 30-minute time difference between the longest time of 40 minutes and the shortest time of 10 minutes taken in delivering a customer's order.
 
 - - - -
 

@@ -703,7 +703,7 @@ Based from the output of the query, it can be observed that Pizza Runner receive
 
 - - - -
 
-### C. Ingredient Optimisation <a href="anchor" id="ingredient-optimization"></a>
+### C. Ingredient Optimization <a href="anchor" id="ingredient-optimization"></a>
 1. What are the standard ingredients for each pizza?
 #### Query:
 ```sql

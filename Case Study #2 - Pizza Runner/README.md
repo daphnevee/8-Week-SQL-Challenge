@@ -622,12 +622,38 @@ Based from the output of the query, it can be observed that Pizza Runner receive
 1. How many runners signed up for each 1 week period? (i.e. week starts ```2021-01-01```)
 #### Query:
 ```sql
+WITH runner_registration_dates AS (
+   SELECT
+       runner_id,
+       registration_date,
+       EXTRACT(DAY FROM registration_date) AS day,
+       EXTRACT(MONTH FROM registration_date) AS month
+   FROM pizza_runner.runners
+)
+
+SELECT
+     CASE
+	WHEN day < 8 THEN 'Week 1'
+	WHEN day < 15 THEN 'Week 2'
+	WHEN day < 22 THEN 'Week 3'
+	ELSE 'Week 4'
+    END AS registration_week,
+    COUNT(runner_id) AS num_of_registered_runners
+FROM runner_registration_dates
+GROUP BY registration_week
 ```
 #### Explanation:
 
+
 #### Output:
+| registration_week | num_of_registered_runners |
+|:-----------------:|:-------------------------:|
+|       Week 1      |             2             |
+|       Week 2      |             1             |
+|       Week 3      |             1             |
 
 #### Answer:
+Based from the output, it can be observed that in Week 1 of January 2021, two people signed up to be runners. For Week 2, only one person signed up to be a runner. Similarly, for Week 3, only one person signed up to be a runner as well for Pizza Runner.
 
 - - - -
 

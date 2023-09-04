@@ -9,7 +9,7 @@ Danny's Diner is in need of your assistance to help the restaurant stay afloat -
 Danny wants to gather insights about his customers, pertaining to their visiting patterns, how much money they've spent and which menu items are their favourite in order to decide whether he should expand the existing customer loyalty program. 
 
 ## Entity Relationship Diagram
-![Capture](https://github.com/daphnevee/8-Week-SQL-Challenge/assets/127839925/9f6748eb-c8d7-41b5-9ecd-2dcd8ae827c7)
+![Capture](https://github.com/daphnevee/8-Week-SQL-Challenge/assets/127839925/5746f6f2-85b4-4b85-ab69-cb5894993d19)
 
 ## Case Study Questions and Answers
 1. What is the total amount each customer spent at the restaurant?

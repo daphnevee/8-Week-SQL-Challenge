@@ -820,12 +820,29 @@ For Runner 3, they only have one record so far in delivering orders to customers
 7. What is the successful delivery percentage for each runner?
 #### Query:
 ```sql
+SELECT
+    runner_id,
+    100 * SUM(
+        CASE
+             WHEN cancellation = '' THEN 1
+             ELSE 0
+        END
+    ) / COUNT(order_id) AS success_delivery_percentage
+FROM cleaned_runner_orders
+GROUP BY runner_id
+ORDER BY runner_id;
 ```
 #### Explanation:
 
 #### Output:
+| runner_id | success_delivery_percentage |
+|:---------:|:---------------------------:|
+|     1     |             100             |
+|     2     |              75             |
+|     3     |              50             |
 
 #### Answer:
+Based from the output of the query, it can be observed that Runner 1 had a 100% success rate in delivering orders to customers. Runner 2, on the other hand, had a 75% success rate and Runner 3 only had a 50% success rate.
 
 - - - -
 

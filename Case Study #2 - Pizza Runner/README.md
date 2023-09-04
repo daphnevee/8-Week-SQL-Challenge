@@ -574,7 +574,7 @@ ORDER BY hour_of_the_day
 |        23       |          3         |
 
 #### Answer:
-
+Based from the output of the query, it can be observed that there is only a small volume of pizza orders being made at the hours 11 and 19 o'clock. On the other hand, there is a higher volume of pizza orders, at most 3, from customers at hours 13, 18, 21, and 23 o'clock. 
 - - - -
 
 10. What was the volume of orders for each day of the week?

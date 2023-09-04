@@ -15,7 +15,15 @@ Danny requires further assistance to clean the data he has collected and apply s
 ## Entity Relationship Diagram
 ![Capture 2](https://github.com/daphnevee/8-Week-SQL-Challenge/assets/127839925/f55d5b54-fd9e-4db1-9dfc-4b269a93b969)
 
-## Data Cleaning
+## Table of Contents
+* [Data Cleaning](#data-cleaning)
+* [Pizza Metrics](#pizza-metrics)
+* [Runner and Customer Experience](#runner-customer-exp)
+* [Ingredient Optimization](#ingredient-optimization)
+* [Pricing and Ratings](#pricing-ratings)
+* [Bonus Questions](#bonus-questions)
+
+## Data Cleaning <a href="anchor" id="data-cleaning"></a>
 ### Table 2: customer_orders
 
 In the ```customer_orders``` table, it can be observed that both the ```exclusions``` and ```extras``` columns contain several null and NaN values. Thus, these columns will need to be cleaned up before being used for queries.
@@ -267,7 +275,7 @@ FROM cleaned_runner_orders
 WHERE cancellation = ''
 GROUP BY runner_id;
 -->
-### A. Pizza Metrics
+### A. Pizza Metrics <a href="anchor" id="pizza-metrics"></a>
 1. How many pizzas were ordered?
 #### Query:
 ```sql
@@ -610,7 +618,7 @@ Based from the output of the query, it can be observed that Pizza Runner receive
 
 - - - -
 
-### B. Runner and Customer Experience
+### B. Runner and Customer Experience <a href="anchor" id="runner-customer-exp"></a>
 1. How many runners signed up for each 1 week period? (i.e. week starts ```2021-01-01```)
 #### Query:
 ```sql
@@ -695,7 +703,7 @@ Based from the output of the query, it can be observed that Pizza Runner receive
 
 - - - -
 
-### C. Ingredient Optimisation
+### C. Ingredient Optimisation <a href="anchor" id="ingredient-optimization"></a>
 1. What are the standard ingredients for each pizza?
 #### Query:
 ```sql
@@ -773,7 +781,7 @@ Based from the output of the query, it can be observed that Pizza Runner receive
 
 - - - -
 
-### D. Pricing and Ratings
+### D. Pricing and Ratings <a href="anchor" id="pricing-ratings"></a>
 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
 #### Query:
 ```sql
@@ -845,7 +853,7 @@ Based from the output of the query, it can be observed that Pizza Runner receive
 
 - - - -
 
-## Bonus Questions
+## Bonus Questions <a href="anchor" id="bonus-questions"></a>
 1. If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
 #### Query:
 ```sql

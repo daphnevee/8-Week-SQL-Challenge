@@ -555,7 +555,7 @@ WHERE exclusions != '' AND extras != '';
 |              1             |
 
 #### Answer:
-Based from the output of the query, it can be observed that only 1 of the successfully delivered orders had both requested exclusions and extras in their pizza.
+Based from the output of the query, it can be observed that only 1 of the successfully delivered orders had both requested exclusions and extras in their ordered pizza.
 
 - - - -
 
@@ -585,7 +585,7 @@ PostgreSQL provides a built-in date function named the EXTRACT() function that e
 |        23       |          3         |
 
 #### Answer:
-Based from the output of the query, it can be observed that there is only a small volume of pizza orders being made at the hours 11 and 19 o'clock. On the other hand, there is a higher volume of pizza orders, at most 3, from customers at hours 13, 18, 21, and 23 o'clock. 
+Based from the output of the query, it can be observed that there is only a small volume of pizza orders being made at the hours 11 and 19 o'clock. On the other hand, there is a higher volume of pizza orders, at most 3, from customers at hours 13, 18, 21, and 23 o'clock. It can be deduced that Pizza Runner receives from orders around lunch time at 13 o'clock, around dinner time at 18 o'clock, or much later in the evening at 21 or 23 o'clock. 
 - - - -
 
 10. What was the volume of orders for each day of the week?
@@ -729,12 +729,29 @@ Based from the output of the query, it can be observed that the average total pr
 4. What was the average distance travelled for each customer?
 #### Query:
 ```sql
+SELECT
+    x.customer_id,
+    ROUND(AVG(y.distance)::NUMERIC, 1) AS avg_distance_travel
+FROM cleaned_customer_orders x
+JOIN cleaned_runner_orders y
+ON x.order_id=y.order_id
+WHERE y.cancellation = ''
+GROUP BY x.customer_id
+ORDER BY x.customer_id;
 ```
 #### Explanation:
 
 #### Output:
+| customer_id | avg_distance_travel |
+|:-----------:|:-------------------:|
+|     101     |         20.0        |
+|     102     |         16.7        |
+|     103     |         23.4        |
+|     104     |         10.0        |
+|     105     |         25.0        |
 
 #### Answer:
+Based from the output of the query, it can be observed that for Customer 101, an average distance of 20 km was travelled by the runners to deliver their orders. As for Customer 102, an average distance of 16.7 km was travelled to deliver their orders, while for Customer 103, an average distance of 23.4 was travelled by the runners. An average distance of 10 km was travelled for Customer 104 and 25 km was travelled for Customer 105 by the runners. It can be deduced that Customer 104 resides in a location nearby Pizza Runner because it takes the least amount of distance to deliver their orders from the Pizza Runner HQ while Customer 105 resides in a location farthest from the headquarters compared to the other customers.
 
 - - - -
 

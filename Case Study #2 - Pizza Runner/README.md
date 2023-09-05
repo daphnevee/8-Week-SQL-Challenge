@@ -95,9 +95,9 @@ To replace both the null and NaN values with empty strings, first, a temporary t
 
 In the previously generated ```cleaned_customer_orders``` table, it can be observed that the pizza exclusions and extras requested by the customer for each order they make are initially stored in a comma-separated format. However, in solving the questions in the Ingredient Optimization section of the case study, this type of data is crucial and must be converted into separate rows to better gather insights from the data. 
 
-2.1 Adding a primary key to the table
+2.1 Adding an identity column to the table
 
-Prior to performing the conversion of the values in the ```exclusions``` and ```extras``` columns, there is a potential duplication of records that can occur because the ```order_id``` column in the table is not a unique identifier for each order record and allows for duplication. When a customer makes multiple orders at the same time, each order is recorded separately in the table. Therefore, a primary key must be established in the ```cleaned_customer_orders``` table to uniquely identify each of its records.
+Prior to performing the conversion of the values in the ```exclusions``` and ```extras``` columns, there is a potential duplication of records that can occur because the ```order_id``` column in the table is not a unique identifier for each order record and allows for duplication. When a customer makes multiple orders at the same time, each order is recorded separately in the table. Therefore, an identity column must be added to the ```cleaned_customer_orders``` table to uniquely identify each of its records.
 
 #### Before Data Cleaning:
 | order_id | customer_id | pizza_id | exclusions | extras |        order_time        |
@@ -118,27 +118,179 @@ Prior to performing the conversion of the values in the ```exclusions``` and ```
 |    10    |     104     |     1    |    2, 6    |  1, 4  | 2020-01-11T18:34:49.000Z |
 
 #### Query:
+```sql
+ALTER TABLE cleaned_customer_orders
+ADD customer_order_id INT GENERATED ALWAYS AS IDENTITY;
+```
 #### Explanation:
+To add an identity column to the ```cleaned_customer_orders``` table, the ```ALTER``` keyword was applied. First, the ```ALTER TABLE``` command modifies the previously created temporary table named ```cleaned_customer_orders```. Second, the ```ADD``` command adds the new identity column named ```customer_order_id``` of ```INTEGER``` data type to the table established with the constraint ```GENERATED ALWAYS AS IDENTITY``` to automatically generate a unique number for each record.
+
 #### After Data Cleaning:
+| order_id | customer_id | pizza_id | exclusions | extras |        order_time        | customer_order_id |
+|:--------:|:-----------:|:--------:|:----------:|:------:|:------------------------:|:-----------------:|
+|     1    |     101     |     1    |            |        | 2020-01-01T18:05:02.000Z |         1         |
+|     2    |     101     |     1    |            |        | 2020-01-01T19:00:52.000Z |         2         |
+|     3    |     102     |     1    |            |        | 2020-01-02T23:51:23.000Z |         3         |
+|     3    |     102     |     2    |            |        | 2020-01-02T23:51:23.000Z |         4         |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |         5         |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |         6         |
+|     4    |     103     |     2    |      4     |        | 2020-01-04T13:23:46.000Z |         7         |
+|     5    |     104     |     1    |            |    1   | 2020-01-08T21:00:29.000Z |         8         |
+|     6    |     101     |     2    |            |        | 2020-01-08T21:03:13.000Z |         9         |
+|     7    |     105     |     2    |            |    1   | 2020-01-08T21:20:29.000Z |         10        |
+|     8    |     102     |     1    |            |        | 2020-01-09T23:54:33.000Z |         11        |
+|     9    |     103     |     1    |      4     |  1, 5  | 2020-01-10T11:22:59.000Z |         12        |
+|    10    |     104     |     1    |            |        | 2020-01-11T18:34:49.000Z |         13        |
+|    10    |     104     |     1    |    2, 6    |  1, 4  | 2020-01-11T18:34:49.000Z |         14        |
 
 2.2 Converting comma-separated values into multiple rows
+
+Now that the identity column has been established in the ```cleaned_customer_orders``` table, the values in the ```exclusions``` and ```extras``` columns can now be converted from comma-separated values into separate rows. 
+
 #### Before Data Cleaning:
+| order_id | customer_id | pizza_id | exclusions | extras |        order_time        | customer_order_id |
+|:--------:|:-----------:|:--------:|:----------:|:------:|:------------------------:|:-----------------:|
+|     1    |     101     |     1    |            |        | 2020-01-01T18:05:02.000Z |         1         |
+|     2    |     101     |     1    |            |        | 2020-01-01T19:00:52.000Z |         2         |
+|     3    |     102     |     1    |            |        | 2020-01-02T23:51:23.000Z |         3         |
+|     3    |     102     |     2    |            |        | 2020-01-02T23:51:23.000Z |         4         |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |         5         |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |         6         |
+|     4    |     103     |     2    |      4     |        | 2020-01-04T13:23:46.000Z |         7         |
+|     5    |     104     |     1    |            |    1   | 2020-01-08T21:00:29.000Z |         8         |
+|     6    |     101     |     2    |            |        | 2020-01-08T21:03:13.000Z |         9         |
+|     7    |     105     |     2    |            |    1   | 2020-01-08T21:20:29.000Z |         10        |
+|     8    |     102     |     1    |            |        | 2020-01-09T23:54:33.000Z |         11        |
+|     9    |     103     |     1    |      4     |  1, 5  | 2020-01-10T11:22:59.000Z |         12        |
+|    10    |     104     |     1    |            |        | 2020-01-11T18:34:49.000Z |         13        |
+|    10    |     104     |     1    |    2, 6    |  1, 4  | 2020-01-11T18:34:49.000Z |         14        |
 
 #### Query:
+```sql
+CREATE TEMPORARY TABLE exclusions AS
+SELECT
+    customer_order_id,
+    UNNEST(STRING_TO_ARRAY(exclusions, ',')) AS topping_id
+FROM cleaned_customer_orders
+ORDER BY customer_order_id;
+
+CREATE TEMPORARY TABLE extras AS
+SELECT
+    customer_order_id,
+    UNNEST(STRING_TO_ARRAY(extras, ',')) AS topping_id
+FROM cleaned_customer_orders
+ORDER BY customer_order_id;
+```
 
 #### Explanation:
+To convert the comma-separated values in both the ```exclusions``` and ```extras``` columns, two temporary tables were created to split up the exclusions and extras records from the main ```cleaned_customer_orders``` table across two separate tables. This process of normalization was applied in order to prevent duplication of records in the main table and improve data integrity. First, both temporary tables were labeled based on the existing columns in the main table, ```exclusions``` and ```extras``` respectively. Second, to apply the conversion of the values, the ```STRING_TO_ARRAY``` function was used to split the strings in both the ```exclusions``` and the ```extras``` columns into array elements using the supplied comma delimeter. Then, the ```UNNEST``` function was used in conjunction with the ```STRING_TO_ARRAY``` function to expand the resulting split array into a set of separate rows. An *alias* of ```topping_id``` was given similarly to both columns to match the records in the ```pizza_toppings``` table. Lastly, an ```ORDER BY``` statement was used to arrange the results by default in ascending order according to the ```customer_order_id``` identity column.
 
 #### After Data Cleaning:
+* #### Exclusions Table
+| customer_order_id | topping_id |
+|:-----------------:|:----------:|
+|         5         |      4     |
+|         6         |      4     |
+|         7         |      4     |
+|         12        |      4     |
+|         14        |      2     |
+|         14        |      6     |
+
+* #### Extras Table
+| customer_order_id | topping_id |
+|:-----------------:|:----------:|
+|         8         |      1     |
+|         10        |      1     |
+|         12        |      1     |
+|         12        |      5     |
+|         14        |      1     |
+|         14        |      4     |
 
 - - - -
-3. Checking and modifying incorrect data types in the schem
-#### Before Data Cleaning:
+3. Checking and modifying incorrect data types in the schema
 
-#### Query:
+After converting the comma-separated values in both the ```exclusions``` and ```extras``` columns into rows in their newly-created temporary tables, it can be observed that the assigned data type for the values of the ```topping_id``` in both tables is incorrect. In reference to the ```pizza_toppings``` table, the ```topping_id``` column is of ```INTEGER``` data type. Both the ```topping_id``` columns in the ```exclusions``` and ```extras``` tables and the ```topping_id``` column in the ```pizza_toppings``` table refer to the same data and can be used in combining both tables for further analysis, and in order to effectively perform a join between the tables, each of these columns should have the same data type.
+
+#### Before Data Cleaning:
+* #### Query for Checking Data Types in the Exclusions table:
+```sql
+SELECT
+    column_name,
+    data_type
+FROM
+    information_schema.columns
+WHERE
+    table_name = 'exclusions';
+```
+* #### Output for Exclusions table:
+|    column_name    | data_type |
+|:-----------------:|:---------:|
+| customer_order_id |  integer  |
+|     topping_id    |    text   |
+
+* #### Query for Checking Data Types in the Extras table:
+```sql
+SELECT
+    column_name,
+    data_type
+FROM
+    information_schema.columns
+WHERE
+    table_name = 'extras';
+```
+* #### Output for Extras table:
+|    column_name    | data_type |
+|:-----------------:|:---------:|
+| customer_order_id |  integer  |
+|     topping_id    |    text   |
+
+#### Query for Exclusions table:
+```sql
+ALTER TABLE exclusions
+ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
+```
+
+#### Query for Extras table:
+```sql
+ALTER TABLE extras
+ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
+```
 
 #### Explanation:
+To modify the incorrect data type in the schema, the ```ALTER``` keyword was applied in both the ```exclusions``` and ```extras``` tables. First, the ```ALTER TABLE``` command modifies the previously created temporary tables, ```exclusions``` and ```extras```. Second, the ```ALTER COLUMN``` command modifies the data type of the ```topping_id``` column in both tables, whose original data type of ```TEXT``` was changed to the type ```INTEGER``` in order to match the automatically generated unique identifier or ID of the pizza toppings in the ```pizza_toppings``` table. 
 
 #### After Data Cleaning:
+* #### Query for Checking Data Types in the Exclusions table:
+```sql
+SELECT
+    column_name,
+    data_type
+FROM
+    information_schema.columns
+WHERE
+    table_name = 'exclusions';
+```
+* #### Output for Exclusions table:
+|    column_name    | data_type |
+|:-----------------:|:---------:|
+| customer_order_id |  integer  |
+|     topping_id    |  integer  |
+
+* #### Query for Checking Data Types in the Extras table:
+```sql
+SELECT
+    column_name,
+    data_type
+FROM
+    information_schema.columns
+WHERE
+    table_name = 'extras';
+```
+* #### Output for Extras table:
+|    column_name    | data_type |
+|:-----------------:|:---------:|
+| customer_order_id |  integer  |
+|     topping_id    |  integer  |
 
 - - - -
 
@@ -221,7 +373,7 @@ It was mentioned that there were some known data issues with the ```runner_order
     ```sql
     SELECT
         column_name,
-        data_type AS data_typ
+        data_type
     FROM
         information_schema.columns
     WHERE
@@ -418,6 +570,29 @@ FROM pizza_runner.pizza_recipes
 ORDER BY pizza_id;
 
 ALTER TABLE cleaned_pizza_recipes
+ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
+
+ALTER TABLE cleaned_customer_orders
+ADD customer_order_id INT GENERATED ALWAYS AS IDENTITY;
+
+CREATE TEMPORARY TABLE exclusions AS
+SELECT
+    customer_order_id,
+    UNNEST(STRING_TO_ARRAY(exclusions, ',')) AS topping_id
+FROM cleaned_customer_orders
+ORDER BY customer_order_id;
+
+CREATE TEMPORARY TABLE extras AS
+SELECT
+    customer_order_id,
+    UNNEST(STRING_TO_ARRAY(extras, ',')) AS topping_id
+FROM cleaned_customer_orders
+ORDER BY customer_order_id;
+
+ALTER TABLE exclusions
+ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
+    
+ALTER TABLE extras
 ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
 -->
 ### A. Pizza Metrics <a href="anchor" id="pizza-metrics"></a>

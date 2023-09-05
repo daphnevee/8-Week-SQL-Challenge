@@ -122,6 +122,7 @@ Prior to performing the conversion of the values in the ```exclusions``` and ```
 ALTER TABLE cleaned_customer_orders
 ADD customer_order_id INT GENERATED ALWAYS AS IDENTITY;
 ```
+
 #### Explanation:
 To add an identity column to the ```cleaned_customer_orders``` table, the ```ALTER``` keyword was applied. First, the ```ALTER TABLE``` command modifies the previously created temporary table named ```cleaned_customer_orders```. Second, the ```ADD``` command adds the new identity column named ```customer_order_id``` of ```INTEGER``` data type to the table established with the constraint ```GENERATED ALWAYS AS IDENTITY``` to automatically generate a unique number for each record.
 
@@ -187,24 +188,24 @@ To convert the comma-separated values in both the ```exclusions``` and ```extras
 
 #### After Data Cleaning:
 * #### Exclusions Table
-| customer_order_id | topping_id |
-|:-----------------:|:----------:|
-|         5         |      4     |
-|         6         |      4     |
-|         7         |      4     |
-|         12        |      4     |
-|         14        |      2     |
-|         14        |      6     |
+	| customer_order_id | topping_id |
+	|:-----------------:|:----------:|
+	|         5         |      4     |
+	|         6         |      4     |
+	|         7         |      4     |
+	|         12        |      4     |
+	|         14        |      2     |
+	|         14        |      6     |
 
 * #### Extras Table
-| customer_order_id | topping_id |
-|:-----------------:|:----------:|
-|         8         |      1     |
-|         10        |      1     |
-|         12        |      1     |
-|         12        |      5     |
-|         14        |      1     |
-|         14        |      4     |
+	| customer_order_id | topping_id |
+	|:-----------------:|:----------:|
+	|         8         |      1     |
+	|         10        |      1     |
+	|         12        |      1     |
+	|         12        |      5     |
+	|         14        |      1     |
+	|         14        |      4     |
 
 - - - -
 3. Checking and modifying incorrect data types in the schema
@@ -213,36 +214,36 @@ After converting the comma-separated values in both the ```exclusions``` and ```
 
 #### Before Data Cleaning:
 * #### Query for Checking Data Types in the Exclusions table:
-```sql
-SELECT
-    column_name,
-    data_type
-FROM
-    information_schema.columns
-WHERE
-    table_name = 'exclusions';
-```
+	```sql
+	SELECT
+	    column_name,
+	    data_type
+	FROM
+	    information_schema.columns
+	WHERE
+	    table_name = 'exclusions';
+	```
 * #### Output for Exclusions table:
-|    column_name    | data_type |
-|:-----------------:|:---------:|
-| customer_order_id |  integer  |
-|     topping_id    |    text   |
+	|    column_name    | data_type |
+	|:-----------------:|:---------:|
+	| customer_order_id |  integer  |
+	|     topping_id    |    text   |
 
 * #### Query for Checking Data Types in the Extras table:
-```sql
-SELECT
-    column_name,
-    data_type
-FROM
-    information_schema.columns
-WHERE
-    table_name = 'extras';
-```
+	```sql
+	SELECT
+	    column_name,
+	    data_type
+	FROM
+	    information_schema.columns
+	WHERE
+	    table_name = 'extras';
+	```
 * #### Output for Extras table:
-|    column_name    | data_type |
-|:-----------------:|:---------:|
-| customer_order_id |  integer  |
-|     topping_id    |    text   |
+	|    column_name    | data_type |
+	|:-----------------:|:---------:|
+	| customer_order_id |  integer  |
+	|     topping_id    |    text   |
 
 #### Query for Exclusions table:
 ```sql
@@ -261,36 +262,36 @@ To modify the incorrect data type in the schema, the ```ALTER``` keyword was app
 
 #### After Data Cleaning:
 * #### Query for Checking Data Types in the Exclusions table:
-```sql
-SELECT
-    column_name,
-    data_type
-FROM
-    information_schema.columns
-WHERE
-    table_name = 'exclusions';
-```
+	```sql
+	SELECT
+	    column_name,
+	    data_type
+	FROM
+	    information_schema.columns
+	WHERE
+	    table_name = 'exclusions';
+	```
 * #### Output for Exclusions table:
-|    column_name    | data_type |
-|:-----------------:|:---------:|
-| customer_order_id |  integer  |
-|     topping_id    |  integer  |
+	|    column_name    | data_type |
+	|:-----------------:|:---------:|
+	| customer_order_id |  integer  |
+	|     topping_id    |  integer  |
 
 * #### Query for Checking Data Types in the Extras table:
-```sql
-SELECT
-    column_name,
-    data_type
-FROM
-    information_schema.columns
-WHERE
-    table_name = 'extras';
-```
+	```sql
+	SELECT
+	    column_name,
+	    data_type
+	FROM
+	    information_schema.columns
+	WHERE
+	    table_name = 'extras';
+	```
 * #### Output for Extras table:
-|    column_name    | data_type |
-|:-----------------:|:---------:|
-| customer_order_id |  integer  |
-|     topping_id    |  integer  |
+	|    column_name    | data_type |
+	|:-----------------:|:---------:|
+	| customer_order_id |  integer  |
+	|     topping_id    |  integer  |
 
 - - - -
 
@@ -369,7 +370,6 @@ It was mentioned that there were some known data issues with the ```runner_order
 
 #### Before Data Cleaning:
 * #### Query for Checking Data Types:
-  
     ```sql
     SELECT
         column_name,
@@ -421,7 +421,9 @@ To modify the incorrect data types in the schema, the ```ALTER``` keyword was ap
     |   distance  |       double precision      |
     |   duration  |           integer           |
     | pickup_time | timestamp without time zone |
+  
 - - - -
+
 ### Table 5: pizza_recipes <a href="anchor" id="table-5"></a>
 1. Converting comma-separated values into multiple rows
 
@@ -471,45 +473,46 @@ After converting the comma-separated values in the ```toppings``` column into se
 
 #### Before Data Cleaning:
 * #### Query for Checking Data Types:
-```sql
-SELECT
-    column_name,
-    data_type AS data_type
-FROM
-    information_schema.columns
-WHERE
-    table_name = 'cleaned_pizza_recipes';
-```
+	```sql
+	SELECT
+	    column_name,
+	    data_type AS data_type
+	FROM
+	    information_schema.columns
+	WHERE
+	    table_name = 'cleaned_pizza_recipes';
+	```
 * #### Output:
-| column_name | data_type |
-|:-----------:|:---------:|
-|   pizza_id  |  integer  |
-|  topping_id |    text   |
+	| column_name | data_type |
+	|:-----------:|:---------:|
+	|   pizza_id  |  integer  |
+	|  topping_id |    text   |
 
 #### Query:
 ```sql
 ALTER TABLE cleaned_pizza_recipes
 ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
 ```
+
 #### Explanation:
 To modify the incorrect data type in the schema, the ```ALTER``` keyword was applied. First, the ```ALTER TABLE``` command modifies the previously created temporary table named ```cleaned_pizza_recipes```. Second, the ```ALTER COLUMN``` command modifies the data type of the ```topping_id``` column, whose original data type of ```TEXT``` was changed to the type ```INTEGER``` in order to match the automatically generated unique identifier or ID of the pizza toppings in the ```pizza_toppings``` table. 
 
 #### After Data Cleaning:
 * #### Query for Checking Data Types:
-```sql
-SELECT
-    column_name,
-    data_type AS data_type
-FROM
-    information_schema.columns
-WHERE
-    table_name = 'cleaned_pizza_recipes';
-```
+	```sql
+	SELECT
+	    column_name,
+	    data_type AS data_type
+	FROM
+	    information_schema.columns
+	WHERE
+	    table_name = 'cleaned_pizza_recipes';
+	```
 * #### Output:
-| column_name | data_type |
-|:-----------:|:---------:|
-|   pizza_id  |  integer  |
-|  topping_id |  integer  |
+	| column_name | data_type |
+	|:-----------:|:---------:|
+	|   pizza_id  |  integer  |
+	|  topping_id |  integer  |
 
 - - - -
 

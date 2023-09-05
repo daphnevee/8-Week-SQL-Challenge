@@ -131,6 +131,16 @@ Prior to performing the conversion of the values in the ```exclusions``` and ```
 #### After Data Cleaning:
 
 - - - -
+3. Checking and modifying incorrect data types in the schem
+#### Before Data Cleaning:
+
+#### Query:
+
+#### Explanation:
+
+#### After Data Cleaning:
+
+- - - -
 
 ### Table 3: runner_orders <a href="anchor" id="table-3"></a>
 1. Cleaning the data in the table

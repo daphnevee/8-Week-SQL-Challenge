@@ -16,15 +16,15 @@ Danny requires further assistance to clean the data he has collected and apply s
 ![Capture 2](https://github.com/daphnevee/8-Week-SQL-Challenge/assets/127839925/f55d5b54-fd9e-4db1-9dfc-4b269a93b969)
 
 ## Table of Contents
-* [Data Cleaning](#data-cleaning)
+1. [Data Cleaning](#data-cleaning)
 	* [Table 2: customer_orders](#table-2)
 	* [Table 3: runner_orders](#table-3)
 	* [Table 5: pizza_recipes](#table-5)
-* [Pizza Metrics](#pizza-metrics)
-* [Runner and Customer Experience](#runner-customer-exp)
-* [Ingredient Optimization](#ingredient-optimization)
-* [Pricing and Ratings](#pricing-ratings)
-* [Bonus Questions](#bonus-questions)
+2. [Pizza Metrics](#pizza-metrics)
+3. [Runner and Customer Experience](#runner-customer-exp)
+4. [Ingredient Optimization](#ingredient-optimization)
+5. [Pricing and Ratings](#pricing-ratings)
+6. [Bonus Questions](#bonus-questions)
 
 ## Data Cleaning <a href="anchor" id="data-cleaning"></a>
 ### Table 2: customer_orders <a href="anchor" id="table-2"></a>

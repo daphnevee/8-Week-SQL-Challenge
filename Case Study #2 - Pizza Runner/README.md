@@ -237,6 +237,20 @@ To modify the incorrect data types in the schema, the ```ALTER``` keyword was ap
 
 #### After Data Cleaning:
 
+- - - - 
+2. Checking and modifying incorrect data types in the schema
+#### Before Data Cleaning:
+* #### Query for Checking Data Types:
+* #### Output:
+
+#### Query:
+
+#### Explanation:
+
+#### After Data Cleaning:
+* #### Query for Checking Data Types:
+* #### Output:
+
 - - - -
 
 ## Case Study Questions and Answers

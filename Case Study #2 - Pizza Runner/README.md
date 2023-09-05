@@ -92,9 +92,42 @@ To replace both the null and NaN values with empty strings, first, a temporary t
 |    10    |     104     |     1    |    2, 6    |  1, 4  | 2020-01-11T18:34:49.000Z |
 - - - -
 2. Converting comma-separated values into multiple rows
+
+In the previously generated ```cleaned_customer_orders``` table, it can be observed that the pizza exclusions and extras requested by the customer for each order they make are initially stored in a comma-separated format. However, in solving the questions in the Ingredient Optimization section of the case study, this type of data is crucial and must be converted into separate rows to better gather insights from the data. 
+
+2.1 Adding a primary key to the table
+
+Prior to performing the conversion of the values in the ```exclusions``` and ```extras``` columns, there is a potential duplication of records that can occur because the ```order_id``` column in the table is not a unique identifier for each order record and allows for duplication. When a customer makes multiple orders at the same time, each order is recorded separately in the table. Therefore, a primary key must be established in the ```cleaned_customer_orders``` table to uniquely identify each of its records.
+
 #### Before Data Cleaning:
+| order_id | customer_id | pizza_id | exclusions | extras |        order_time        |
+|:--------:|:-----------:|:--------:|:----------:|:------:|:------------------------:|
+|     1    |     101     |     1    |            |        | 2020-01-01T18:05:02.000Z |
+|     2    |     101     |     1    |            |        | 2020-01-01T19:00:52.000Z |
+|     3    |     102     |     1    |            |        | 2020-01-02T23:51:23.000Z |
+|     3    |     102     |     2    |            |        | 2020-01-02T23:51:23.000Z |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |
+|     4    |     103     |     1    |      4     |        | 2020-01-04T13:23:46.000Z |
+|     4    |     103     |     2    |      4     |        | 2020-01-04T13:23:46.000Z |
+|     5    |     104     |     1    |            |    1   | 2020-01-08T21:00:29.000Z |
+|     6    |     101     |     2    |            |        | 2020-01-08T21:03:13.000Z |
+|     7    |     105     |     2    |            |    1   | 2020-01-08T21:20:29.000Z |
+|     8    |     102     |     1    |            |        | 2020-01-09T23:54:33.000Z |
+|     9    |     103     |     1    |      4     |  1, 5  | 2020-01-10T11:22:59.000Z |
+|    10    |     104     |     1    |            |        | 2020-01-11T18:34:49.000Z |
+|    10    |     104     |     1    |    2, 6    |  1, 4  | 2020-01-11T18:34:49.000Z |
+
 #### Query:
 #### Explanation:
+#### After Data Cleaning:
+
+2.2 Converting comma-separated values into multiple rows
+#### Before Data Cleaning:
+
+#### Query:
+
+#### Explanation:
+
 #### After Data Cleaning:
 
 - - - -
@@ -272,21 +305,49 @@ To convert the comma-separated values into separate rows, first, a temporary tab
 - - - - 
 2. Checking and modifying incorrect data types in the schema
 
-After converting the comma-separated values in the ```toppings``` column into separate rows, it can be observed that the assigned data type for the values of the ```topping_id``` column
-
-<!--It was mentioned that there were some known data issues with the ```runner_orders``` table and upon checking the schema, it can be observed that the columns ```pickup_time```, ```distance```, and ```duration``` have incorrect data types assigned. Therefore, it is important that the data types of these columns must be modified in order to improve data integrity and ensure that the correct data is stored within the database.-->
+After converting the comma-separated values in the ```toppings``` column into separate rows, it can be observed that the assigned data type for the values of the ```topping_id``` column is incorrect. In reference to the ```pizza_toppings``` table, the ```topping_id``` column is of ```INTEGER``` data type. Both the ```topping_id``` columns in the now ```cleaned_pizza_recipes``` table and the ```pizza_toppings``` table refer to the same data and can be used in combining both tables for further analysis, and in order to effectively perform a join between the two tables, both columns should have the same data type. 
 
 #### Before Data Cleaning:
 * #### Query for Checking Data Types:
+```sql
+SELECT
+    column_name,
+    data_type AS data_type
+FROM
+    information_schema.columns
+WHERE
+    table_name = 'cleaned_pizza_recipes';
+```
 * #### Output:
+| column_name | data_type |
+|:-----------:|:---------:|
+|   pizza_id  |  integer  |
+|  topping_id |    text   |
 
 #### Query:
-
+```sql
+ALTER TABLE cleaned_pizza_recipes
+ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
+```
 #### Explanation:
+To modify the incorrect data type in the schema, the ```ALTER``` keyword was applied. First, the ```ALTER TABLE``` command modifies the previously created temporary table named ```cleaned_pizza_recipes```. Second, the ```ALTER COLUMN``` command modifies the data type of the ```topping_id``` column, whose original data type of ```TEXT``` was changed to the type ```INTEGER``` in order to match the automatically generated unique identifier or ID of the pizza toppings in the ```pizza_toppings``` table. 
 
 #### After Data Cleaning:
 * #### Query for Checking Data Types:
+```sql
+SELECT
+    column_name,
+    data_type AS data_type
+FROM
+    information_schema.columns
+WHERE
+    table_name = 'cleaned_pizza_recipes';
+```
 * #### Output:
+| column_name | data_type |
+|:-----------:|:---------:|
+|   pizza_id  |  integer  |
+|  topping_id |  integer  |
 
 - - - -
 
@@ -345,6 +406,9 @@ SELECT
     UNNEST(STRING_TO_ARRAY(toppings, ',')) AS topping_id
 FROM pizza_runner.pizza_recipes
 ORDER BY pizza_id;
+
+ALTER TABLE cleaned_pizza_recipes
+ALTER COLUMN topping_id TYPE INT USING topping_id::INT;
 -->
 ### A. Pizza Metrics <a href="anchor" id="pizza-metrics"></a>
 1. How many pizzas were ordered?

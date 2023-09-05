@@ -228,17 +228,54 @@ To modify the incorrect data types in the schema, the ```ALTER``` keyword was ap
     | pickup_time | timestamp without time zone |
 - - - -
 ### Table 5: pizza_recipes <a href="anchor" id="table-5"></a>
-1. Converting comma-separated values into multiple rows 
+1. Converting comma-separated values into multiple rows
+
+In the ```pizza_recipes``` table, it can be observed that the ingredients listed for each type of pizza are initially stored in a comma-separated format. However, in solving the questions in the Ingredient Optimization section of this case study, this type of data is crucial and must be converted into separate rows to better gather insights from the data.
+
 #### Before Data Cleaning:
+| pizza_id |         toppings        |
+|:--------:|:-----------------------:|
+|     1    | 1, 2, 3, 4, 5, 6, 8, 10 |
+|     2    |    4, 6, 7, 9, 11, 12   |
 
 #### Query:
+```sql
+CREATE TEMPORARY TABLE cleaned_pizza_recipes AS
+SELECT
+    pizza_id,
+    UNNEST(STRING_TO_ARRAY(toppings, ',')) AS topping_id
+FROM pizza_runner.pizza_recipes
+ORDER BY pizza_id;
+```
 
 #### Explanation:
+To convert the comma-separated values into separate rows, first, a temporary table named ```cleaned_pizza_recipes``` was creted whose structure is based on the already available ```pizza_recipes``` table in the database. Second, the ```STRING_TO_ARRAY``` function was used to split the strings in the ```toppings``` column into array elements using the supplied delimeter which is a comma. Third, in conjunction with the ```STRING_TO_ARRAY``` function, the ```UNNEST``` function was used to then expand the resulting split array into a set of separate rows. An *alias* of ```topping_id``` was used to appropriately label the column name in the results. Lastly, an ```ORDER BY``` statement was used to arrange the results by default in ascending order according to the Pizza ID.
 
 #### After Data Cleaning:
+| pizza_id | topping_id |
+|:--------:|:----------:|
+|     1    |      1     |
+|     1    |      2     |
+|     1    |      3     |
+|     1    |      4     |
+|     1    |      5     |
+|     1    |      6     |
+|     1    |      8     |
+|     1    |     10     |
+|     2    |      4     |
+|     2    |      6     |
+|     2    |      7     |
+|     2    |      9     |
+|     2    |     11     |
+|     2    |     12     |
 
 - - - - 
 2. Checking and modifying incorrect data types in the schema
+
+After converting the comma-separated values in the ```toppings``` column into separate rows, it can be observed that the assigned data type for the values of the ```topping_id``` column
+
+<!--It was mentioned that there were some known data issues with the ```runner_orders``` table and upon checking the schema, it can be observed that the columns ```pickup_time```, ```distance```, and ```duration``` have incorrect data types assigned. Therefore, it is important that the data types of these columns must be modified in order to improve data integrity and ensure that the correct data is stored within the database.-->
+
 #### Before Data Cleaning:
 * #### Query for Checking Data Types:
 * #### Output:

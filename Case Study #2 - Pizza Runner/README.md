@@ -17,6 +17,9 @@ Danny requires further assistance to clean the data he has collected and apply s
 
 ## Table of Contents
 * [Data Cleaning](#data-cleaning)
+	* [Table 2: customer_orders](#table-2)
+	* [Table 3: runner_orders](#table-3)
+	* [Table 5: pizza_recipes](#table-5)
 * [Pizza Metrics](#pizza-metrics)
 * [Runner and Customer Experience](#runner-customer-exp)
 * [Ingredient Optimization](#ingredient-optimization)
@@ -24,7 +27,8 @@ Danny requires further assistance to clean the data he has collected and apply s
 * [Bonus Questions](#bonus-questions)
 
 ## Data Cleaning <a href="anchor" id="data-cleaning"></a>
-### Table 2: customer_orders
+### Table 2: customer_orders <a href="anchor" id="table-2"></a>
+1. Replacing null and NaN values with empty strings
 
 In the ```customer_orders``` table, it can be observed that both the ```exclusions``` and ```extras``` columns contain several null and NaN values. Thus, these columns will need to be cleaned up before being used for queries.
 
@@ -86,10 +90,16 @@ To replace both the null and NaN values with empty strings, first, a temporary t
 |     9    |     103     |     1    |      4     |  1, 5  | 2020-01-10T11:22:59.000Z |
 |    10    |     104     |     1    |            |        | 2020-01-11T18:34:49.000Z |
 |    10    |     104     |     1    |    2, 6    |  1, 4  | 2020-01-11T18:34:49.000Z |
+- - - -
+2. Converting comma-separated values into multiple rows
+#### Before Data Cleaning:
+#### Query:
+#### Explanation:
+#### After Data Cleaning:
 
 - - - -
 
-### Table 3: runner_orders
+### Table 3: runner_orders <a href="anchor" id="table-3"></a>
 1. Cleaning the data in the table
 
 In the ```runner_orders``` table, it can be observed that the ```pickup_time```, ```distance```, ```duration```, and ```cancellation``` columns contain several null and NaN values. Moreover, the ```distance``` column contains values with a unit of measurement of ```km``` and the ```duration``` column contains values with units of time of ```min``` or ```minutes```. Thus, these columns will need to be cleaned up before being used for queries.
@@ -216,6 +226,16 @@ To modify the incorrect data types in the schema, the ```ALTER``` keyword was ap
     |   distance  |       double precision      |
     |   duration  |           integer           |
     | pickup_time | timestamp without time zone |
+- - - -
+### Table 5: pizza_recipes <a href="anchor" id="table-5"></a>
+1. Converting comma-separated values into multiple rows 
+#### Before Data Cleaning:
+
+#### Query:
+
+#### Explanation:
+
+#### After Data Cleaning:
 
 - - - -
 

@@ -339,12 +339,12 @@ ALTER COLUMN pickup_time TYPE TIMESTAMP USING pickup_time::TIMESTAMP,
 ALTER COLUMN distance TYPE FLOAT USING distance::FLOAT,
 ALTER COLUMN duration TYPE INT USING duration::INT;
 
+CREATE TEMPORARY TABLE cleaned_pizza_recipes AS
 SELECT
-	pizza_id,
-	pizza_name,
-FROM cleaned_runner_orders
-WHERE cancellation = ''
-GROUP BY runner_id;
+    pizza_id,
+    UNNEST(STRING_TO_ARRAY(toppings, ',')) AS topping_id
+FROM pizza_runner.pizza_recipes
+ORDER BY pizza_id;
 -->
 ### A. Pizza Metrics <a href="anchor" id="pizza-metrics"></a>
 1. How many pizzas were ordered?

@@ -1186,6 +1186,9 @@ GROUP BY x.pizza_id, y.pizza_name
 ORDER BY x.pizza_id;
 ```
 #### Explanation:
+<!--
+The STRING_AGG function is an aggregate function used to concatenate the values from a column into a single string.
+-->
 
 #### Output:
 | pizza_id | pizza_name |                           pizza_ingredients                           |
@@ -1201,12 +1204,26 @@ Based from the output of the query, it can be observed that the standard ingredi
 2. What was the most commonly added extra?
 #### Query:
 ```sql
+SELECT
+    x.topping_id,
+    y.topping_name,
+    COUNT(x.topping_id) AS num_of_requests
+FROM extras x
+JOIN pizza_runner.pizza_toppings y
+ON x.topping_id=y.topping_id
+GROUP BY x.topping_id, y.topping_name
+ORDER BY num_of_requests DESC
+LIMIT 1;
 ```
 #### Explanation:
 
 #### Output:
+| topping_id | topping_name | num_of_requests |
+|:----------:|:------------:|:---------------:|
+|      1     |     Bacon    |        4        |
 
 #### Answer:
+Based from the output of the query, it can be observed that the most commonly added extra topping that customers choose in their pizza order is Bacon, with a total number of 4 requests.
 
 - - - -
 

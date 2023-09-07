@@ -1223,19 +1223,33 @@ LIMIT 1;
 |      1     |     Bacon    |        4        |
 
 #### Answer:
-Based from the output of the query, it can be observed that the most commonly added extra topping that customers choose in their pizza order is Bacon, with a total number of 4 requests.
+Based from the output of the query, it can be observed that the most commonly added extra topping that customers choose in their pizza order is Bacon, with a total number of 4 requests. It appears Bacon is a popular choice of topping on pizza among customers of Pizza Runner.
 
 - - - -
 
 3. What was the most common exclusion?
 #### Query:
 ```sql
+SELECT
+    x.topping_id,
+    y.topping_name,
+    COUNT(x.topping_id) AS num_of_requests
+FROM exclusions x
+JOIN pizza_runner.pizza_toppings y
+ON x.topping_id=y.topping_id
+GROUP BY x.topping_id, y.topping_name
+ORDER BY num_of_requests DESC
+LIMIT 1;
 ```
 #### Explanation:
 
 #### Output:
+| topping_id | topping_name | num_of_requests |
+|:----------:|:------------:|:---------------:|
+|      4     |    Cheese    |        4        |
 
 #### Answer:
+Based from the output of the query, it can be observed that the most common topping that customers request to excluded from their pizza order is Cheese, with a total of 4 requests. It appears that in comparison to Bacon, Cheese is not a favorable topping on pizza among customers of Pizza Runner.
 
 - - - -
 

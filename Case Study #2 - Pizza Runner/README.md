@@ -1173,12 +1173,28 @@ Based from the output of the query, it can be observed that Runner 1 had a 100% 
 1. What are the standard ingredients for each pizza?
 #### Query:
 ```sql
+SELECT
+    x.pizza_id,
+    y.pizza_name,
+    STRING_AGG(z.topping_name, ', ') AS pizza_ingredients
+FROM cleaned_pizza_recipes x
+JOIN pizza_runner.pizza_names y
+ON x.pizza_id=y.pizza_id
+JOIN pizza_runner.pizza_toppings z
+ON x.topping_id=z.topping_id
+GROUP BY x.pizza_id, y.pizza_name
+ORDER BY x.pizza_id;
 ```
 #### Explanation:
 
 #### Output:
+| pizza_id | pizza_name |                           pizza_ingredients                           |
+|:--------:|:----------:|:---------------------------------------------------------------------:|
+|     1    | Meatlovers | BBQ Sauce, Pepperoni, Cheese, Salami, Chicken, Bacon, Mushrooms, Beef |
+|     2    | Vegetarian |       Tomato Sauce, Cheese, Mushrooms, Onions, Peppers, Tomatoes      |
 
 #### Answer:
+Based from the output of the query, it can be observed that the standard ingredients for the Meatlovers pizza include BBQ Sauce, Pepperoni, Cheese, Salami, Chicken, Bacon, Mushrooms, and Beef. For Vegetarian pizza, it includes Tomato Sauce, Cheese, Mushrooms, Onions, Peppers, and Tomatoes.
 
 - - - -
 

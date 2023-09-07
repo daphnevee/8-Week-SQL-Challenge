@@ -1260,12 +1260,78 @@ Based from the output of the query, it can be observed that the most common topp
   * ```Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers```
 #### Query:
 ```sql
+WITH pizza_order AS (
+  SELECT
+      x.customer_order_id,
+      x.customer_id,
+      y.pizza_name
+  FROM cleaned_customer_orders x
+  JOIN pizza_runner.pizza_names y
+  ON x.pizza_id=y.pizza_id
+  ORDER BY x.customer_order_id
+),
+
+exclusions AS (
+  SELECT
+      x.customer_order_id,
+      STRING_AGG(y.topping_name, ', ') AS exclusions
+  FROM exclusions x
+  JOIN pizza_runner.pizza_toppings y
+  ON x.topping_id=y.topping_id
+  GROUP BY x.customer_order_id
+  ORDER BY x.customer_order_id
+),
+
+extras AS (
+  SELECT
+      x.customer_order_id,
+      STRING_AGG(y.topping_name, ', ') AS extras
+  FROM extras x
+  JOIN pizza_runner.pizza_toppings y
+  ON x.topping_id=y.topping_id
+  GROUP BY x.customer_order_id
+  ORDER BY x.customer_order_id
+)
+
+SELECT
+    x.customer_order_id,
+    x.customer_id,
+    CASE
+        WHEN y.exclusions IS NULL AND z.extras IS NOT NULL THEN CONCAT(x.pizza_name, ' - Extra ', z.extras)
+        WHEN z.extras IS NULL AND y.exclusions IS NOT NULL THEN CONCAT(x.pizza_name, ' - Exclude ', y.exclusions)
+        WHEN y.exclusions IS NOT NULL AND z.extras IS NOT NULL THEN CONCAT(x.pizza_name, ' - Exclude ', y.exclusions, ' - Extra ', z.extras)
+        ELSE x.pizza_name
+    END AS order_details
+FROM pizza_order x
+LEFT JOIN exclusions y
+ON x.customer_order_id=y.customer_order_id
+LEFT JOIN extras z
+ON x.customer_order_id=z.customer_order_id
+GROUP BY x.customer_order_id, x.customer_id, x.pizza_name, y.exclusions, z.extras
+ORDER BY x.customer_order_id;
 ```
 #### Explanation:
 
 #### Output:
+| customer_order_id | customer_id |                          order_details                          |
+|:-----------------:|:-----------:|:---------------------------------------------------------------:|
+|         1         |     101     |                            Meatlovers                           |
+|         2         |     101     |                            Meatlovers                           |
+|         3         |     102     |                            Meatlovers                           |
+|         4         |     102     |                            Vegetarian                           |
+|         5         |     103     |                   Meatlovers - Exclude Cheese                   |
+|         6         |     103     |                   Meatlovers - Exclude Cheese                   |
+|         7         |     103     |                   Vegetarian - Exclude Cheese                   |
+|         8         |     104     |                     Meatlovers - Extra Bacon                    |
+|         9         |     101     |                            Vegetarian                           |
+|         10        |     105     |                     Vegetarian - Extra Bacon                    |
+|         11        |     102     |                            Meatlovers                           |
+|         12        |     103     |        Meatlovers - Exclude Cheese - Extra Bacon, Chicken       |
+|         13        |     104     |                            Meatlovers                           |
+|         14        |     104     | Meatlovers - Exclude BBQ Sauce, Mushrooms - Extra Bacon, Cheese |
 
 #### Answer:
+The output of the query displays the list of orders received by Pizza Runner, the ID of the Customer that made the order, and the details of their order such the name of the pizza and if they have any requested exclusions or extra toppings in their pizza order.
 
 - - - -
 

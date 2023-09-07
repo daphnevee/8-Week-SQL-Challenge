@@ -1339,6 +1339,43 @@ The output of the query displays the list of orders received by Pizza Runner, th
   * For example: ```"Meat Lovers: 2xBacon, Beef, ... , Salami"```
 #### Query:
 ```sql
+<!--
+WITH customer_orders AS (
+  SELECT
+      x.customer_order_id,
+      x.customer_id,
+      x.pizza_id,
+  	  y.pizza_name
+  FROM cleaned_customer_orders x
+  JOIN pizza_runner.pizza_names y
+  ON x.pizza_id=y.pizza_id
+),
+
+order_ingredients AS (
+  SELECT
+      x.customer_order_id,
+      x.customer_id,
+      x.pizza_name,
+      CASE
+          WHEN y.topping_id IN (SELECT b.topping_id FROM extras b WHERE x.customer_order_id=b.customer_order_id) THEN CONCAT('2x', z.topping_name)
+          ELSE z.topping_name
+      END AS pizza_ingredients
+  FROM customer_orders x
+  JOIN cleaned_pizza_recipes y
+  ON x.pizza_id=y.pizza_id
+  JOIN pizza_runner.pizza_toppings z
+  ON y.topping_id=z.topping_id
+  WHERE y.topping_id NOT IN (SELECT d.topping_id FROM exclusions d WHERE x.customer_order_id=d.customer_order_id)
+  ORDER BY pizza_ingredients 
+)
+
+SELECT
+	customer_order_id,
+    customer_id,
+    CONCAT(pizza_name, ': ', STRING_AGG(pizza_ingredients, ', ')) AS pizza_order
+FROM order_ingredients
+GROUP BY customer_order_id, customer_id, pizza_name
+-->
 ```
 #### Explanation:
 

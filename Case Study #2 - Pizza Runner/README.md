@@ -1339,27 +1339,7 @@ The output of the query displays the list of orders received by Pizza Runner, th
   * For example: ```"Meat Lovers: 2xBacon, Beef, ... , Salami"```
 #### Query:
 ```sql
-WITH exclusions AS (
-  SELECT
-      x.customer_order_id,
-      x.topping_id,
-      y.topping_name
-  FROM exclusions x
-  JOIN pizza_runner.pizza_toppings y
-  ON x.topping_id=y.topping_id
-),
-
-extras AS (
-  SELECT
-      x.customer_order_id,
-      x.topping_id,
-      y.topping_name
-  FROM extras x
-  JOIN pizza_runner.pizza_toppings y
-  ON x.topping_id=y.topping_id
-),
-
-ingredients AS (
+WITH ingredients AS (
   SELECT
       x.pizza_id,
       y.pizza_name,
@@ -1420,19 +1400,75 @@ ORDER BY customer_order_id;
 |                   |             |                                                                                     |
 
 #### Answer:
-The output of the query displays the list of orders received by Pizza Runner, the ID of the customer that made the order, and the details of their order such as the type of pizza, the ingredients included which vary according to their requested exclusions and extra toppings in their pizza order. A pizza topping with the indication of '2x' represents an extra request made by the customer of that particular topping in their order.
+The output of the query displays the list of orders received by Pizza Runner, the ID of the customer that made the order, and the details of their order such as the type of pizza, the ingredients included which vary according to their requested exclusions and extra toppings in their pizza order. A pizza topping with the indication of '2x' represents an extra request of the topping in the customer's order.
 
 - - - -
 
 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
 #### Query:
 ```sql
+WITH ingredients AS (
+  SELECT
+      x.pizza_id,
+      y.pizza_name,
+      x.topping_id,
+      z.topping_name
+  FROM cleaned_pizza_recipes x
+  JOIN pizza_runner.pizza_names y
+  ON x.pizza_id=y.pizza_id
+  JOIN pizza_runner.pizza_toppings z
+  ON x.topping_id=z.topping_id
+  ORDER BY x.pizza_id, x.topping_id
+),
+
+order_records AS (
+  SELECT
+      x.customer_order_id,
+      x.customer_id,
+      x.pizza_id,
+      y.pizza_name,
+      y.topping_name,
+      CASE
+          WHEN y.topping_id IN (SELECT b.topping_id FROM extras b WHERE x.customer_order_id=b.customer_order_id) THEN 2
+          WHEN y.topping_id IN (SELECT b.topping_id FROM exclusions b WHERE x.customer_order_id=b.customer_order_id) THEN 0
+          ELSE 1
+      END AS ingredient_count
+  FROM cleaned_customer_orders x
+  JOIN ingredients y
+  ON x.pizza_id=y.pizza_id
+  JOIN cleaned_runner_orders z
+  ON x.order_id=z.order_id
+  WHERE z.cancellation = ''
+  ORDER BY x.customer_order_id, x.customer_id
+)
+
+SELECT
+    topping_name,
+    SUM(ingredient_count) AS ingredient_frequency
+FROM order_records
+GROUP BY topping_name
+ORDER BY ingredient_frequency DESC;
 ```
 #### Explanation:
 
 #### Output:
+| topping_name | ingredient_frequency |
+|:------------:|:--------------------:|
+|     Bacon    |          11          |
+|   Mushrooms  |          11          |
+|    Cheese    |          10          |
+|   Pepperoni  |           9          |
+|    Salami    |           9          |
+|    Chicken   |           9          |
+|     Beef     |           9          |
+|   BBQ Sauce  |           8          |
+|   Tomatoes   |           3          |
+|    Onions    |           3          |
+|    Peppers   |           3          |
+| Tomato Sauce |           3          |
 
 #### Answer:
+Based from the output of the query, it can be observed that the most frequent ingredient used in all delivered pizzas are either Bacon or Mushrooms, followed by Cheese. The least used ingredients, on the other hand, are Tomatoes, Onions, Peppers, and Tomato Sauce.
 
 - - - -
 

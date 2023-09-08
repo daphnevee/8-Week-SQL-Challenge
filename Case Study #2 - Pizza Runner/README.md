@@ -1338,9 +1338,9 @@ The output of the query displays the list of orders received by Pizza Runner, th
 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the ```customer_orders``` table and add a 2x in front of any relevant ingredients
   * For example: ```"Meat Lovers: 2xBacon, Beef, ... , Salami"```
 #### Query:
-<!--
+```sql
 WITH exclusions AS (
-  SELECT 
+  SELECT
       x.customer_order_id,
       x.topping_id,
       y.topping_name
@@ -1352,28 +1352,75 @@ WITH exclusions AS (
 extras AS (
   SELECT
       x.customer_order_id,
-  	  x.topping_id,
+      x.topping_id,
       y.topping_name
   FROM extras x
   JOIN pizza_runner.pizza_toppings y
   ON x.topping_id=y.topping_id
+),
+
+ingredients AS (
+  SELECT
+      x.pizza_id,
+      y.pizza_name,
+      x.topping_id,
+      z.topping_name
+  FROM cleaned_pizza_recipes x
+  JOIN pizza_runner.pizza_names y
+  ON x.pizza_id=y.pizza_id
+  JOIN pizza_runner.pizza_toppings z
+  ON x.topping_id=z.topping_id
+  ORDER BY x.pizza_id, x.topping_id
+),
+
+order_records AS (
+  SELECT
+      x.customer_order_id,
+      x.customer_id,
+      x.pizza_id,
+      y.pizza_name,
+      CASE
+          WHEN y.topping_id IN (SELECT b.topping_id FROM extras b WHERE x.customer_order_id=b.customer_order_id) THEN CONCAT('2x', y.topping_name)
+          ELSE y.topping_name
+      END AS pizza_order_ingredients
+  FROM cleaned_customer_orders x
+  JOIN ingredients y
+  ON x.pizza_id=y.pizza_id
+  WHERE y.topping_id NOT IN (SELECT b.topping_id FROM exclusions b WHERE x.customer_order_id=b.customer_order_id)
+  ORDER BY x.customer_order_id, x.customer_id, y.topping_name
 )
 
 SELECT
-	x.customer_order_id,
-    x.customer_id,
-    x.pizza_id,
-    y.pizza_name,
-    CASE
-    	WHEN z.topping_id IN (SELECT b.topping_id FROM extras b WHERE x.customer_order_id=b.customer_order_id) THEN CONCAT('2x'
--->
-```sql
+    customer_order_id,
+    customer_id,
+    CONCAT(pizza_name, ': ', STRING_AGG(pizza_order_ingredients, ', ')) AS pizza_order_ingredients
+FROM order_records
+GROUP BY customer_order_id, customer_id, pizza_name
+ORDER BY customer_order_id;
 ```
 #### Explanation:
 
 #### Output:
+| customer_order_id | customer_id |                               pizza_order_ingredients                               |
+|:-----------------:|:-----------:|:-----------------------------------------------------------------------------------:|
+|         1         |     101     |  Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami  |
+|         2         |     101     |  Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami  |
+|         3         |     102     |  Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami  |
+|         4         |     102     |        Vegetarian: Cheese, Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes       |
+|         5         |     103     |      Meatlovers: BBQ Sauce, Bacon, Beef, Chicken, Mushrooms, Pepperoni, Salami      |
+|         6         |     103     |      Meatlovers: BBQ Sauce, Bacon, Beef, Chicken, Mushrooms, Pepperoni, Salami      |
+|         7         |     103     |            Vegetarian: Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes           |
+|         8         |     104     | Meatlovers: BBQ Sauce, 2xBacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami |
+|         9         |     101     |        Vegetarian: Cheese, Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes       |
+|         10        |     105     |        Vegetarian: Cheese, Mushrooms, Onions, Peppers, Tomato Sauce, Tomatoes       |
+|         11        |     102     |  Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami  |
+|         12        |     103     |    Meatlovers: BBQ Sauce, 2xBacon, Beef, 2xChicken, Mushrooms, Pepperoni, Salami    |
+|         13        |     104     |  Meatlovers: BBQ Sauce, Bacon, Beef, Cheese, Chicken, Mushrooms, Pepperoni, Salami  |
+|         14        |     104     |           Meatlovers: 2xBacon, Beef, 2xCheese, Chicken, Pepperoni, Salami           |
+|                   |             |                                                                                     |
 
 #### Answer:
+The output of the query displays the list of orders received by Pizza Runner, the ID of the customer that made the order, and the details of their order such as the type of pizza, the ingredients included which vary according to their requested exclusions and extra toppings in their pizza order. A pizza topping with the indication of '2x' represents an extra request made by the customer of that particular topping in their order.
 
 - - - -
 

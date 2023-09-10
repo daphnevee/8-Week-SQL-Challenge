@@ -1503,12 +1503,47 @@ Based from the output of the query, it can be observed that Pizza Runner had att
   * Add cheese is $1 extra
 #### Query:
 ```sql
+WITH extra_count AS (
+  SELECT
+      x.customer_order_id,
+      COUNT(x.topping_id) AS num_extras
+  FROM extras x
+  JOIN cleaned_customer_orders y
+  ON x.customer_order_id=y.customer_order_id
+  GROUP BY x.customer_order_id
+)
+
+SELECT
+    SUM(
+      CASE
+          WHEN x.pizza_id = 1 THEN
+              CASE
+                  WHEN x.customer_order_id IN (SELECT customer_order_id FROM extra_count) THEN 12 + y.num_extras
+                  ELSE 12
+              END
+          ELSE
+              CASE
+                  WHEN x.customer_order_id IN (SELECT customer_order_id FROM extra_count) THEN 10 + y.num_extras
+                  ELSE 10
+              END
+       END
+      ) AS total_profit
+FROM cleaned_customer_orders x
+LEFT JOIN extra_count y
+ON x.customer_order_id=y.customer_order_id
+JOIN cleaned_runner_orders z
+ON x.order_id=z.order_id
+WHERE z.cancellation = '';
 ```
 #### Explanation:
 
 #### Output:
+| total_profit |
+|:------------:|
+|      142     |
 
 #### Answer:
+Based from the output of the query, it can be observed that Pizza Runner earned a total profit of $142 so far with the additional $1 charge for extra toppings.
 
 - - - -
 

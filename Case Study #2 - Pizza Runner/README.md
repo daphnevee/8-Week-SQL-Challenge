@@ -1476,12 +1476,26 @@ Based from the output of the query, it can be observed that the most frequent in
 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
 #### Query:
 ```sql
+SELECT
+    SUM(
+      CASE
+          WHEN x.pizza_id = 1 THEN 12
+          ELSE 10
+      END ) AS total_profit
+FROM cleaned_customer_orders x
+JOIN cleaned_runner_orders y
+ON x.order_id=y.order_id
+WHERE y.cancellation = '';
 ```
 #### Explanation:
 
 #### Output:
+| total_profit |
+|:------------:|
+|      138     |
 
 #### Answer:
+Based from the output of the query, it can be observed that Pizza Runner had attained a total profit of $138 so far.
 
 - - - -
 

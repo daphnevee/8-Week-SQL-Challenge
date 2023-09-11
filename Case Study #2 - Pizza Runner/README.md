@@ -518,6 +518,29 @@ To modify the incorrect data type in the schema, the ```ALTER``` keyword was app
 
 ## Case Study Questions and Answers
 <!--
+DROP TABLE IF EXISTS runner_ratings;
+
+CREATE TABLE runner_ratings (
+  "order_id" INTEGER,
+  "runner_id" INTEGER,
+  "rating" INTEGER,
+  "comment" TEXT
+);
+
+INSERT INTO runner_ratings
+  ("order_id", "runner_id", "rating", "comment")
+VALUES
+  (1, 1, 4, 'Good service.'),
+  (2, 1, 5, 'Excellent service! Very accommodating, would definitely recommend.'),
+  (3, 1, 5, 'Delivered on time. Delivery man was very polite and courteous. Would recommend!'),
+  (4, 2, 1, 'Poor service. Took an hour to get food. Would not recommend.'),
+  (5, 3, 5, 'Great service. Picked up and delivered securely and on time.'),
+  (7, 2, 5, 'Arrived on time and delivered quickly. Great service.'),
+  (8, 2, 5, 'Good service. Efficient and reliable.'),
+  (10, 1, 5, 'Excellent and professional service. Highly recommend.');
+-->
+
+<!--
 CREATE TEMPORARY TABLE cleaned_customer_orders AS
 SELECT
     order_id,
@@ -1550,12 +1573,41 @@ Based from the output of the query, it can be observed that Pizza Runner earned 
 3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner, how would you design an additional table for this new dataset - generate a schema for this new table and insert your own data for ratings for each successful customer order between 1 to 5.
 #### Query:
 ```sql
+DROP TABLE IF EXISTS runner_ratings;
+
+CREATE TABLE runner_ratings (
+  "order_id" INTEGER,
+  "runner_id" INTEGER,
+  "rating" INTEGER,
+  "comment" TEXT
+);
+
+INSERT INTO runner_ratings
+  ("order_id", "runner_id", "rating", "comment")
+VALUES
+  (1, 1, 4, 'Good service.'),
+  (2, 1, 5, 'Excellent service! Very accommodating, would definitely recommend.'),
+  (3, 1, 5, 'Delivered on time. Delivery man was very polite and courteous. Would recommend!'),
+  (4, 2, 1, 'Poor service. Took an hour to get food. Would not recommend.'),
+  (5, 3, 5, 'Great service. Picked up and delivered securely and on time.'),
+  (7, 2, 5, 'Arrived on time and delivered quickly. Great service.'),
+  (8, 2, 5, 'Good service. Efficient and reliable.'),
+  (10, 1, 5, 'Excellent and professional service. Highly recommend.');
 ```
 #### Explanation:
+<!-- orders 6 and 9 were not included. only delivered orders will have ratings. -->
 
 #### Output:
-
-#### Answer:
+| order_id | runner_id | rating |                                     comment                                     |
+|:--------:|:---------:|:------:|:-------------------------------------------------------------------------------:|
+|     1    |     1     |    4   |                                  Good service.                                  |
+|     2    |     1     |    5   |        Excellent service! Very accommodating, would definitely recommend.       |
+|     3    |     1     |    5   | Delivered on time. Delivery man was very polite and courteous. Would recommend! |
+|     4    |     2     |    1   |           Poor service. Took an hour to get food. Would not recommend.          |
+|     5    |     3     |    5   |           Great service. Picked up and delivered securely and on time.          |
+|     7    |     2     |    5   |              Arrived on time and delivered quickly. Great service.              |
+|     8    |     2     |    5   |                      Good service. Efficient and reliable.                      |
+|    10    |     1     |    5   |              Excellent and professional service. Highly recommend.              |
 
 - - - -
 

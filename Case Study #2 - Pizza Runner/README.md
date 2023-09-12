@@ -1624,25 +1624,76 @@ VALUES
   * Total number of pizzas
 #### Query:
 ```sql
+SELECT
+    x.customer_id,
+    x.order_id,
+    y.runner_id,
+    y.rating,
+    x.order_time,
+    z.pickup_time,
+    DATE_PART('minute', z.pickup_time - x.order_time) AS total_prep_time_mins,
+    z.duration AS delivery_duration_mins,
+    ROUND((z.distance / (z.duration / 60.0))::NUMERIC, 2) AS avg_speed_kph,
+    COUNT(x.pizza_id) AS total_num_pizza
+FROM cleaned_customer_orders x
+JOIN pizza_runner.runner_ratings y
+ON x.order_id=y.order_id
+JOIN cleaned_runner_orders z
+ON x.order_id=z.order_id
+WHERE z.cancellation = ''
+GROUP BY x.customer_id, x.order_id, y.runner_id, y.rating, x.order_time, z.pickup_time, z.duration, z.distance
+ORDER BY x.order_id;
 ```
 #### Explanation:
 
 #### Output:
-
-#### Answer:
+| customer_id | order_id | runner_id | rating |        order_time        |        pickup_time       | total_prep_time_mins | delivery_duration_mins | avg_speed_kph | total_num_pizza |
+|:-----------:|:--------:|:---------:|:------:|:------------------------:|:------------------------:|:--------------------:|:----------------------:|:-------------:|:---------------:|
+|     101     |     1    |     1     |    4   | 2020-01-01T18:05:02.000Z | 2020-01-01T18:15:34.000Z |          10          |           32           |     37.50     |        1        |
+|     101     |     2    |     1     |    5   | 2020-01-01T19:00:52.000Z | 2020-01-01T19:10:54.000Z |          10          |           27           |     44.44     |        1        |
+|     102     |     3    |     1     |    5   | 2020-01-02T23:51:23.000Z | 2020-01-03T00:12:37.000Z |          21          |           20           |     40.20     |        2        |
+|     103     |     4    |     2     |    1   | 2020-01-04T13:23:46.000Z | 2020-01-04T13:53:03.000Z |          29          |           40           |     35.10     |        3        |
+|     104     |     5    |     3     |    5   | 2020-01-08T21:00:29.000Z | 2020-01-08T21:10:57.000Z |          10          |           15           |     40.00     |        1        |
+|     105     |     7    |     2     |    5   | 2020-01-08T21:20:29.000Z | 2020-01-08T21:30:45.000Z |          10          |           25           |     60.00     |        1        |
+|     102     |     8    |     2     |    5   | 2020-01-09T23:54:33.000Z | 2020-01-10T00:15:02.000Z |          20          |           15           |     93.60     |        1        |
+|     104     |    10    |     1     |    5   | 2020-01-11T18:34:49.000Z | 2020-01-11T18:50:20.000Z |          15          |           10           |     60.00     |        2        |
 
 - - - -
 
 5. If a Meat Lovers pizza was $12 and Vegetarian $10 fixed prices with no cost for extras and each runner is paid $0.30 per kilometre traveled - how much money does Pizza Runner have left over after these deliveries?
 #### Query:
 ```sql
+WITH costs AS (
+   SELECT
+      x.order_id,
+      SUM(
+        CASE
+            WHEN x.pizza_id = 1 THEN 12
+            ELSE 10
+        END
+      ) AS total_profit,
+      y.runner_id,
+      (y.distance * 0.30) AS runner_profit
+  FROM cleaned_customer_orders x
+  JOIN cleaned_runner_orders y
+  ON x.order_id=y.order_id
+  WHERE y.cancellation = ''
+  GROUP BY x.order_id, y.runner_id, y.distance
+)
+
+SELECT
+     ROUND(SUM(total_profit - runner_profit::NUMERIC), 2) AS remaining_total_profit
+FROM costs;
 ```
 #### Explanation:
 
 #### Output:
+| remaining_total_profit |
+|:----------------------:|
+|          94.44         |
 
 #### Answer:
-
+Based from the output of the query, it can be observed that Pizza Runner has a remaining total profit of $94.44 after the deliveries.
 - - - -
 
 ## Bonus Questions <a href="anchor" id="bonus-questions"></a>

@@ -1700,9 +1700,62 @@ Based from the output of the query, it can be observed that Pizza Runner has a r
 1. If Danny wants to expand his range of pizzas - how would this impact the existing data design? Write an INSERT statement to demonstrate what would happen if a new Supreme pizza with all the toppings was added to the Pizza Runner menu?
 #### Query:
 ```sql
+INSERT INTO pizza_names
+ ("pizza_id", "pizza_name")
+VALUES
+ (3, 'Supreme');
+
+INSERT INTO pizza_recipes
+ ("pizza_id", "toppings")
+VALUES
+ (3, '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12');
 ```
 #### Explanation:
 
 #### Output:
+* Query to display results for ```pizza_names``` table:
+```sql
+SELECT *
+FROM pizza_runner.pizza_recipes;
+```
+* Results:
+| pizza_id |                toppings               |
+|:--------:|:-------------------------------------:|
+|     1    |        1, 2, 3, 4, 5, 6, 8, 10        |
+|     2    |           4, 6, 7, 9, 11, 12          |
+|     3    | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 |
 
-#### Answer:
+* Query to display results for ```cleaned_pizza_recipes``` table:
+```sql
+SELECT *
+FROM cleaned_pizza_recipes;
+```
+* Results:
+| pizza_id | topping_id |
+|:--------:|:----------:|
+|     1    |      1     |
+|     1    |      2     |
+|     1    |      3     |
+|     1    |      4     |
+|     1    |      5     |
+|     1    |      6     |
+|     1    |      8     |
+|     1    |     10     |
+|     2    |      4     |
+|     2    |      6     |
+|     2    |      7     |
+|     2    |      9     |
+|     2    |     11     |
+|     2    |     12     |
+|     3    |      1     |
+|     3    |      2     |
+|     3    |      3     |
+|     3    |      4     |
+|     3    |      5     |
+|     3    |      6     |
+|     3    |      7     |
+|     3    |      8     |
+|     3    |      9     |
+|     3    |     10     |
+|     3    |     11     |
+|     3    |     12     |

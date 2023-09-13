@@ -650,7 +650,7 @@ SELECT
 FROM cleaned_customer_orders;
 ```
 #### Explanation:
-To deermine the number of unique customer orders, a ```COUNT``` aggregate function was used in conjunction with the ```DISTINCT``` clause in order to extract and count only the unique order records from the ```cleaned_customer_orders``` table. An *alias* of ```num_of_unique_customer_orders``` was given to provide a more descriptive column name for the results.
+To determine the number of unique customer orders, a ```COUNT``` aggregate function was used in conjunction with the ```DISTINCT``` clause in order to extract and count only the unique order records from the ```cleaned_customer_orders``` table. An *alias* of ```num_of_unique_customer_orders``` was given to provide a more descriptive column name for the results.
 
 #### Output:
 | num_of_unique_customer_orders |
@@ -781,39 +781,20 @@ Based from the output of the query, it can be observed that Customer 101 ordered
 6. What was the maximum number of pizzas delivered in a single order?
 #### Query:
 ```sql
-WITH successful_deliveries AS (
-    SELECT
-	x.order_id,
-	COUNT(x.pizza_id) AS num_of_successful_deliveries
-    FROM cleaned_customer_orders x
-    JOIN cleaned_runner_orders y
-    ON x.order_id=y.order_id
-    WHERE y.cancellation = ''
-    GROUP BY x.order_id
-    ORDER BY x.order_id
-)
-
 SELECT
-    order_id,
-    num_of_successful_deliveries AS max_deliveries
-FROM successful_deliveries
+    x.order_id,
+    COUNT(x.pizza_id) AS max_deliveries
+FROM cleaned_customer_orders x
+JOIN cleaned_runner_orders y
+ON x.order_id=y.order_id
+WHERE y.cancellation = ''
+GROUP BY x.order_id
 ORDER BY max_deliveries DESC
 LIMIT 1;
 ```
 #### Explanation:
-To determine the maximum number of pizzas delivered in a single order, first, a CTE labeled ```successful_deliveries``` consisting of a ```COUNT``` aggregate function, a ```JOIN``` clause, a ```WHERE``` clause, a ```GROUP BY``` statement as well as an ```ORDER BY``` statement was used. The ```COUNT``` aggregate function was used to count the total number of deliveries made for each order in conjunction with a ```WHERE``` clause in order to filter the records according to only successful deliveries. The condition set was if the cancellation column has no record for a particular record, if the order was not cancelled by either the restaurant or the customer, then the order was delivered successfully to the customer. An *alias* of ```num_of_successful_deliveries``` was given to provide a more descriptive column name for the results. The ```JOIN``` clause was also applied to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table to display the Order ID and the total number of successful deliveries. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. The ```GROUP BY``` statement was then used to arrange the results into groups according to the Order ID. Lastly, the ```ORDER BY``` statement was used to organize the results by default in ascending order based on the Order ID. This query then produces the following results:
-| order_id | num_of_successful_deliveries |
-|:--------:|:----------------------------:|
-|     1    |               1              |
-|     2    |               1              |
-|     3    |               2              |
-|     4    |               3              |
-|     5    |               1              |
-|     7    |               1              |
-|     8    |               1              |
-|    10    |               2              |
 
-Following that, first, an *alias* of ```max_deliveries``` was given to provide a more descriptive column name for the results. Second, an ```ORDER BY``` statement was used to organize the total number of successful deliveries made in descending order and place the highest number of successful deliveries made at the top. Finally, the ```LIMIT``` clause was used to limit the results to only the first record. 
+To determine the maximum number of pizzas delivered in a single order, first, a ```COUNT``` aggregate function was used to count the total number of deliveries made for each order in conjunction with a ```WHERE``` clause in order to filter the records according to only successful deliveries. The condition set was if the cancellation column has no record for a particular record, if the order was not cancelled by either the restaurant or the customer, then the order was delivered successfully to the customer. An *alias* of ```max_deliveries``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also applied to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table to display the Order ID and the total number of successful deliveries. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. Third, a ```GROUP BY``` statement was then used to arrange the results into groups according to the Order ID. Fourth, the ```ORDER BY``` statement was used to organize the total number of successful deliveries made in descending order and place the highest number of successful deliveries made at the top. Lastly, the ```LIMIT``` clause was used to limit the results to only the first record.
 
 #### Output:
 | order_id | max_deliveries |
@@ -828,37 +809,29 @@ Based from the output of the query, it can be observed that the maximum number o
 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 #### Query:
 ```sql
-WITH successful_deliveries AS (
-  SELECT
-      x.customer_id,
-      x.order_id,
-      x.exclusions,
-      x.extras
-  FROM cleaned_customer_orders x
-  JOIN cleaned_runner_orders y
-  ON x.order_id=y.order_id
-  WHERE y.cancellation = ''
-)
-
 SELECT
-    customer_id,
+    x.customer_id,
     SUM(
-	CASE
-	  WHEN exclusions != '' OR extras != '' THEN 1
-	  ELSE 0
-	END
+        CASE
+          WHEN x.exclusions != '' OR x.extras != '' THEN 1
+          ELSE 0
+        END
     ) AS with_changes,
     SUM(
-	CASE
-	  WHEN exclusions = '' AND extras = '' THEN 1
-	  ELSE 0
-	END
+        CASE
+          WHEN x.exclusions = '' AND x.extras = '' THEN 1
+          ELSE 0
+        END
     ) AS no_changes
-FROM successful_deliveries
+FROM cleaned_customer_orders x
+JOIN cleaned_runner_orders y
+ON x.order_id=y.order_id
+WHERE y.cancellation = ''
 GROUP BY customer_id
 ORDER BY customer_id;
 ```
 #### Explanation:
+To determine the number of delivered pizzas that had either requested changes or none, first, two ```SUM``` aggregate functions were used to calculate the total number of delivered pizzas for both conditions. In the first ```SUM``` aggregate function, it consists of a ```CASE``` expression that evaluates whether the given order had requested changes according to the condition that either or both the ```exclusions``` and ```extras``` columns had values and were *not* empty, which would equate to a value of 1. Otherwise, it would equate to a value of 0. The second ```SUM``` aggregate function also consists of a ```CASE``` expression that evaluates whether the given order did *not* have any requested changes according to the condition that either or both the ```exclusions``` and ```extras``` columns had no values and were empty, which would equate to a value of 1. Otherwise, it would equate to a value of 0. Aliases of ```with_changes``` and ```no_changes``` were given for both aggregate functions to provide more descriptive column names for the results, respectively. Second, a ```JOIN``` clause was used to combine both the ```cleaned_customer_orders``` and ```cleaned_runner_orders``` tables based on their related column of ```order_id``` to display the Customer ID, evaluate the conditions for the exclusions and extras in the ```CASE``` expressions from the ```cleaned_customer_orders``` table and to later filter the results with the ```cancellation``` column from the ```cleaned_runner_orders```. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. Third, a ```WHERE``` clause was used to filter the results based on orders that were only delivered successfully and did not undergo any cancellation. Fourth, a ```GROUP BY``` statement was used to arrange the results into groups according to the Customer ID since the results would show the number of requested changes each customer made in their orders from Pizza Runner. Lastly, an ```ORDER BY``` statement was also used to sort the results by default in ascending order based on the Customer ID.
 
 #### Output:
 | customer_id | with_changes | no_changes |
@@ -877,23 +850,15 @@ Based from the output of the query, it can be observed that for Customer 101, bo
 8. How many pizzas were delivered that had both exclusions and extras?
 #### Query:
 ```sql
-WITH successful_deliveries AS (
-  SELECT
-      x.order_id,
-      x.exclusions,
-      x.extras
-  FROM cleaned_customer_orders x
-  JOIN cleaned_runner_orders y
-  ON x.order_id=y.order_id
-  WHERE y.cancellation = ''
-)
-
 SELECT
-    COUNT(order_id) AS with_exclusions_and_extras
-FROM successful_deliveries
-WHERE exclusions != '' AND extras != '';
+     COUNT(x.order_id) AS with_exclusions_and_extras
+FROM cleaned_customer_orders x
+JOIN cleaned_runner_orders y
+ON x.order_id=y.order_id
+WHERE (x.exclusions != '' AND x.extras != '') AND y.cancellation = '';
 ```
 #### Explanation:
+To determine the number of delivered pizzas that had both requested exclusions and extras, first, a ```COUNT``` aggregate function was used to count the total number of orders. An alias of ```with_exclusions_and_extras``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to display the Order ID and to later set the conditions of the ```exclusions``` and ```extras``` columns, as well as the ```cancellation``` column to filter the results. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. Third, with that, a ```WHERE``` clause was used to accomplish the filtering of the results based on two conditions where both the ```exclusions``` and ```extras``` columns had values to indicate that the order had both requested exclusions and extras at the same time, and that the given order was successfully delivered and did not undergo any cancellation. 
 
 #### Output:
 | with_exclusions_and_extras |
@@ -913,12 +878,10 @@ SELECT
     COUNT(pizza_id) AS total_pizza_orders
 FROM cleaned_customer_orders
 GROUP BY hour_of_the_day
-ORDER BY hour_of_the_day
+ORDER BY hour_of_the_day;
 ```
 #### Explanation:
-<!--
-PostgreSQL provides a built-in date function named the EXTRACT() function that extracts a specific field from a date, time, or timestamp. It allows us to pull out any date/time field, such as a day, month, hour, minute, etc., from any specific DateTime. 
--->
+To determine the total volume of pizzas ordered for each hour of the day, first, an ```EXTRACT``` function was used to extract a specific field, in this case the hour of the day, from the ```order_time``` column which consists of the specific DateTime value of each order. An alias of ```hour_of_the_day``` was given to provide a more descriptive column name for the results. Second, a ```COUNT``` aggregate function was used to count the total number of pizzas according to the Pizza ID. An alias of ```total_pizza_orders``` was given to provide a more descriptive column name for the results. Third, a ```GROUP BY``` statement was then used to arrange the results into groups according to the hours of the day. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the hours of the day.
 
 #### Output:
 | hour_of_the_day | total_pizza_orders |
@@ -945,11 +908,7 @@ GROUP BY day_of_the_week
 ORDER BY day_of_the_week;
 ```
 #### Explanation:
-<!--
-In PostgreSQL, the EXTRACT() function is used to get a day, month, year, etc., from a DATE, TIME, or TIMESTAMP. We can use this function to get/extract the day from the specified date or time stamp. However, it retrieves the specific part/field from the specified date as a number. If we have to get/extract the day names from a specific date, then we must use the TO_CHAR() function.
-
-valid day format -- "Day"
--->
+To determine the total volume of orders for each day of the week, first, the ```TO_CHAR``` function was used this time as opposed to the ```EXTRACT``` function when getting the values of the days of the week. This is because the ```EXTRACT``` function is particularly used for extracting the numerical value from a specific date or time stamp. The ```TO_CHAR``` function would be more appropriate in displaying the results consisting of the days of the week as it in turn extracts the *names* of the day from a specific date. The valid day format of ```Day``` was applied to display the results according to that specific text format. The values for the days of the week would then be extracted from the ```order_time``` column which consists of both the date and the time when a particular order was made. An alias of ```day_of_the_week``` was given to provide a more descriptive column name for the results. Second, a ```COUNT``` aggregate function was used to count the total number of pizza orders according to the Pizza ID. An alias of ```total_pizza_orders``` was given to provide a more descriptive column name for the results. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to their corresponding day of the week. Lastly, an ```ORDER BY``` statement was used to sort the results by default according to the day of the week.
 
 #### Output:
 | day_of_the_week | total_pizza_orders |
@@ -989,7 +948,16 @@ FROM runner_registration_dates
 GROUP BY registration_week
 ```
 #### Explanation:
+To determine the number of runners that signed up for each 1 week, first, a CTE labeled ```runner_registration_dates``` was used consiting of two ```EXTRACT``` functions to extract both the day and the month of the runner's registration date. Aliases of ```day``` and ```month``` were also given to provide more descriptive column names for the results. This query then displays a clearer view of the exact day and month of when a particular runner signed up, as shown below:
 
+| runner_id |     registration_date    | day | month |
+|:---------:|:------------------------:|:---:|:-----:|
+|     1     | 2021-01-01T00:00:00.000Z |  1  |   1   |
+|     2     | 2021-01-03T00:00:00.000Z |  3  |   1   |
+|     3     | 2021-01-08T00:00:00.000Z |  8  |   1   |
+|     4     | 2021-01-15T00:00:00.000Z |  15 |   1   |
+
+Following that, first, a ```CASE``` expression was used to determine what week for the month of January did a particular runner sign up. The first condition identifies whether the runner signed up within the first week period, the second condition identifies whether the runner signed up within the second week period, the third condition identifies whether the runner signed up within the third week period, and otherwise, if the runner signed up within the fourth or last week period in the month of January. An alias of ```registration_week``` was given to provide a more descriptive column name for the results. Second, a ```COUNT``` aggregate function was used to count the total number of registered runners for each given week. Lastly, a ```GROUP BY``` was then used to arrange the results into groups according to the registration week.
 
 #### Output:
 | registration_week | num_of_registered_runners |
@@ -1019,11 +987,7 @@ GROUP BY y.runner_id
 ORDER BY y.runner_id;
 ```
 #### Explanation:
-<!--
-PostgreSQL does not define round(double precision, integer). You must cast the value to be rounded to numeric to use the two-argument form of round. Just append ::numeric for the shorthand cast, like round(val::numeric,2).
-
-PostgreSQL does not provide DATEDIFF function similar to SQL Server DATEDIFF, but you can use various expressions or UDF to get the same results.
--->
+To determine the average time (in minutes) it took for each runner to arrive at the Pizza Runner HQ to pickup an order, first, a ```DATE_PART``` function was used to extract the minutes from the resulting difference between a customer's order time and a runner's pickup time. Second, an ```AVG``` (average) aggregate function was used to calculate the average time in minutes. Third, since  PostgreSQL does not define ```ROUND(double precision, integer)```, the resulting average value is casted to be rounded to numeric in order to use the two-argument form of the ```ROUND``` function, which then rounds the results to a whole number. An alias of ```avg_pickup_time``` was given to provide a more descriptive column name for the results. Fourth, a ```JOIN``` clause was used to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to display the Runner ID, the average difference between the order time and the pickup time, and to filter the results according to successful deliveries. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. Fifth, a ```WHERE``` clause was then used to filter the results according to whether a runner was able to successfully deliver the order or not. Sixth, a ```GROUP BY``` statement was used to arrange the results into groups according to the Runner ID. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the Runner ID.
 
 #### Output:
 | runner_id | avg_pickup_time |
@@ -1036,7 +1000,7 @@ PostgreSQL does not provide DATEDIFF function similar to SQL Server DATEDIFF, bu
 Based from the output of the query, it can be observed that Runner 1 took an average time of 15 minutes to arrive at the Pizza Runner HQ to pickup the order. As for Runner 2, it took them an average time of 23 minutes, while Runner 3 took 10 minutes. 
 
 - - - -
-
+<!--stopped here!-->
 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 #### Query:
 ```sql

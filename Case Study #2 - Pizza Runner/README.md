@@ -1000,7 +1000,6 @@ To determine the average time (in minutes) it took for each runner to arrive at 
 Based from the output of the query, it can be observed that Runner 1 took an average time of 15 minutes to arrive at the Pizza Runner HQ to pickup the order. As for Runner 2, it took them an average time of 23 minutes, while Runner 3 took 10 minutes. 
 
 - - - -
-<!--stopped here!-->
 3. Is there any relationship between the number of pizzas and how long the order takes to prepare?
 #### Query:
 ```sql
@@ -1023,6 +1022,20 @@ FROM prep_time_per_order
 GROUP BY num_of_pizza;
 ```
 #### Explanation:
+To determine if there is any relationship between pizza quantity and the length of order preparation time, a CTE labeled ```prep_time_per_order``` consisting of a ```COUNT``` aggregate function, a ```DATE_PART``` function, a ```JOIN``` clause, a ```WHERE``` clause, and a ```GROUP BY``` statement was used. First, a ```COUNT``` aggregate function was used to count the total quantity of pizza per order. An alias of ```num_of_pizza``` was given to provide a more descriptive column name. Second, a ```DATE_PART``` function was used to extract the minutes from the results of the difference between the time the customer made the order and the time the runner arrived to the Pizza Runner HQ to pick up the order. An alias of ```total_prep_time``` was given to provide a more descriptive column name for the results. Third, a ```JOIN``` clause was then used to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to display the Order ID, Pizza ID, the length of order preparation time using the Order Time and Pickup Time records, and to later filter the results based on orders that were successfully delivered. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. Fourth, a ```WHERE``` clause was used to filter the results according to orders that were only successfully delivered and did not undergo any cancellation. Lastly, a ```GROUP BY``` statement was used to arrange the results into groups according to the Order ID, Pickup Time, and Order Time. This query then produces the following results:
+
+| order_id | num_of_pizza | total_prep_time |
+|:--------:|:------------:|:---------------:|
+|     8    |       1      |        20       |
+|    10    |       2      |        15       |
+|     5    |       1      |        10       |
+|     3    |       2      |        21       |
+|     7    |       1      |        10       |
+|     4    |       3      |        29       |
+|     1    |       1      |        10       |
+|     2    |       1      |        10       |
+
+Following that, first, an ```AVG``` (average) aggregate function was then used to calculate the average of the total prep time resulting from the CTE to determine the average length of order preparation time that it takes for each pizza quantity. An alias of ```avg_total_prep_time``` was given to provide a more descriptive column name for the results. Second, a ```GROUP BY``` statement was used as well to arrange the results into groups according to the quantity of pizza.
 
 #### Output:
 | num_of_pizza | avg_total_prep_time |
@@ -1050,6 +1063,7 @@ GROUP BY x.customer_id
 ORDER BY x.customer_id;
 ```
 #### Explanation:
+To determine the average distance runners travelled for each customer, first, an ```AVG``` (average) aggregate function was used to calculate the average distance. Second, given that PostgreSQL does not define ```ROUND(double precision, integer)```, the resulting average needs to be casted to numeric. Third, with that, the ```ROUND``` function was then used to round the results to 1 decimal point. An alias of ```avg_distance_travel``` was then given to provide a more descriptive column name for the results. Fourth, a ```JOIN``` clause was then used to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to display the Customer ID, the average distance travelled by each runner to deliver the customers' orders, and to later filter the results according to orders that were only successfully delivered. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. Fifth, a ```WHERE``` clause was then used to filter the results according to orders that were only successfully delivered and did not undergo any cancellation. Sixth, a ```GROUP BY``` statement was used to arrange the results into groups according to the Customer ID. Lastly, an ```ORDER BY``` statement was also used to sort the results by default in ascending order according to the Customer ID.
 
 #### Output:
 | customer_id | avg_distance_travel |
@@ -1064,7 +1078,7 @@ ORDER BY x.customer_id;
 Based from the output of the query, it can be observed that for Customer 101, an average distance of 20 km was travelled by the runners to deliver their orders. As for Customer 102, an average distance of 16.7 km was travelled to deliver their orders, while for Customer 103, an average distance of 23.4 was travelled by the runners. An average distance of 10 km was travelled for Customer 104 and 25 km was travelled for Customer 105 by the runners. It can be deduced that Customer 104 resides in a location nearby Pizza Runner because it takes the least amount of distance to deliver their orders from the Pizza Runner HQ while Customer 105 resides in a location farthest from the headquarters compared to the other customers.
 
 - - - -
-
+<!--continue here!-->
 5. What was the difference between the longest and shortest delivery times for all orders?
 #### Query:
 ```sql

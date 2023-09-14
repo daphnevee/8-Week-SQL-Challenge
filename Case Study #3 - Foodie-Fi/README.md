@@ -20,7 +20,7 @@ Danny wants to gather insights about his customers, pertaining to their preferre
 4. [Outside The Box Questions](#outside-the-box-questions)
 
 ## Case Study Questions and Answers
-### Customer Journey <a href="anchor" id="customer-journey"></a>
+### A. Customer Journey <a href="anchor" id="customer-journey"></a>
 
 Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey. Try to keep it as short as possible - you may also want to run some sort of join to make your explanations a bit easier!
 #### Query:
@@ -139,7 +139,7 @@ Based off the 8 sample customers provided in the sample from the subscriptions t
 #### Answer:
 
 - - - -
-### Challenge Payment Question
+### B. Challenge Payment Question <a href="anchor" id="challenge-payment-question"></a>
 The Foodie-Fi team wants you to create a new payments table for the year 2020 that includes amounts paid by each customer in the subscriptions table with the following requirements:
 
 * monthly payments always occur on the same day of month as the original start_date of any monthly paid plan
@@ -183,7 +183,7 @@ Example outputs for this table might look like the following:
 #### Answer:
 
 - - - -
-### Outside The Box Questions
+### C. Outside The Box Questions <a href="anchor" id="outside-the-box-questions"></a>
 The following are open ended questions which might be asked during a technical interview for this case study - there are no right or wrong answers, but answers that make sense from both a technical and a business perspective make an amazing impression!
 1. How would you calculate the rate of growth for Foodie-Fi?
 #### Query:

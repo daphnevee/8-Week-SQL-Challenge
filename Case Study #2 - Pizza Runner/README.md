@@ -1078,7 +1078,6 @@ To determine the average distance runners travelled for each customer, first, an
 Based from the output of the query, it can be observed that for Customer 101, an average distance of 20 km was travelled by the runners to deliver their orders. As for Customer 102, an average distance of 16.7 km was travelled to deliver their orders, while for Customer 103, an average distance of 23.4 was travelled by the runners. An average distance of 10 km was travelled for Customer 104 and 25 km was travelled for Customer 105 by the runners. It can be deduced that Customer 104 resides in a location nearby Pizza Runner because it takes the least amount of distance to deliver their orders from the Pizza Runner HQ while Customer 105 resides in a location farthest from the headquarters compared to the other customers.
 
 - - - -
-<!--continue here!-->
 5. What was the difference between the longest and shortest delivery times for all orders?
 #### Query:
 ```sql
@@ -1090,6 +1089,7 @@ FROM cleaned_runner_orders
 WHERE cancellation = '';
 ```
 #### Explanation:
+To determine the difference between the longest and shortest delivery times for all orders, first, a ```MAX``` function was used to return the largest value from the selected ```duration``` column which corresponds to the longest delivery time taken for an order. An alias of ```max_delivery_time``` was given to provide a more descriptive column name for the results. Second, a ```MIN``` function was then used to return the smallest value from the ```duration``` column which corresponds to the shortest delivery time taken for an order. An alias of ```min_delivery_time``` was given to provide a more descriptive column name for the results. Third, the results from both the ```MAX``` and ```MIN``` functions are then subtracted from each other to identify the difference between the longest and shortest delivery times. An alias of ```delivery_time_difference``` was given to provide a more descriptive column name for the results. Lastly, a ```WHERE``` clause was also used to filter the results according to orders that were only successfully delivered and did not undergo any cancellation.
 
 #### Output:
 | max_delivery_time | min_delivery_time | delivery_time_difference |
@@ -1116,9 +1116,10 @@ JOIN cleaned_runner_orders y
 ON x.order_id=y.order_id
 WHERE y.cancellation = ''
 GROUP BY y.runner_id, x.order_id, x.customer_id, y.duration, y.distance
-ORDER BY y.runner_id
+ORDER BY y.runner_id;
 ```
 #### Explanation:
+To determine the average speed for each runner for each delivery, first, the values in the ```duration``` column were converted from minutes to hours as measurements of time by dividing them by 60.0. This conversion is required in order to calculate the average speed. The result of the division was then casted to numeric so it can be rounded off to 2 decimal places using the ```ROUND``` function. An alias of ```duration_hr``` was given to provide a more descriptive column name for the results. Second, to calculate the average speed, the distance in kilometers must be divided by the duration in hours. The result is then also casted to numeric so it can be rounded off to 2 decimal places using the ```ROUND``` function as well. An alias of ```avg_speed_kph``` was then given to provide a more descriptive column name for the results. Third, a ```JOIN``` clause was then used to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to display the Runner ID, the Order ID, the Customer ID, the distance travelled by the runner in delivering the order, the resulting conversion of the duration of the delivery from minutes to hours, the calculated average speed of each runner, and to later filter the results according to orders that were only successfully delivered. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```cleaned_runner_orders```, so as to make the query more readable. Fourth, a ```WHERE``` clause was used to filter the results according to orders that were only successfully delivered and did not undergo any cancellation. Fifth, a ```GROUP BY``` statement was used to arrange the results into groups according to the Runner ID, Order ID, Customer ID, duration, and distance. Lastly, an ```ORDER BY``` statement was also used to sort the results by default in ascending order according to the Runner ID.
 
 #### Output:
 | runner_id | order_id | customer_id | distance_km | duration_hr | avg_speed_kph |
@@ -1157,6 +1158,7 @@ GROUP BY runner_id
 ORDER BY runner_id;
 ```
 #### Explanation:
+To determine the successful delivery percentage for each runner, first, a ```CASE``` expression was used to set the condition where an order was successfully delivered or not. If it was successfully delivered, it would return the value of 1. Otherwise, it would return 0. Second, given those conditions, a ```SUM``` aggregate function would then be used to count the total number of orders that were successfully delivered. Third, the resulting sum would then be divided by the total number of orders which are counted using the ```COUNT``` aggregate function. The result of the division would then be multipled by 100 to convert the answer to percentage. An alias of ```success_delivery_percentage``` was then given to provide a more descriptive column name for the results. Fourth, a ```GROUP BY``` statement was used to arrange the results into groups according to the Runner ID. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the Runner ID.
 
 #### Output:
 | runner_id | success_delivery_percentage |
@@ -1187,9 +1189,7 @@ GROUP BY x.pizza_id, y.pizza_name
 ORDER BY x.pizza_id;
 ```
 #### Explanation:
-<!--
-The STRING_AGG function is an aggregate function used to concatenate the values from a column into a single string.
--->
+To determine the standard ingredients for each pizza, first, a ```STRING_AGG``` aggregate function was used to concatenate all the names of the toppings available for each type of pizza into a single string. An alias of ```pizza_ingredients``` was given to provide a more descriptive column name for the results. Second, two ```JOIN``` clauses were used to first combine the ```cleaned_pizza_recipes``` table with the ```pizza_names``` table based on their related column, ```pizza_id```, to display the Pizza ID and the name of the pizza, and second, to combine the ```cleaned_pizza_recipes``` table with the ```pizza_toppings``` table based on their related column, ```topping_id```, to display the names of the toppings available for each type of pizza. In the joining the tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_pizza_recipes``` table, ```y``` for the ```pizza_names``` table, and ```z``` for the ```pizza_toppings``` table, so as to make the query more readable. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the Pizza ID and the name of the pizza. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the Pizza ID.
 
 #### Output:
 | pizza_id | pizza_name |                           pizza_ingredients                           |
@@ -1217,6 +1217,7 @@ ORDER BY num_of_requests DESC
 LIMIT 1;
 ```
 #### Explanation:
+To determine the most commonly added extra topping on pizzas, first, a ```COUNT``` aggregate function was used to count the total number of times a topping was requested by a customer to be added to their order based on the topping ID. An alias of ```num_of_requests``` was used to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine both the ```extras``` table and the ```pizza_toppings``` table based on their related column, ```topping_id```, to display the topping ID, the name of the topping, and to count the occurrence of each topping. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```extras``` table and ```y``` for the ```pizza_toppings``` table, so as to make the query more readable. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the topping ID and the topping name. Fourth, an ```ORDER BY``` statement was also used to sort the results in descending order according to the counted number of requests in order to put the largest value at the top. Lastly, the ```LIMIT``` keyword was used to filter the results in displaying only the first record and since the results are sorted in descending order, this would display only the topping record that had the highest number of requests.
 
 #### Output:
 | topping_id | topping_name | num_of_requests |
@@ -1243,6 +1244,7 @@ ORDER BY num_of_requests DESC
 LIMIT 1;
 ```
 #### Explanation:
+To determine the most commonly requested topping to be excluded on pizzas, first, a ```COUNT``` aggregate function was used to count the total number of times a topping was requested by a customer to be excluded from their order based on the topping ID. An alias of ```num_of_requests``` was used to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was used to combine both the ```exclusions``` table and the ```pizza_toppings``` table based on their related column, ```topping_id```, to display the topping ID, the name of the topping, and to count the occurrence of each topping. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```exclusions``` table and ```y``` for the ```pizza_toppings``` table, so as to make the query more readable. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the topping ID and the topping name. Fourth, an ```ORDER BY``` statement was also used to sort the results in descending order according to the counted number of requests in order to put the largest value at the top. Lastly, the ```LIMIT``` keyword was used to filter the results in displaying only the first record and since the results are sorted in descending order, this would display only the topping record that had the highest number of requests for exclusion.
 
 #### Output:
 | topping_id | topping_name | num_of_requests |
@@ -1312,6 +1314,45 @@ GROUP BY x.customer_order_id, x.customer_id, x.pizza_name, y.exclusions, z.extra
 ORDER BY x.customer_order_id;
 ```
 #### Explanation:
+To generate the order items in the ```customer_orders``` table in the given format, first, 3 CTEs were utilized. The first CTE labeled ```pizza_order``` was used consisting of a ```JOIN``` clause that combines both the ```cleaned_customer_orders``` table and the ```pizza_names``` table based on their related column, ````pizza_id```, to display the ```customer_order_id```, the Customer ID, and the name of the pizza. In joining the two tables, *aliases* were also given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the ```pizza_names``` table. Second, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the ```customer_order_id``` column. This CTE then generates a table that shows the name of the pizzas ordered by each customer. This query then produces the following results:
+
+| customer_order_id | customer_id | pizza_name |
+|:-----------------:|:-----------:|:----------:|
+|         1         |     101     | Meatlovers |
+|         2         |     101     | Meatlovers |
+|         3         |     102     | Meatlovers |
+|         4         |     102     | Vegetarian |
+|         5         |     103     | Meatlovers |
+|         6         |     103     | Meatlovers |
+|         7         |     103     | Vegetarian |
+|         8         |     104     | Meatlovers |
+|         9         |     101     | Vegetarian |
+|         10        |     105     | Vegetarian |
+|         11        |     102     | Meatlovers |
+|         12        |     103     | Meatlovers |
+|         13        |     104     | Meatlovers |
+|         14        |     104     | Meatlovers |
+
+The second CTE labeled ```exclusions``` was used consisting of a ```STRING_AGG``` aggregate function, a ```JOIN``` clause, a ```GROUP BY``` statement, and an ```ORDER BY``` statement. First, the ```STRING_AGG``` aggregate function was used to concatenate the names of the toppings that were requested by customers to be excluded from their pizza orders into a single string. An *alias* of ```exclusions``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was then used to combine both the ```exclusions``` table and the ```pizza_toppings``` table based on their related column, ```topping_id```, to display the ```customer_order_id``` and the names of the toppings. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the ```customer_order_id``` column. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the ```customer_order_id``` column. This CTE then generates a table that shows the name of the toppings that were requested to be excluded by customers from their ordered pizzas. This query then produces the following results:
+
+| customer_order_id |      exclusions      |
+|:-----------------:|:--------------------:|
+|         5         |        Cheese        |
+|         6         |        Cheese        |
+|         7         |        Cheese        |
+|         12        |        Cheese        |
+|         14        | BBQ Sauce, Mushrooms |
+
+The third and final CTE labeled ```extras``` was used consisting of a ```STRING_AGG``` aggregate function, a ```JOIN``` clause, a ```GROUP BY``` statement, and an ```ORDER BY``` statement. First, the ```STRING_AGG``` aggregate function was used to concatenate the names of the toppings that were requested by customers to be added to their pizza orders into a single string. An *alias* of ```extras``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was then used to combine both the ```extras``` table and the ```pizza_toppings``` table based on their related column, ```topping_id```, to display the ```customer_order_id``` and the names of the toppings. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the ```customer_order_id``` column. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the ```customer_order_id``` column. This CTE then generates a table that shows the name of the toppings that were requested by customers to be added to their ordered pizzas. This query then produces the following results:
+
+| customer_order_id |     extras     |
+|:-----------------:|:--------------:|
+|         8         |      Bacon     |
+|         10        |      Bacon     |
+|         12        | Bacon, Chicken |
+|         14        |  Bacon, Cheese |
+
+Following that, to now generate the order items in the given specific format, first, a ```CASE``` expression was used to set the conditions of whether a particular order had any requests of extra or excluded toppings in their ordered pizzas. The first condition determines if an order has any requested extra toppings based on the ```exclusions``` column having no value and the ```extras``` column having a value. With that, the ```CONCAT``` function is used to concatenate the name of the pizza, along with the string ``` - Extra```, and the requested extra toppings into a single string to follow the given format. The second condition then determines if an order has any requested toppings to be excluded from their pizza based on the ```extras``` column having no value and the ```exclusions``` column having a value. With that, the ```CONCAT``` function is also used to similarly concatenate the name of the pizza, along with the string ``` - Exclude```, and the requested excluded toppings into a single string to follow the given format. The third condition then determines if an order has both requested extra or excluded toppings from their pizza based on both the ```exclusions``` and ```extras``` columns having a value. With that, the ```CONCAT``` function is used to concatenate the name of the pizza, along with the string ``` - Exclude``` for the requested excluded toppings, and the string ``` - Extra``` for the requested extra toppings into a single string to follow the given format. If a particular order has neither any exclusions or extras, it would only display the name of the pizza. An *alias* of ```order_details``` was given to provide a more descriptive column name for the results. Second, two ```LEFT JOIN``` clauses were used to first combine the resulting table of the ```pizza_order``` CTE and the resulting table of the ```exclusions``` CTE based on their related column, ```customer_order_id```, and second, to also combine the resulting table of the ```pizza_order``` CTE and the resulting table of the ```extras``` CTE based on their related column, ```customer_order_id```, to collectively display the ```customer_order_id```, the Customer ID, and to utilize the exclusions and extras in the ```CASE``` expressions. Third, a ```GROUP BY``` statement was used to arrange the results into groups according to the ```customer_order_id``` column, the Customer ID, the name of the pizza, the exclusions, and extras. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the ```customer_order_id``` column.
 
 #### Output:
 | customer_order_id | customer_id |                          order_details                          |
@@ -1378,8 +1419,133 @@ SELECT
 FROM order_records
 GROUP BY customer_order_id, customer_id, pizza_name
 ORDER BY customer_order_id;
+
 ```
 #### Explanation:
+
+To generate the alphabetically ordered comma separated ingredient list for each pizza order from the ```customer_orders``` table and to add the ```2x``` in front of any relevant ingredients, 2 CTEs were used. First, a CTE labeled ```ingredients``` was used consisting of 2 ```JOIN``` clauses and an ```ORDER BY``` statement. The first ```JOIN``` clause was used to combine both the ```cleaned_pizza_recipes``` table and the ```pizza_names``` table based on their related column, ```pizza_id```, to display the Pizza ID, the name of the pizza, and the topping ID. The second ```JOIN``` clause was used to also combine the ```cleaned_pizza_recipes``` table with the ```pizza_toppings``` table based on their related column, ```topping_id```, to display the name of the topping. In joining the tables, *aliases* were given, i.e. ```x``` for the ```cleaned_pizza_recipes``` table, ```y``` for the ```pizza_names``` table, and ```z``` for the ```pizza_toppings``` table. An ```ORDER BY``` statement was also used to sort the results by default in ascending order according to the Pizza ID and the topping ID. This CTE then generates a list of ingredients available for each type of pizza. This query then produces the following results:
+
+| pizza_id | pizza_name | topping_id | topping_name |
+|:--------:|:----------:|:----------:|:------------:|
+|     1    | Meatlovers |      1     |     Bacon    |
+|     1    | Meatlovers |      2     |   BBQ Sauce  |
+|     1    | Meatlovers |      3     |     Beef     |
+|     1    | Meatlovers |      4     |    Cheese    |
+|     1    | Meatlovers |      5     |    Chicken   |
+|     1    | Meatlovers |      6     |   Mushrooms  |
+|     1    | Meatlovers |      8     |   Pepperoni  |
+|     1    | Meatlovers |     10     |    Salami    |
+|     2    | Vegetarian |      4     |    Cheese    |
+|     2    | Vegetarian |      6     |   Mushrooms  |
+|     2    | Vegetarian |      7     |    Onions    |
+|     2    | Vegetarian |      9     |    Peppers   |
+|     2    | Vegetarian |     11     |   Tomatoes   |
+|     2    | Vegetarian |     12     | Tomato Sauce |
+
+The second CTE labeled ```order_records``` was used consisting of a ```CASE``` expression, a ```JOIN``` clause, a ```WHERE``` clause, and an ```ORDER BY``` statement was used. First, a ```CASE``` expression was used to set the condition of adding the "2x" string to any extra topping that was requested by the customer to be added to their pizza. If a particular topping matches a topping ID record from the ```extras``` table, then the ```CONCAT``` function is used to concatenate the "2x" and the name of the topping to indicate that the customer requested extra of that particular topping. Otherwise, it would simply return the name of the topping. An *alias* of ```pizza_order_ingredients``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was then used to combine both the ```cleaned_customer_orders``` table and the resulting table of the ```ingredients``` CTE based on their related column, ```pizza_id```, to display the ```customer_order_id``` column, the Customer ID, the Pizza ID, the name of the pizza, and to utilize the topping ID and the name of the topping in the conditions for the ```CASE``` expression. In joining the two tables, *aliases* were given, i.e. ```x``` for the ```cleaned_customer_orders``` table and ```y``` for the resulting table of the ```ingredients``` CTE. Third, a ```WHERE``` clause was then used to filter the results only according to extra toppings and not excluded toppings. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the ```customer_order_id``` column, the Customer ID, and the name of the topping. This CTE then generates a table where the orders that have additional requested toppings have a "2x" indication for whichever topping it is applicable. This query then produces the following results:
+
+| customer_order_id | customer_id | pizza_id | pizza_name | pizza_order_ingredients |
+|:-----------------:|:-----------:|:--------:|:----------:|:-----------------------:|
+|         1         |     101     |     1    | Meatlovers |        BBQ Sauce        |
+|         1         |     101     |     1    | Meatlovers |          Bacon          |
+|         1         |     101     |     1    | Meatlovers |           Beef          |
+|         1         |     101     |     1    | Meatlovers |          Cheese         |
+|         1         |     101     |     1    | Meatlovers |         Chicken         |
+|         1         |     101     |     1    | Meatlovers |        Mushrooms        |
+|         1         |     101     |     1    | Meatlovers |        Pepperoni        |
+|         1         |     101     |     1    | Meatlovers |          Salami         |
+|         2         |     101     |     1    | Meatlovers |        BBQ Sauce        |
+|         2         |     101     |     1    | Meatlovers |          Bacon          |
+|         2         |     101     |     1    | Meatlovers |           Beef          |
+|         2         |     101     |     1    | Meatlovers |          Cheese         |
+|         2         |     101     |     1    | Meatlovers |         Chicken         |
+|         2         |     101     |     1    | Meatlovers |        Mushrooms        |
+|         2         |     101     |     1    | Meatlovers |        Pepperoni        |
+|         2         |     101     |     1    | Meatlovers |          Salami         |
+|         3         |     102     |     1    | Meatlovers |        BBQ Sauce        |
+|         3         |     102     |     1    | Meatlovers |          Bacon          |
+|         3         |     102     |     1    | Meatlovers |           Beef          |
+|         3         |     102     |     1    | Meatlovers |          Cheese         |
+|         3         |     102     |     1    | Meatlovers |         Chicken         |
+|         3         |     102     |     1    | Meatlovers |        Mushrooms        |
+|         3         |     102     |     1    | Meatlovers |        Pepperoni        |
+|         3         |     102     |     1    | Meatlovers |          Salami         |
+|         4         |     102     |     2    | Vegetarian |          Cheese         |
+|         4         |     102     |     2    | Vegetarian |        Mushrooms        |
+|         4         |     102     |     2    | Vegetarian |          Onions         |
+|         4         |     102     |     2    | Vegetarian |         Peppers         |
+|         4         |     102     |     2    | Vegetarian |       Tomato Sauce      |
+|         4         |     102     |     2    | Vegetarian |         Tomatoes        |
+|         5         |     103     |     1    | Meatlovers |        BBQ Sauce        |
+|         5         |     103     |     1    | Meatlovers |          Bacon          |
+|         5         |     103     |     1    | Meatlovers |           Beef          |
+|         5         |     103     |     1    | Meatlovers |         Chicken         |
+|         5         |     103     |     1    | Meatlovers |        Mushrooms        |
+|         5         |     103     |     1    | Meatlovers |        Pepperoni        |
+|         5         |     103     |     1    | Meatlovers |          Salami         |
+|         6         |     103     |     1    | Meatlovers |        BBQ Sauce        |
+|         6         |     103     |     1    | Meatlovers |          Bacon          |
+|         6         |     103     |     1    | Meatlovers |           Beef          |
+|         6         |     103     |     1    | Meatlovers |         Chicken         |
+|         6         |     103     |     1    | Meatlovers |        Mushrooms        |
+|         6         |     103     |     1    | Meatlovers |        Pepperoni        |
+|         6         |     103     |     1    | Meatlovers |          Salami         |
+|         7         |     103     |     2    | Vegetarian |        Mushrooms        |
+|         7         |     103     |     2    | Vegetarian |          Onions         |
+|         7         |     103     |     2    | Vegetarian |         Peppers         |
+|         7         |     103     |     2    | Vegetarian |       Tomato Sauce      |
+|         7         |     103     |     2    | Vegetarian |         Tomatoes        |
+|         8         |     104     |     1    | Meatlovers |        BBQ Sauce        |
+|         8         |     104     |     1    | Meatlovers |         2xBacon         |
+|         8         |     104     |     1    | Meatlovers |           Beef          |
+|         8         |     104     |     1    | Meatlovers |          Cheese         |
+|         8         |     104     |     1    | Meatlovers |         Chicken         |
+|         8         |     104     |     1    | Meatlovers |        Mushrooms        |
+|         8         |     104     |     1    | Meatlovers |        Pepperoni        |
+|         8         |     104     |     1    | Meatlovers |          Salami         |
+|         9         |     101     |     2    | Vegetarian |          Cheese         |
+|         9         |     101     |     2    | Vegetarian |        Mushrooms        |
+|         9         |     101     |     2    | Vegetarian |          Onions         |
+|         9         |     101     |     2    | Vegetarian |         Peppers         |
+|         9         |     101     |     2    | Vegetarian |       Tomato Sauce      |
+|         9         |     101     |     2    | Vegetarian |         Tomatoes        |
+|         10        |     105     |     2    | Vegetarian |          Cheese         |
+|         10        |     105     |     2    | Vegetarian |        Mushrooms        |
+|         10        |     105     |     2    | Vegetarian |          Onions         |
+|         10        |     105     |     2    | Vegetarian |         Peppers         |
+|         10        |     105     |     2    | Vegetarian |       Tomato Sauce      |
+|         10        |     105     |     2    | Vegetarian |         Tomatoes        |
+|         11        |     102     |     1    | Meatlovers |        BBQ Sauce        |
+|         11        |     102     |     1    | Meatlovers |          Bacon          |
+|         11        |     102     |     1    | Meatlovers |           Beef          |
+|         11        |     102     |     1    | Meatlovers |          Cheese         |
+|         11        |     102     |     1    | Meatlovers |         Chicken         |
+|         11        |     102     |     1    | Meatlovers |        Mushrooms        |
+|         11        |     102     |     1    | Meatlovers |        Pepperoni        |
+|         11        |     102     |     1    | Meatlovers |          Salami         |
+|         12        |     103     |     1    | Meatlovers |        BBQ Sauce        |
+|         12        |     103     |     1    | Meatlovers |         2xBacon         |
+|         12        |     103     |     1    | Meatlovers |           Beef          |
+|         12        |     103     |     1    | Meatlovers |        2xChicken        |
+|         12        |     103     |     1    | Meatlovers |        Mushrooms        |
+|         12        |     103     |     1    | Meatlovers |        Pepperoni        |
+|         12        |     103     |     1    | Meatlovers |          Salami         |
+|         13        |     104     |     1    | Meatlovers |        BBQ Sauce        |
+|         13        |     104     |     1    | Meatlovers |          Bacon          |
+|         13        |     104     |     1    | Meatlovers |           Beef          |
+|         13        |     104     |     1    | Meatlovers |          Cheese         |
+|         13        |     104     |     1    | Meatlovers |         Chicken         |
+|         13        |     104     |     1    | Meatlovers |        Mushrooms        |
+|         13        |     104     |     1    | Meatlovers |        Pepperoni        |
+|         13        |     104     |     1    | Meatlovers |          Salami         |
+|         14        |     104     |     1    | Meatlovers |         2xBacon         |
+|         14        |     104     |     1    | Meatlovers |           Beef          |
+|         14        |     104     |     1    | Meatlovers |         2xCheese        |
+|         14        |     104     |     1    | Meatlovers |         Chicken         |
+|         14        |     104     |     1    | Meatlovers |        Pepperoni        |
+|         14        |     104     |     1    | Meatlovers |          Salami         |
+
+Following that, to generate the necessary results, first, a ```CONCAT``` function was used to concatenate the name of the pizza and ingredients available for each ordered pizza with an indication for extra toppings. A ```STRING_AGG``` aggregate function was used in conjunction with the ```CONCAT``` function to concatenate the list of ingredients into a single string alongside the name of the pizza. An *alias* of ```pizza_order_ingredients``` was given to provide a more descriptive column anme for the results. Second, a ```GROUP BY``` statement was used to arrange the results into groups according to the ```customer_order_id``` column, the Customer ID, and the name of the pizza. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the ```customer_order_id``` column. 
 
 #### Output:
 | customer_order_id | customer_id |                               pizza_order_ingredients                               |
@@ -1452,6 +1618,122 @@ ORDER BY ingredient_frequency DESC;
 ```
 #### Explanation:
 
+To determine the total quantity of each ingredient used in all delivered pizzas, 2 CTEs were used. First, a CTE labeled ```ingredients``` was used consisting of 2 ```JOIN``` clauses and an ```ORDER BY``` statement. The first ```JOIN``` clause was used to combine both the ```cleaned_pizza_recipes``` table and the ```pizza_names``` table based on their related column, ```pizza_id```, to display the Pizza ID, the name of the pizza, and the topping ID. The second ```JOIN``` clause was used to also combine the ```cleaned_pizza_recipes``` table with the ```pizza_toppings``` table based on their related column, ```topping_id```, to display the name of the topping. In joining the tables, *aliases* were given, i.e. ```x``` for the ```cleaned_pizza_recipes``` table, ```y``` for the ```pizza_names``` table, and ```z``` for the ```pizza_toppings``` table. An ```ORDER BY``` statement was also used to sort the results by default in ascending order according to the Pizza ID and the topping ID. This CTE then generates a list of ingredients available for each type of pizza. This query then produces the following results:
+
+| pizza_id | pizza_name | topping_id | topping_name |
+|:--------:|:----------:|:----------:|:------------:|
+|     1    | Meatlovers |      1     |     Bacon    |
+|     1    | Meatlovers |      2     |   BBQ Sauce  |
+|     1    | Meatlovers |      3     |     Beef     |
+|     1    | Meatlovers |      4     |    Cheese    |
+|     1    | Meatlovers |      5     |    Chicken   |
+|     1    | Meatlovers |      6     |   Mushrooms  |
+|     1    | Meatlovers |      8     |   Pepperoni  |
+|     1    | Meatlovers |     10     |    Salami    |
+|     2    | Vegetarian |      4     |    Cheese    |
+|     2    | Vegetarian |      6     |   Mushrooms  |
+|     2    | Vegetarian |      7     |    Onions    |
+|     2    | Vegetarian |      9     |    Peppers   |
+|     2    | Vegetarian |     11     |   Tomatoes   |
+|     2    | Vegetarian |     12     | Tomato Sauce |
+
+The second CTE labeled ```order_records``` was used consisting of a ```CASE``` expression, two ```JOIN``` clauses, a ```WHERE``` clause, and an ```ORDER BY``` statement was used. First, a ```CASE``` expression was used to set the condition of when an extra topping is requested, it would return a value of 2. If a topping is requested to be excluded from their order, it would return a value of 0. Otherwise, a particular topping ingredient would only return a value of 1. An *alias* of ```ingredient_count``` was given to provide a more descriptive column name for the results. Second, 2 ```JOIN``` clauses were used to first combine the ```cleaned_customer_orders``` table with the resulting table of the ```ingredients``` CTE based on their related column, ```pizza_id```, and second, to combine the ```cleaned_customer_orders``` table with the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to display the ```customer_order_id``` column, Customer ID, Pizza ID, name of the pizza, name of the topping, and to utilize the topping ID in the conditions in the ```CASE``` expression. In joining the tables, *aliases* were given, i.e. ```x``` for the ```cleaned_customer_orders``` table, ```y``` for the resulting table of the ```ingredients``` CTE, and ```z``` for the ```cleaned_runner_orders``` table. Third, a ```WHERE``` clause was used to filter the results according to orders that were only successfully delivered and did not undergo any cancellation. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the ```customer_order_id``` column and the Customer ID. This CTE then generates the total number of times a topping was to be added to an ordered pizza. This query then produces the following results: 
+
+| customer_order_id | customer_id | pizza_id | pizza_name | topping_name | ingredient_count |
+|:-----------------:|:-----------:|:--------:|:----------:|:------------:|:----------------:|
+|         1         |     101     |     1    | Meatlovers |    Cheese    |         1        |
+|         1         |     101     |     1    | Meatlovers |     Beef     |         1        |
+|         1         |     101     |     1    | Meatlovers |    Salami    |         1        |
+|         1         |     101     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         1         |     101     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         1         |     101     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         1         |     101     |     1    | Meatlovers |     Bacon    |         1        |
+|         1         |     101     |     1    | Meatlovers |    Chicken   |         1        |
+|         2         |     101     |     1    | Meatlovers |    Chicken   |         1        |
+|         2         |     101     |     1    | Meatlovers |     Beef     |         1        |
+|         2         |     101     |     1    | Meatlovers |     Bacon    |         1        |
+|         2         |     101     |     1    | Meatlovers |    Salami    |         1        |
+|         2         |     101     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         2         |     101     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         2         |     101     |     1    | Meatlovers |    Cheese    |         1        |
+|         2         |     101     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         3         |     102     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         3         |     102     |     1    | Meatlovers |     Bacon    |         1        |
+|         3         |     102     |     1    | Meatlovers |     Beef     |         1        |
+|         3         |     102     |     1    | Meatlovers |    Cheese    |         1        |
+|         3         |     102     |     1    | Meatlovers |    Chicken   |         1        |
+|         3         |     102     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         3         |     102     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         3         |     102     |     1    | Meatlovers |    Salami    |         1        |
+|         4         |     102     |     2    | Vegetarian | Tomato Sauce |         1        |
+|         4         |     102     |     2    | Vegetarian |    Peppers   |         1        |
+|         4         |     102     |     2    | Vegetarian |   Mushrooms  |         1        |
+|         4         |     102     |     2    | Vegetarian |    Cheese    |         1        |
+|         4         |     102     |     2    | Vegetarian |    Onions    |         1        |
+|         4         |     102     |     2    | Vegetarian |   Tomatoes   |         1        |
+|         5         |     103     |     1    | Meatlovers |     Bacon    |         1        |
+|         5         |     103     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         5         |     103     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         5         |     103     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         5         |     103     |     1    | Meatlovers |    Chicken   |         1        |
+|         5         |     103     |     1    | Meatlovers |    Cheese    |         0        |
+|         5         |     103     |     1    | Meatlovers |    Salami    |         1        |
+|         5         |     103     |     1    | Meatlovers |     Beef     |         1        |
+|         6         |     103     |     1    | Meatlovers |     Beef     |         1        |
+|         6         |     103     |     1    | Meatlovers |    Salami    |         1        |
+|         6         |     103     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         6         |     103     |     1    | Meatlovers |    Cheese    |         0        |
+|         6         |     103     |     1    | Meatlovers |    Chicken   |         1        |
+|         6         |     103     |     1    | Meatlovers |     Bacon    |         1        |
+|         6         |     103     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         6         |     103     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         7         |     103     |     2    | Vegetarian |   Tomatoes   |         1        |
+|         7         |     103     |     2    | Vegetarian |    Peppers   |         1        |
+|         7         |     103     |     2    | Vegetarian |    Cheese    |         0        |
+|         7         |     103     |     2    | Vegetarian |    Onions    |         1        |
+|         7         |     103     |     2    | Vegetarian | Tomato Sauce |         1        |
+|         7         |     103     |     2    | Vegetarian |   Mushrooms  |         1        |
+|         8         |     104     |     1    | Meatlovers |     Bacon    |         2        |
+|         8         |     104     |     1    | Meatlovers |     Beef     |         1        |
+|         8         |     104     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         8         |     104     |     1    | Meatlovers |    Cheese    |         1        |
+|         8         |     104     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         8         |     104     |     1    | Meatlovers |    Salami    |         1        |
+|         8         |     104     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         8         |     104     |     1    | Meatlovers |    Chicken   |         1        |
+|         10        |     105     |     2    | Vegetarian |    Onions    |         1        |
+|         10        |     105     |     2    | Vegetarian | Tomato Sauce |         1        |
+|         10        |     105     |     2    | Vegetarian |   Tomatoes   |         1        |
+|         10        |     105     |     2    | Vegetarian |    Cheese    |         1        |
+|         10        |     105     |     2    | Vegetarian |   Mushrooms  |         1        |
+|         10        |     105     |     2    | Vegetarian |    Peppers   |         1        |
+|         11        |     102     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         11        |     102     |     1    | Meatlovers |    Cheese    |         1        |
+|         11        |     102     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         11        |     102     |     1    | Meatlovers |    Chicken   |         1        |
+|         11        |     102     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         11        |     102     |     1    | Meatlovers |     Bacon    |         1        |
+|         11        |     102     |     1    | Meatlovers |    Salami    |         1        |
+|         11        |     102     |     1    | Meatlovers |     Beef     |         1        |
+|         13        |     104     |     1    | Meatlovers |    Salami    |         1        |
+|         13        |     104     |     1    | Meatlovers |     Bacon    |         1        |
+|         13        |     104     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         13        |     104     |     1    | Meatlovers |   Mushrooms  |         1        |
+|         13        |     104     |     1    | Meatlovers |    Chicken   |         1        |
+|         13        |     104     |     1    | Meatlovers |   BBQ Sauce  |         1        |
+|         13        |     104     |     1    | Meatlovers |    Cheese    |         1        |
+|         13        |     104     |     1    | Meatlovers |     Beef     |         1        |
+|         14        |     104     |     1    | Meatlovers |   BBQ Sauce  |         0        |
+|         14        |     104     |     1    | Meatlovers |     Beef     |         1        |
+|         14        |     104     |     1    | Meatlovers |   Pepperoni  |         1        |
+|         14        |     104     |     1    | Meatlovers |    Cheese    |         2        |
+|         14        |     104     |     1    | Meatlovers |     Bacon    |         2        |
+|         14        |     104     |     1    | Meatlovers |   Mushrooms  |         0        |
+|         14        |     104     |     1    | Meatlovers |    Salami    |         1        |
+|         14        |     104     |     1    | Meatlovers |    Chicken   |         1        |
+
+Following that, first, a ```SUM``` aggregate function was used to calculate the total quantity of each ingredient used in all delivered pizzas. An *alias* of ```ingredient_frequency``` was given to provide a more descriptive column name. Second, a ```GROUP BY``` statement was used to arrange the results into groups according to the name of the topping. Lastly, an ```ORDER BY``` statement was used to sort the results according to the frequency of each ingredient in descending order which puts the most used ingredient at the top.
+
 #### Output:
 | topping_name | ingredient_frequency |
 |:------------:|:--------------------:|
@@ -1489,6 +1771,7 @@ ON x.order_id=y.order_id
 WHERE y.cancellation = '';
 ```
 #### Explanation:
+To determine Pizza Runner's current total profit based on the given prices, first, a ```CASE``` expression was used to set the condition of associating the type of pizza with an ID of 1 with the price of $12 and the type of pizza with an ID of 2 with the price of $10. An *alias* of ```total_profit``` was given to provide a more descriptive column name for the results. Second, a ```SUM``` aggregate function is then used to calculate the total amount for each type of pizza ordered by customers. Third, a ```JOIN``` clause was used to combine both the ```cleaned_customer_orders``` table and the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to utilize the Pizza ID in the condition for the ```CASE``` expression and to later filter the results according to the ```cancellation``` column. Lastly, a ```WHERE``` clause was used to filter the results according to orders that were only successfully delivered and did not undergo any cancellation.
 
 #### Output:
 | total_profit |
@@ -1506,13 +1789,13 @@ Based from the output of the query, it can be observed that Pizza Runner had att
 ```sql
 WITH extra_count AS (
   SELECT
-      x.customer_order_id,
-      COUNT(x.topping_id) AS num_extras
-  FROM extras x
-  JOIN cleaned_customer_orders y
-  ON x.customer_order_id=y.customer_order_id
-  GROUP BY x.customer_order_id
+      customer_order_id,
+      COUNT(topping_id) AS num_extras
+  FROM extras
+  GROUP BY customer_order_id
 )
+
+
 
 SELECT
     SUM(
@@ -1537,6 +1820,17 @@ ON x.order_id=z.order_id
 WHERE z.cancellation = '';
 ```
 #### Explanation:
+
+To determine Pizza Runner's current total profit based on the change that there was an additional $1 for any extra toppings, first, a CTE labeled ```extra_count``` was used consisting of a ```COUNT``` aggregate function and a ```GROUP BY``` statement. First, a ```COUNT``` aggregate function was used to count the total number of times a particular topping was requested to be added on their order. An *alias* of ```num_extras``` was given to provide a more descriptive column name for the results. Second, a ```GROUP BY``` statement was then used to arrange the results into groups according to the ```customer_order_id``` column. This CTE then generates a list of the total number of times a topping was requested to be added in their order. This query then produces the following results:
+
+| customer_order_id | num_extras |
+|:-----------------:|:----------:|
+|         10        |      1     |
+|         14        |      2     |
+|         12        |      2     |
+|         8         |      1     |
+
+Following that, first, a nested ```CASE``` expression was used to set the condition of calculating the associated price and the additional charges for each extra topping for each ordered pizza. The outer ```CASE``` expression sets the first condition of when the Pizza ID has a value of 1, then it would proceed to an inner ```CASE``` expression that sets the condition of when an order ID matches an Order ID record in the resulting table of the ```extra_count``` CTE, it would then calculate the sum of the associated price of $12 and the additional $1 charge for each extra topping. Otherwise, if the order has no extra toppings, it would only return its default price of $12. When the Pizza ID has a value of 2, it would also be evaluated with similar conditions. Second, a ```SUM``` aggregate function was then used to calculate the total amount for each type of pizza ordered by customers. An *alias* of ```total_profit``` was given to provide a more descriptive column anme for the results. Third, a ```LEFT JOIN``` was used to combine both the ```cleaned_customer_orders``` table and the resulting table of the ```extra_count``` CTE based on their related column ```customer_order_id``` to display the ```customer_order_id```column and the number of times a topping was requested to be added to an order. This is to ensure that all results will be displayed even if there were no requested extra toppings. Another ```JOIN``` clause was also used to combine the ```cleaned_customer_orders``` table with the ```cleaned_runner_orders``` table to later filter the results using the ```cancellation``` column. In contrast to the ```LEFT JOIN``` clause, an ```INNER JOIN``` was used to ensure that only records that match the condition in the ```WHERE``` clause would be displayed. Lastly, a ```WHERE``` clause was used to filter the results according to orders that were only successfully delivered and did not undergo any cancellation.
 
 #### Output:
 | total_profit |
@@ -1573,7 +1867,7 @@ VALUES
   (10, 1, 5, 'Excellent and professional service. Highly recommend.');
 ```
 #### Explanation:
-<!-- orders 6 and 9 were not included. only delivered orders will have ratings. -->
+To create a new table for the runner rating system, first, the ```DROP TABLE IF EXISTS``` statement was used to initially check if a ```runner_ratings``` table already exists. If it does, it would be dropped. Otherwise, the action of dropping the table would simply be skipped. Second, the ```CREATE TABLE``` statement was then used to create a new table named ```runner_ratings``` in the database. The specified parameters include an Order ID column of integer data type, a Runner ID column of integer data type, a Rating column of integer data type to accommodate the "1-5" rating system, and a Comment column of text data type which would include any additional comments that customers would want to deliver to the Pizza Runner HQ. Third, the ```INSERT INTO``` statement was then used to insert new records into the ```runner_ratings``` table. Note that orders with the ID of 6 and 9 do not have any ratings nor comments since they were cancelled.
 
 #### Output:
 | order_id | runner_id | rating |                                     comment                                     |
@@ -1623,6 +1917,7 @@ GROUP BY x.customer_id, x.order_id, y.runner_id, y.rating, x.order_time, z.picku
 ORDER BY x.order_id;
 ```
 #### Explanation:
+To combine all the necessary information, first, a ```DATE_PART``` function was used to extract the resulting minutes of the calculated difference between the time the customer made the order and the time the order was picked up by the runner from the Pizza Runner HQ. An *alias* of ```total_prep_time_mins``` was given to provide a more descriptive column name for the results. Second, the average speed was calculated by dividing the distance (in kilometers) travelled by the runner and the duration of the travel which was also converted from minutes to hours. The result of the division was then casted to numeric in order to round off the value into 2 decimal places. An *alias* of ```avg_speed_kph``` was given to provide a more descriptive column name for the results. Third, a ```COUNT``` aggregate function was used to count the total number of times a type of pizza was ordered. Fourth, 2 ```JOIN``` clauses were used where the first ```JOIN``` clause combines the ```cleaned_customer_orders``` table and the ```runner_ratings``` table based on their related column, ```order_id```, to display the Customer ID, Order ID, Runner ID, Rating, Order Time, Pickup Time, and to utilize the Pizza ID in the ```COUNT``` aggregate function. The second ```JOIN``` clause then combines the ```cleaned_customer_orders``` table with the ```cleaned_runner_orders``` table based on their related column, ```order_id```, to display the Duration and to also utilize the Pickup Time in the ```DATE_PART``` function, the Distance and Duration in calculating the average speed and the ```cancellation``` column in the ```WHERE``` clause. 
 
 #### Output:
 | customer_id | order_id | runner_id | rating |        order_time        |        pickup_time       | total_prep_time_mins | delivery_duration_mins | avg_speed_kph | total_num_pizza |

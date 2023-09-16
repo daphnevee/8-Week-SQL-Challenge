@@ -75,10 +75,47 @@ VALUES
 Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey. Try to keep it as short as possible - you may also want to run some sort of join to make your explanations a bit easier!
 #### Query:
 ```sql
+SELECT
+    x.customer_id,
+    y.plan_name,
+    y.price,
+    x.start_date
+FROM foodie_fi.subscriptions x
+JOIN foodie_fi.plans y
+ON x.plan_id=y.plan_id
+ORDER BY x.customer_id, y.plan_id;
 ```
 #### Explanation:
+To get a clear picture of each customer's onboarding journey, a ```JOIN``` clause was used to combine both the ```subscriptions``` table and the ```plans``` table based on their related column, ```plan_id```, to display the Customer ID and the Start Date details from the ```subscriptions``` table and the Plan Name and Price from the ```plans``` table. *Aliases* were also given, i.e. ```x``` for the ```subscriptions``` table and ```y``` for the ```plans``` table, so as to make the query more readable. Moreover, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the Customer ID and the Plan ID to better extract insights from an organized output.
+
 #### Output:
+| customer_id |   plan_name   |  price |        start_date        |
+|:-----------:|:-------------:|:------:|:------------------------:|
+|      1      |     trial     |  0.00  | 2020-08-01T00:00:00.000Z |
+|      1      | basic monthly |  9.90  | 2020-08-08T00:00:00.000Z |
+|      2      |     trial     |  0.00  | 2020-09-20T00:00:00.000Z |
+|      2      |   pro annual  | 199.00 | 2020-09-27T00:00:00.000Z |
+|      11     |     trial     |  0.00  | 2020-11-19T00:00:00.000Z |
+|      11     |     churn     |  null  | 2020-11-26T00:00:00.000Z |
+|      13     |     trial     |  0.00  | 2020-12-15T00:00:00.000Z |
+|      13     | basic monthly |  9.90  | 2020-12-22T00:00:00.000Z |
+|      13     |  pro monthly  |  19.90 | 2021-03-29T00:00:00.000Z |
+|      15     |     trial     |  0.00  | 2020-03-17T00:00:00.000Z |
+|      15     |  pro monthly  |  19.90 | 2020-03-24T00:00:00.000Z |
+|      15     |     churn     |  null  | 2020-04-29T00:00:00.000Z |
+|      16     |     trial     |  0.00  | 2020-05-31T00:00:00.000Z |
+|      16     | basic monthly |  9.90  | 2020-06-07T00:00:00.000Z |
+|      16     |   pro annual  | 199.00 | 2020-10-21T00:00:00.000Z |
+|      18     |     trial     |  0.00  | 2020-07-06T00:00:00.000Z |
+|      18     |  pro monthly  |  19.90 | 2020-07-13T00:00:00.000Z |
+|      19     |     trial     |  0.00  | 2020-06-22T00:00:00.000Z |
+|      19     |  pro monthly  |  19.90 | 2020-06-29T00:00:00.000Z |
+|      19     |   pro annual  | 199.00 | 2020-08-29T00:00:00.000Z |
+
 #### Answer:
+<!--
+Based from the output of the query, it can be observed that Customer 1 
+-->
 
 - - - -
 ### B. Data Analysis Questions <a href="anchor" id="data-analysis-questions"></a>

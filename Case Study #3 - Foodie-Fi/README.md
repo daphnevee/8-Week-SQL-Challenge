@@ -88,6 +88,8 @@ ORDER BY x.customer_id, y.plan_id;
 #### Explanation:
 To get a clear picture of each customer's onboarding journey, a ```JOIN``` clause was used to combine both the ```subscriptions``` table and the ```plans``` table based on their related column, ```plan_id```, to display the Customer ID and the Start Date details from the ```subscriptions``` table and the Plan Name and Price from the ```plans``` table. *Aliases* were also given, i.e. ```x``` for the ```subscriptions``` table and ```y``` for the ```plans``` table, so as to make the query more readable. Moreover, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the Customer ID and the Plan ID to better extract insights from an organized output.
 
+NOTE: The schema for the ```subscriptions``` table was slightly modified to match the given table in the instructions.
+
 #### Output:
 | customer_id |   plan_name   |  price |        start_date        |
 |:-----------:|:-------------:|:------:|:------------------------:|

@@ -265,10 +265,38 @@ Based from the output of the query, it can be observed that about 9% of customer
 6. What is the number and percentage of customer plans after their initial free trial?
 #### Query:
 ```sql
+WITH customer_previous_plans AS (
+  SELECT 
+    x.customer_id,
+    y.plan_name,
+    x.start_date,
+    LAG(x.plan_id, 1) OVER (PARTITION BY x.customer_id ORDER BY x.start_date) AS previous_plan
+  FROM foodie_fi.subscriptions x
+  JOIN foodie_fi.plans y
+  ON x.plan_id=y.plan_id
+  ORDER BY x.customer_id
+)
+
+SELECT
+    plan_name,
+    COUNT(DISTINCT customer_id) AS num_of_customers,
+    ROUND(100 * (COUNT(DISTINCT customer_id))::DECIMAL / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_percentage
+FROM customer_previous_plans
+WHERE previous_plan = 0
+GROUP BY plan_name;
 ```
 #### Explanation:
+
 #### Output:
+|   plan_name   | num_of_customers | customer_percentage |
+|:-------------:|:----------------:|:-------------------:|
+| basic monthly |        546       |        54.60        |
+|     churn     |        92        |         9.20        |
+|   pro annual  |        37        |         3.70        |
+|  pro monthly  |        325       |        32.50        |
+
 #### Answer:
+Based from the output of the query, it can be observed that among the subscription plans offered by Foodie-Fi, the highest percentage of 54.60% of customers purchased a basic monthly subscription plan after their initial trial, followed by 32.50% of customers that purchased a pro monthly subscription plan. On the other hand, about 9.20% of customers churned after their trial. The least percentage of 3.70% of customers purchased a pro annual subscription plan after their trial.
 
 - - - -
 

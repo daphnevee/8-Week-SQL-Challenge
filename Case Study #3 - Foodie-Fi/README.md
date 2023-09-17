@@ -224,7 +224,7 @@ WHERE plan_id = 4;
 |          307         |           30.70           |
 
 #### Answer:
-Based from the output of the query, it can be observed that about 30% of customers, which is a total of 307 customers
+Based from the output of the query, it can be observed that about 30.70% of customers, which is a total of 307 customers, churned from their subscription plan with Foodie-Fi's streaming service.
 
 - - - -
 

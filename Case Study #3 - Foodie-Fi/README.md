@@ -248,6 +248,9 @@ WHERE plan_id = 0 AND next_plan = 4;
 ```
 
 #### Explanation:
+<!--
+https://www.postgresqltutorial.com/postgresql-window-function/postgresql-lead-function/#:~:text=PostgreSQL%20LEAD()%20function%20provide,next%20row%2C%20and%20so%20on.
+-->
 
 #### Output:
 | customer_churn_count | customer_churn_percentage |

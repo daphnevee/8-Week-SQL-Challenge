@@ -211,10 +211,8 @@ Based from the output, it can be observed that only 8 customers signed up after 
 #### Query:
 ```sql
 SELECT
-    COUNT(customer_id) AS customer_churn_count,
-    ROUND(
-      100 * COUNT(DISTINCT customer_id) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions) 
-    , 2) AS customer_churn_percentage
+    COUNT(DISTINCT customer_id) AS customer_churn_count,
+    ROUND(100 * (COUNT(DISTINCT customer_id)::DECIMAL) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_churn_percentage
 FROM foodie_fi.subscriptions
 WHERE plan_id = 4;
 ```
@@ -223,19 +221,41 @@ WHERE plan_id = 4;
 #### Output:
 | customer_churn_count | customer_churn_percentage |
 |:--------------------:|:-------------------------:|
-|          307         |           30.00           |
+|          307         |           30.70           |
 
 #### Answer:
+Based from the output of the query, it can be observed that about 30% of customers, which is a total of 307 customers
 
 - - - -
 
 5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?
 #### Query:
 ```sql
+WITH customer_plan AS (
+  SELECT
+      customer_id,
+      plan_id,
+      start_date,
+      LEAD(plan_id, 1) OVER(PARTITION BY customer_id ORDER BY customer_id) next_plan
+  FROM foodie_fi.subscriptions
+)
+
+SELECT
+  COUNT(DISTINCT customer_id) AS customer_churn_count,
+  ROUND(100 * (COUNT(DISTINCT customer_id))::DECIMAL / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions)) AS customer_churn_percentage
+FROM customer_plan
+WHERE plan_id = 0 AND next_plan = 4;
 ```
+
 #### Explanation:
+
 #### Output:
+| customer_churn_count | customer_churn_percentage |
+|:--------------------:|:-------------------------:|
+|          92          |             9             |
+
 #### Answer:
+Based from the output of the query, it can be observed that about 9% of customers churned straight after their free trial with Foodie-Fi's streaming services.
 
 - - - -
 

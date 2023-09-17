@@ -149,6 +149,7 @@ SELECT
 FROM foodie_fi.subscriptions x
 JOIN foodie_fi.plans y
 ON x.plan_id=y.plan_id
+WHERE x.plan_id = 0
 GROUP BY month_id, month_name
 ORDER BY month_id;
 ```
@@ -158,30 +159,51 @@ ORDER BY month_id;
 #### Output:
 | month_id | month_name | monthly_distribution |
 |:--------:|:----------:|:--------------------:|
-|     1    |   January  |          164         |
-|     2    |  February  |          137         |
-|     3    |    March   |          162         |
-|     4    |    April   |          149         |
-|     5    |     May    |          139         |
-|     6    |    June    |          136         |
-|     7    |    July    |          147         |
-|     8    |   August   |          161         |
-|     9    |  September |          158         |
-|    10    |   October  |          164         |
-|    11    |  November  |          146         |
-|    12    |  December  |          151         |
+|     1    |   January  |          88          |
+|     2    |  February  |          68          |
+|     3    |    March   |          94          |
+|     4    |    April   |          81          |
+|     5    |     May    |          88          |
+|     6    |    June    |          79          |
+|     7    |    July    |          89          |
+|     8    |   August   |          88          |
+|     9    |  September |          87          |
+|    10    |   October  |          79          |
+|    11    |  November  |          75          |
+|    12    |  December  |          84          |
 
 #### Answer:
+Based from the output of the query, it can be observed that the month of March has the highest monthly distribution with a total of 94 customer sign-ups for Foodie-Fi's 7 day free trial. The month of July follows a close second with a total of 89 customer sign-ups, with the months of January, May, and August with a total of 88 customer sign-ups each. On the other hand, the month of February has the lowest monthly distribution with a total of 68 customer sign-ups.
 
 - - - -
 
 3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name
 #### Query:
 ```sql
+SELECT
+  x.plan_id,
+  y.plan_name,
+  COUNT(x.plan_id) AS count_of_events
+FROM foodie_fi.subscriptions x
+JOIN foodie_fi.plans y
+ON x.plan_id=y.plan_id
+WHERE DATE_PART('Year', x.start_date) > 2020
+GROUP BY x.plan_id, y.plan_name
+ORDER BY x.plan_id;
 ```
+
 #### Explanation:
+
 #### Output:
+| plan_id |   plan_name   | count_of_events |
+|:-------:|:-------------:|:---------------:|
+|    1    | basic monthly |        8        |
+|    2    |  pro monthly  |        60       |
+|    3    |   pro annual  |        63       |
+|    4    |     churn     |        71       |
+
 #### Answer:
+Based from the output, it can be observed that only 8 customers signed up after the year 2020 for the basic monthly plan of Foodie-Fi's streaming service, while 60 customers purchased the pro monthly subscription plan and 63 customers purchased the pro annual subscription plan. On the contrary, it can be seen that a large total of 71 customers opted to discontinue their subscription plan with Foodie-Fi which can be a cause for concern.
 
 - - - -
 

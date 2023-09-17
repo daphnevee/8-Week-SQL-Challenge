@@ -210,9 +210,21 @@ Based from the output, it can be observed that only 8 customers signed up after 
 4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?
 #### Query:
 ```sql
+SELECT
+    COUNT(customer_id) AS customer_churn_count,
+    ROUND(
+      100 * COUNT(DISTINCT customer_id) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions) 
+    , 2) AS customer_churn_percentage
+FROM foodie_fi.subscriptions
+WHERE plan_id = 4;
 ```
 #### Explanation:
+
 #### Output:
+| customer_churn_count | customer_churn_percentage |
+|:--------------------:|:-------------------------:|
+|          307         |           30.00           |
+
 #### Answer:
 
 - - - -

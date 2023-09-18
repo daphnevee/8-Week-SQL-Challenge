@@ -352,10 +352,21 @@ Based from the output of the query, it can be observed that on or before the 31s
 8. How many customers have upgraded to an annual plan in 2020?
 #### Query:
 ```sql
+SELECT
+     COUNT(DISTINCT customer_id) AS annual_plan_upgrade_count
+FROM foodie_fi.subscriptions
+WHERE plan_id = 3 AND DATE_PART('Year', start_date) = '2020';
 ```
+
 #### Explanation:
+
 #### Output:
+| annual_plan_upgrade_count |
+|:-------------------------:|
+|            195            |
+
 #### Answer:
+Based from the output of the query, it can be observed that a total of 195 customers upgraded to an annual subscription plan in 2020.
 
 - - - -
 

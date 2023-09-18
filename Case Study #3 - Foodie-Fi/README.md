@@ -83,11 +83,11 @@ SELECT
 FROM foodie_fi.subscriptions x
 JOIN foodie_fi.plans y
 ON x.plan_id=y.plan_id
-WHERE x.customer_id BETWEEN 1 AND 8
+WHERE x.customer_id IN (1, 2, 11, 13, 15, 16, 18, 19)
 ORDER BY x.customer_id, y.plan_id;
 ```
 #### Explanation:
-To get a clear picture of each customer's onboarding journey, a ```JOIN``` clause was used to combine both the ```subscriptions``` table and the ```plans``` table based on their related column, ```plan_id```, to display the Customer ID and the Start Date details from the ```subscriptions``` table and the Plan Name and Price from the ```plans``` table. *Aliases* were also given, i.e. ```x``` for the ```subscriptions``` table and ```y``` for the ```plans``` table, so as to make the query more readable. In addition to that, a ```WHERE``` clause is applied to filter the results to show only the details for customers with the ID of 1 through 8 given that the new schema appears to have been modified to have a total number of customer records ranging up to 1000 compared to the given table in the instructions for the Case Study. An ```ORDER BY``` statement was then also used to organize the results by default in ascending order according to the Customer ID and the Plan ID.
+To get a clear picture of each customer's onboarding journey, a ```JOIN``` clause was used to combine both the ```subscriptions``` table and the ```plans``` table based on their related column, ```plan_id```, to display the Customer ID and the Start Date details from the ```subscriptions``` table and the Plan Name and Price from the ```plans``` table. *Aliases* were also given, i.e. ```x``` for the ```subscriptions``` table and ```y``` for the ```plans``` table, so as to make the query more readable. In addition to that, a ```WHERE``` clause is applied to filter the results to show only details for customers with specifically the IDs of 1, 2, 11, 13, 15, 16, 18, and 19 to match the given table in the instructions for the Case Study. An ```ORDER BY``` statement was then also used to organize the results by default in ascending order according to the Customer ID and the Plan ID.
 
 #### Output:
 | customer_id |   plan_name   |  price |        start_date        |
@@ -96,25 +96,32 @@ To get a clear picture of each customer's onboarding journey, a ```JOIN``` claus
 |      1      | basic monthly |  9.90  | 2020-08-08T00:00:00.000Z |
 |      2      |     trial     |  0.00  | 2020-09-20T00:00:00.000Z |
 |      2      |   pro annual  | 199.00 | 2020-09-27T00:00:00.000Z |
-|      3      |     trial     |  0.00  | 2020-01-13T00:00:00.000Z |
-|      3      | basic monthly |  9.90  | 2020-01-20T00:00:00.000Z |
-|      4      |     trial     |  0.00  | 2020-01-17T00:00:00.000Z |
-|      4      | basic monthly |  9.90  | 2020-01-24T00:00:00.000Z |
-|      4      |     churn     |  null  | 2020-04-21T00:00:00.000Z |
-|      5      |     trial     |  0.00  | 2020-08-03T00:00:00.000Z |
-|      5      | basic monthly |  9.90  | 2020-08-10T00:00:00.000Z |
-|      6      |     trial     |  0.00  | 2020-12-23T00:00:00.000Z |
-|      6      | basic monthly |  9.90  | 2020-12-30T00:00:00.000Z |
-|      6      |     churn     |  null  | 2021-02-26T00:00:00.000Z |
-|      7      |     trial     |  0.00  | 2020-02-05T00:00:00.000Z |
-|      7      | basic monthly |  9.90  | 2020-02-12T00:00:00.000Z |
-|      7      |  pro monthly  |  19.90 | 2020-05-22T00:00:00.000Z |
-|      8      |     trial     |  0.00  | 2020-06-11T00:00:00.000Z |
-|      8      | basic monthly |  9.90  | 2020-06-18T00:00:00.000Z |
-|      8      |  pro monthly  |  19.90 | 2020-08-03T00:00:00.000Z |
-
+|      11     |     trial     |  0.00  | 2020-11-19T00:00:00.000Z |
+|      11     |     churn     |  null  | 2020-11-26T00:00:00.000Z |
+|      13     |     trial     |  0.00  | 2020-12-15T00:00:00.000Z |
+|      13     | basic monthly |  9.90  | 2020-12-22T00:00:00.000Z |
+|      13     |  pro monthly  |  19.90 | 2021-03-29T00:00:00.000Z |
+|      15     |     trial     |  0.00  | 2020-03-17T00:00:00.000Z |
+|      15     |  pro monthly  |  19.90 | 2020-03-24T00:00:00.000Z |
+|      15     |     churn     |  null  | 2020-04-29T00:00:00.000Z |
+|      16     |     trial     |  0.00  | 2020-05-31T00:00:00.000Z |
+|      16     | basic monthly |  9.90  | 2020-06-07T00:00:00.000Z |
+|      16     |   pro annual  | 199.00 | 2020-10-21T00:00:00.000Z |
+|      18     |     trial     |  0.00  | 2020-07-06T00:00:00.000Z |
+|      18     |  pro monthly  |  19.90 | 2020-07-13T00:00:00.000Z |
+|      19     |     trial     |  0.00  | 2020-06-22T00:00:00.000Z |
+|      19     |  pro monthly  |  19.90 | 2020-06-29T00:00:00.000Z |
+|      19     |   pro annual  | 199.00 | 2020-08-29T00:00:00.000Z |
+trial -> basic monthly = 1 ✓
+trial -> pro annual = 2 ✓
+trial -> churn = 11
+trial -> basic monthly -> pro monthly = 13 ✓
+trial -> pro monthly -> churn = 15
+trial -> basic monthly -> pro annual = 16 ✓
+trial -> pro monthly = 18 ✓
+trial -> pro monthly -> pro annual = 19 ✓
 #### Answer:
-Based from the output of the query, it can be observed Customer 1 chose to sign up for an initial 7 day free trial of Foodie-Fi's streaming service on the 1st of August. It appears that Customer 1 was satisified with the streaming service because on the 8th of August, after the 7 day free trial, they immediately opted to purchase a basic monthly plan at the price of $9.90. The same behavior can also be observed from Customers 3 and 5 who signed up for the free trial and later purchased a basic monthly plan. Customer 2 also signed up for the initial 7 day free trial on the 20th of September and after a week, at the end of the trial, chose to purchase a pro annual subscription at the price of $199. As for Customers 7 and 8, they signed up for the free trial and after a week, purchased a basic monthly plan. Given that basic monthly customers have limited access to Foodie-Fi's streaming services, both customers decided to upgrade their current subscription plan to a pro monthly plan at the price of $19.90. Pro plan customers, compared to basic monthly plan customers, have no watch time limits and can also download videos for offline viewing. On the other hand, it can be observed that Customers 4 and 6 initially signed up for a free trial and later purchased a basic monthly plan but after a couple of months, they decided to cancel their subscription plan based on their churn plan records.
+Based from the output of the query, it can be observed Customer 1 chose to sign up for an initial 7 day free trial of Foodie-Fi's streaming service on the 1st of August. It appears that Customer 1 was satisified with the streaming service because on the 8th of August, after the 7 day free trial, they immediately opted to purchase a basic monthly plan at the price of $9.90. Customer 2 also signed up for the initial 7 day free trial on the 20th of September and after a week, at the end of the trial, chose to purchase a pro annual subscription at the price of $199. As for Customers 13 and 16, they each signed up for the free trial and after a week, purchased a basic monthly plan. Given that basic monthly customers have limited access to Foodie-Fi's streaming services, both customers decided to upgrade their current subscription plan to a pro monthly plan at the price of $19.90 and a pro annual plan at the price of $199, respectively. Pro plan customers, compared to basic monthly plan customers, have no watch time limits and can also download videos for offline viewing. Both Customers 18 and 19 also subscribed to a pro monthly plan after their 7 day free trial, but Customer 19 further upgraded to a pro annual plan. On the other hand, it can be observed that Customer 15 also subscribed to a pro monthly plan after their 7 day free trial but after a month, they decided to cancel their subscription plan, while Customer 11 immediately churned after their 7 day free trial based on their churn plan records.
 
 - - - -
 ### B. Data Analysis Questions <a href="anchor" id="data-analysis-questions"></a>
@@ -212,7 +219,7 @@ Based from the output, it can be observed that only 8 customers signed up after 
 ```sql
 SELECT
     COUNT(DISTINCT customer_id) AS customer_churn_count,
-    ROUND(100 * (COUNT(DISTINCT customer_id)::DECIMAL) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_churn_percentage
+    ROUND(100 * (COUNT(DISTINCT customer_id)::NUMERIC) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_churn_percentage
 FROM foodie_fi.subscriptions
 WHERE plan_id = 4;
 ```
@@ -242,7 +249,7 @@ WITH customer_plan AS (
 
 SELECT
   COUNT(DISTINCT customer_id) AS customer_churn_count,
-  ROUND(100 * (COUNT(DISTINCT customer_id))::DECIMAL / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions)) AS customer_churn_percentage
+  ROUND(100 * (COUNT(DISTINCT customer_id))::NUMERIC / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions)) AS customer_churn_percentage
 FROM customer_plan
 WHERE plan_id = 0 AND next_plan = 4;
 ```
@@ -280,7 +287,7 @@ WITH customer_previous_plans AS (
 SELECT
     plan_name,
     COUNT(DISTINCT customer_id) AS num_of_customers,
-    ROUND(100 * (COUNT(DISTINCT customer_id))::DECIMAL / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_percentage
+    ROUND(100 * (COUNT(DISTINCT customer_id))::NUMERIC / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_percentage
 FROM customer_previous_plans
 WHERE previous_plan = 0
 GROUP BY plan_name;

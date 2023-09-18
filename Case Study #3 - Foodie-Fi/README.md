@@ -310,10 +310,42 @@ Based from the output of the query, it can be observed that among the subscripti
 7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
 #### Query:
 ```sql
+WITH customer_plan AS (
+  SELECT
+      x.customer_id,
+      x.plan_id,
+      y.plan_name,
+      x.start_date,
+      ROW_NUMBER() OVER (PARTITION BY x.customer_id ORDER BY x.start_date DESC) AS most_recent_plan
+  FROM foodie_fi.subscriptions x
+  JOIN foodie_fi.plans y
+  ON x.plan_id=y.plan_id
+  WHERE x.start_date <= '2020-12-31'
+)
+
+SELECT
+  plan_id,
+  plan_name,
+  COUNT(DISTINCT customer_id) AS most_recent_plan,
+  ROUND(100 * (COUNT(DISTINCT customer_id))::NUMERIC / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_percentage
+FROM customer_plan
+WHERE latest_plan = 1
+GROUP BY plan_id, plan_name;
 ```
+
 #### Explanation:
+
 #### Output:
+| plan_id |   plan_name   | num_of_customers | customer_percentage |
+|:-------:|:-------------:|:----------------:|:-------------------:|
+|    0    |     trial     |        19        |         1.90        |
+|    1    | basic monthly |        224       |        22.40        |
+|    2    |  pro monthly  |        326       |        32.60        |
+|    3    |   pro annual  |        195       |        19.50        |
+|    4    |     churn     |        236       |        23.60        |
+
 #### Answer:
+Based from the output of the query, it can be observed that on or before the 31st of December of 2020, the highest percentage of 32.60% of Foodie-Fi customers were subscribed to a pro monthly plan. However, the second highest percentage of 23.60% is associated with churned customers. Following closely behind is a percentage of about 22.40% of Foodie-Fi customers were subscribed to a basic monthly plan. The least percentage of 1.90% of Foodie-Fi customers were signed up for the initial 7 day free trial plan of the streaming platform. 
 
 - - - -
 

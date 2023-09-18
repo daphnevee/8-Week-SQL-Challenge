@@ -373,10 +373,34 @@ Based from the output of the query, it can be observed that a total of 195 custo
 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 #### Query:
 ```sql
+WITH trial_plan AS (
+  SELECT *
+  FROM foodie_fi.subscriptions
+  WHERE plan_id = 0
+),
+
+annual_plan AS (
+  SELECT *
+  FROM foodie_fi.subscriptions
+  WHERE plan_id = 3
+)
+
+SELECT
+  ROUND(AVG(y.start_date - x.start_date), 0) AS avg_time_upgrade
+FROM trial_plan x
+JOIN annual_plan y
+ON x.customer_id=y.customer_id;
 ```
+
 #### Explanation:
+
 #### Output:
+| avg_time_upgrade |
+|:----------------:|
+|        105       |
+
 #### Answer:
+Based from the output of the query, it takes about an average of 105 days for a customer to upgrade to an annual plan subscription since they signed up for Foodie-Fi.
 
 - - - -
 
@@ -393,10 +417,29 @@ Based from the output of the query, it can be observed that a total of 195 custo
 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
 #### Query:
 ```sql
+WITH customer_plans AS (
+  SELECT
+      *,
+      LEAD(plan_id, 1) OVER (PARTITION BY customer_id ORDER BY start_date) AS next_plan
+  FROM foodie_fi.subscriptions
+  WHERE DATE_PART('Year', start_date) = '2020'
+)
+
+SELECT
+   COUNT(DISTINCT customer_id) AS downgrade_plan_count
+FROM customer_plans
+WHERE plan_id = 2 AND next_plan = 1;
 ```
+
 #### Explanation:
+
 #### Output:
+| downgrade_plan_count |
+|:--------------------:|
+|           0          |
+
 #### Answer:
+Based from the output of the query, it can be observed that none of the customers downgraded from a pro monthly plan to a basic monthly plan in 2020.
 
 - - - -
 

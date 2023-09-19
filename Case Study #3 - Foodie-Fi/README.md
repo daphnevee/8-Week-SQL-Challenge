@@ -407,11 +407,60 @@ Based from the output of the query, it takes about an average of 105 days for a 
 10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
 #### Query:
 ```sql
-```
-#### Explanation:
-#### Output:
-#### Answer:
+WITH trial_plan AS (
+  SELECT *
+  FROM foodie_fi.subscriptions
+  WHERE plan_id = 0
+),
 
+annual_plan AS (
+  SELECT *
+  FROM foodie_fi.subscriptions
+  WHERE plan_id = 3
+),
+
+thirty_day_period_plans AS (
+  SELECT 
+      x.customer_id,
+      x.plan_id AS trial_plan_id,
+      x.start_date AS trial_plan_start_date,
+      y.plan_id AS annual_plan_id_upgrade,
+      y.start_date AS annual_plan_start_date,
+      WIDTH_BUCKET(y.start_date - x.start_date, 0, 365, 12) AS thirty_day_period_upgrade
+  FROM trial_plan x
+  JOIN annual_plan y
+  ON x.customer_id=y.customer_id
+  ORDER BY x.customer_id
+)
+
+SELECT
+  CONCAT((thirty_day_period_upgrade - 1) * 30, '-', (thirty_day_period_upgrade * 30)) AS thirty_day_period_buckets,
+  COUNT(DISTINCT customer_id) AS customer_count_upgrade
+FROM thirty_day_period_plans
+GROUP BY thirty_day_period_upgrade
+ORDER BY thirty_day_period_upgrade;
+```
+
+#### Explanation:
+
+#### Output:
+| thirty_day_period_buckets | customer_count_upgrade |
+|:-------------------------:|:----------------------:|
+|            0-30           |           49           |
+|           30-60           |           24           |
+|           60-90           |           35           |
+|           90-120          |           35           |
+|          120-150          |           43           |
+|          150-180          |           37           |
+|          180-210          |           24           |
+|          210-240          |            4           |
+|          240-270          |            4           |
+|          270-300          |            1           |
+|          300-330          |            1           |
+|          330-360          |            1           |
+
+#### Answer:
+Based from the output of the query, it can be observed that about 49 customers chose to upgrade from a basic monthly plan to an annual plan within the 1st 30-day period, while 24 customers purchased an upgrade in the 2nd 30-day period. There was a slight increase in upgrading from a basic monthly plan to an annual plan among customers within the 3rd and 4th 30-day periods, each with a total of 35 customers. It further increased by the 5th 30-day period with a total of 43 customers. Followed by that, 37 customers upgraded within the 6th 30-day period and 24 customers upgraded within the 7th 30-day period. However, there was a huge decline of subscription plan upgrade around the latter part of the year. 
 - - - -
 
 11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?

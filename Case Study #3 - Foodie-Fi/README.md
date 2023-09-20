@@ -531,6 +531,14 @@ Example outputs for this table might look like the following:
 
 #### Query:
 ```sql
+CREATE TABLE payments (
+  customer_id INTEGER,
+  plan_id INTEGER,
+  plan_name VARCHAR(13),
+  payment_date DATE,
+  amount DECIMAL(5,2),
+  payment_order INTEGER
+);
 ```
 #### Explanation:
 #### Output:

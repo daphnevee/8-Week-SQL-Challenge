@@ -442,6 +442,7 @@ ORDER BY thirty_day_period_upgrade;
 ```
 
 #### Explanation:
+<!-- https://www.sqliz.com/postgresql-ref/width_bucket/ -->
 
 #### Output:
 | thirty_day_period_buckets | customer_count_upgrade |

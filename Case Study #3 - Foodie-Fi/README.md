@@ -531,14 +531,33 @@ Example outputs for this table might look like the following:
 
 #### Query:
 ```sql
-CREATE TABLE payments (
-  customer_id INTEGER,
-  plan_id INTEGER,
-  plan_name VARCHAR(13),
-  payment_date DATE,
-  amount DECIMAL(5,2),
-  payment_order INTEGER
+DROP TABLE IF EXISTS payments_2020;
+
+CREATE TABLE payments_2020 (
+  "customer_id" INTEGER,
+  "plan_id" INTEGER,
+  "plan_name" VARCHAR(13),
+  "payment_date" DATE,
+  "amount" DECIMAL(5,2),
+  "payment_order" INTEGER
 );
+
+INSERT INTO foodie_fi.payments_2020 (customer_id, plan_id, plan_name, payment_date, amount, payment_order)
+SELECT
+	x.customer_id,
+    x.plan_id,
+    y.plan_name,
+    x.start_date AS payment_date,
+    y.price AS amount,
+    ROW_NUMBER() OVER (PARTITION BY x.customer_id ORDER BY x.start_date) AS payment_order
+FROM foodie_fi.subscriptions x
+JOIN foodie_fi.plans y
+ON x.plan_id=y.plan_id
+WHERE DATE_PART('Year', x.start_date) = 2020 AND x.plan_id IN (1, 2, 3)
+ORDER BY x.customer_id;
+
+SELECT *
+FROM foodie_fi.payments_2020;
 ```
 #### Explanation:
 #### Output:

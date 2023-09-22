@@ -531,6 +531,7 @@ Example outputs for this table might look like the following:
 
 #### Query:
 ```sql
+<!--
 INSERT INTO foodie_fi.payments_2020 (customer_id, plan_id, plan_name, payment_date, amount, payment_order)
 SELECT
 	x.customer_id,
@@ -563,6 +564,7 @@ ORDER BY x.customer_id;
 
 -- SELECT *
 -- FROM foodie_fi.payments_2020;
+-->
 ```
 #### Explanation:
 #### Output:

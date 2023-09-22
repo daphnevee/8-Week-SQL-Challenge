@@ -531,7 +531,7 @@ Example outputs for this table might look like the following:
 
 #### Query:
 ```sql
-<!--
+<
 INSERT INTO foodie_fi.payments_2020 (customer_id, plan_id, plan_name, payment_date, amount, payment_order)
 SELECT
 	x.customer_id,
@@ -564,7 +564,30 @@ ORDER BY x.customer_id;
 
 -- SELECT *
 -- FROM foodie_fi.payments_2020;
--->
+
+
+-- progress! (actual recursive function)
+WITH RECURSIVE date_cte AS (
+  SELECT
+  	customer_id,
+  	plan_id,
+  	start_date AS payment_date
+  FROM foodie_fi.subscriptions
+  
+  UNION ALL
+  
+  SELECT
+  	customer_id,
+  	plan_id,
+  	(payment_date + INTERVAL '1 month')::DATE
+  FROM date_cte
+  WHERE DATE_PART('Year', payment_date) = '2020'
+)
+
+SELECT *
+FROM date_cte
+WHERE customer_id = 1 AND plan_id IN (1, 2, 3);
+
 ```
 #### Explanation:
 #### Output:

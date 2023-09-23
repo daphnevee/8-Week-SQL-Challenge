@@ -493,7 +493,7 @@ Based from the output of the query, it can be observed that none of the customer
 
 - - - -
 
-### C. Challenge Payment Question <a href="anchor" id="challenge-payment-question"></a>
+### C. Challenge Payment Question <a href="anchor" id="challenge-payment-question"></a> *skipped*
 The Foodie-Fi team wants you to create a new payments table for the year 2020 that includes amounts paid by each customer in the subscriptions table with the following requirements:
 
 * monthly payments always occur on the same day of month as the original start_date of any monthly paid plan
@@ -531,20 +531,31 @@ Example outputs for this table might look like the following:
 
 #### Query:
 ```sql
-<
-INSERT INTO foodie_fi.payments_2020 (customer_id, plan_id, plan_name, payment_date, amount, payment_order)
-SELECT
-	x.customer_id,
-    x.plan_id,
-    y.plan_name,
-    x.start_date AS payment_date,
-    y.price AS amount,
-    ROW_NUMBER() OVER (PARTITION BY x.customer_id ORDER BY x.start_date) AS payment_order
-FROM foodie_fi.subscriptions x
-JOIN foodie_fi.plans y
-ON x.plan_id=y.plan_id
-WHERE DATE_PART('Year', x.start_date) = 2020 AND x.plan_id IN (1, 2, 3) AND x.customer_id = 1
-ORDER BY x.customer_id;
+
+-- DROP TABLE IF EXISTS payments_2020; 
+
+-- CREATE TABLE payments_2020 (
+--   customer_id INTEGER,
+--   plan_id INTEGER,
+--   plan_name VARCHAR(13),
+--   payment_date DATE,
+--   amount DECIMAL(5,2),
+--   payment_order INTEGER
+-- );
+
+-- INSERT INTO foodie_fi.payments_2020 (customer_id, plan_id, plan_name, payment_date, amount, payment_order)
+-- SELECT
+-- 	x.customer_id,
+--     x.plan_id,
+--     y.plan_name,
+--     x.start_date AS payment_date,
+--     y.price AS amount,
+--     ROW_NUMBER() OVER (PARTITION BY x.customer_id ORDER BY x.start_date) AS payment_order
+-- FROM foodie_fi.subscriptions x
+-- JOIN foodie_fi.plans y
+-- ON x.plan_id=y.plan_id
+-- WHERE DATE_PART('Year', x.start_date) = 2020 AND x.plan_id IN (1, 2, 3) AND x.customer_id = 1
+-- ORDER BY x.customer_id;
 
 
 
@@ -567,26 +578,26 @@ ORDER BY x.customer_id;
 
 
 -- progress! (actual recursive function)
-WITH RECURSIVE date_cte AS (
-  SELECT
-  	customer_id,
-  	plan_id,
-  	start_date AS payment_date
-  FROM foodie_fi.subscriptions
-  
-  UNION ALL
-  
-  SELECT
-  	customer_id,
-  	plan_id,
-  	(payment_date + INTERVAL '1 month')::DATE
-  FROM date_cte
-  WHERE DATE_PART('Year', payment_date) = '2020'
-)
+-- WITH RECURSIVE date_cte AS (
+--   SELECT
+--   	customer_id,
+--   	plan_id,
+--   	start_date AS payment_date
+--   FROM foodie_fi.subscriptions
+--   
+--   UNION ALL
+--   
+--   SELECT
+--   	customer_id,
+--   	plan_id,
+--   	(payment_date + INTERVAL '1 month')::DATE
+--   FROM date_cte
+--   WHERE DATE_PART('Year', payment_date) = '2020'
+-- )
 
-SELECT *
-FROM date_cte
-WHERE customer_id = 1 AND plan_id IN (1, 2, 3);
+-- SELECT *
+-- FROM date_cte
+-- WHERE customer_id = 1 AND plan_id IN (1, 2, 3);
 
 ```
 #### Explanation:
@@ -597,49 +608,25 @@ WHERE customer_id = 1 AND plan_id IN (1, 2, 3);
 ### D. Outside The Box Questions <a href="anchor" id="outside-the-box-questions"></a>
 The following are open ended questions which might be asked during a technical interview for this case study - there are no right or wrong answers, but answers that make sense from both a technical and a business perspective make an amazing impression!
 1. How would you calculate the rate of growth for Foodie-Fi?
-#### Query:
-```sql
-```
-#### Explanation:
-#### Output:
 #### Answer:
+To calculate the rate of growth for Foodie-Fi, there are 2 possible metrics that can be considered: user acquisition growth rate and revenue growth rate. First, keeping track of the business' user acquisition growth rate is beneficial because it can help assess whether there is an upward trend or a declining trend overtime in the number of customers subscribing to Foodie-Fi's streaming service. This determines whether people are enjoying their usage of Foodie-Fi's streaming platform or not. Second, it is also important to assess whether Foodie-Fi's revenue has grown or shrunk over time, whether there is an increase or decrease of sales with the business. This can help determine the business' financial health. Overall, both growth rate metrics can help the Foodie-Fi team gain insight into the success of their business.
 
 - - - -
 
 2. What key metrics would you recommend Foodie-Fi management to track over time to assess performance of their overall business?
-#### Query:
-```sql
-```
-#### Explanation:
-#### Output:
 #### Answer:
 
 - - - -
 
 3. What are some key customer journeys or experiences that you would analyse further to improve customer retention?
-#### Query:
-```sql
-```
-#### Explanation:
-#### Output:
 #### Answer:
 
 - - - -
 
 4. If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
-#### Query:
-```sql
-```
-#### Explanation:
-#### Output:
 #### Answer:
 
 - - - -
 
 5. What business levers could the Foodie-Fi team use to reduce the customer churn rate? How would you validate the effectiveness of your ideas?
-#### Query:
-```sql
-```
-#### Explanation:
-#### Output:
 #### Answer:

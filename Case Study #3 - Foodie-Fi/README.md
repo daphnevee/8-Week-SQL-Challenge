@@ -493,7 +493,7 @@ Based from the output of the query, it can be observed that none of the customer
 
 - - - -
 
-### C. Challenge Payment Question <a href="anchor" id="challenge-payment-question"></a> *skipped*
+### C. Challenge Payment Question <a href="anchor" id="challenge-payment-question"></a> *-skipped for now-*
 The Foodie-Fi team wants you to create a new payments table for the year 2020 that includes amounts paid by each customer in the subscriptions table with the following requirements:
 
 * monthly payments always occur on the same day of month as the original start_date of any monthly paid plan

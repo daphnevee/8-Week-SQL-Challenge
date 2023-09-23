@@ -615,16 +615,19 @@ To calculate the rate of growth for Foodie-Fi, there are 2 possible metrics that
 
 2. What key metrics would you recommend Foodie-Fi management to track over time to assess performance of their overall business?
 #### Answer:
+Some key metrics I would recommend Foodie-Fi management to keep track of for performance assessment of their business include their monthly recurring revenue (MRR), annual recurring revenue (ARR), churn rate, revenue churn, and customer lifetime value (CLV). First, keeping track of their monthly recurring revenue (MRR) would be beneficial in gaining insight about the business' monthly revenue based on all active subscriptions. Second, keeping track of their annual recurring revenue (ARR) would also help the business obtain an overview of their yearly revenue based on all active subscriptions and see year-over-year trends in order to set goals for business growth. Third, churn rate would also be important to assess which would help Foodie-Fi management gain insight on the percentage of customers that terminate their subscription plans in a given billing period. This would also help Foodie-Fi identify whether their streaming platform has been gaining more subscribers or losing them, which can be a cause for concern. Foodie-Fi could also try to gather data on customers' reasons for churning to get an idea of key factors that contribute to their decision and further improve the business' future customer retention actions. Fourth, revenue churn can also be assessed by the Foodie-Fi management to determine the percentage of lost revenue from existing subscribers in a given period. This would help Foodie-Fi management gain an overview of the financial impact of customers that terminate their subscription plans with their service. Lastly, Foodie-Fi management can also assess customer lifetime value (CLV) which essentially determines customer loyalty and maximizes the value of every customer relationship with the business.
 
 - - - -
 
 3. What are some key customer journeys or experiences that you would analyse further to improve customer retention?
 #### Answer:
+I think it would be important to analyze customer journeys pertaining to those that churn or rather, those that terminate their subscription plans with Foodie-Fi's streaming service. It would be helpful for Foodie-Fi to improve customer retention by identifying why customers choose to churn after a particular subscription plan, whether they were currently subscribed to a trial plan, a basic plan, or a pro plan. This would help them determine what certain features that customers liked or disliked with each subscription plan in order to improve their overall customer experience and retention.
 
 - - - -
 
 4. If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
 #### Answer:
+
 
 - - - -
 

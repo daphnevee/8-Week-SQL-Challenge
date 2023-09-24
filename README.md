@@ -13,7 +13,7 @@ Case Study # | Title | Solution | Reference Link | Status
 :----------: | ----- | :------: | :------------: | :----:
 1 | Danny's Dinner | [Link](https://github.com/daphnevee/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/README.md) | [Link](https://8weeksqlchallenge.com/case-study-1/) | Completed
 2 | Pizza Runner | [Link](https://github.com/daphnevee/8-Week-SQL-Challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/README.md) | [Link](https://8weeksqlchallenge.com/case-study-2/) | Completed
-3 | Foodie-Fi | [Link](https://github.com/daphnevee/8-Week-SQL-Challenge/blob/main/Case%20Study%20%233%20-%20Foodie-Fi/README.md) | [Link](https://8weeksqlchallenge.com/case-study-3/) | Completed
+3 | Foodie-Fi | | [Link](https://8weeksqlchallenge.com/case-study-3/) | In progress
 4 | Data Bank | | [Link](https://8weeksqlchallenge.com/case-study-4/) | In progress
 5 | Data Mart | | [Link](https://8weeksqlchallenge.com/case-study-5/) 
 6 | Clique Bait | | [Link](https://8weeksqlchallenge.com/case-study-6/) 

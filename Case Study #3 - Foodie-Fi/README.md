@@ -627,7 +627,11 @@ I think it would be important to analyze customer journeys pertaining to those t
 
 4. If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
 #### Answer:
-
+Some of the questions I would include in the exit survey are:
+* Based on your overall experience, how satisfied are you with Foodie-Fi's streaming platform?
+* How likely will you recommend Foodie-Fi to your friends and colleagues?
+* What issues did you experience with Foodie-Fi's streaming service that prompted you to cancel your subscription plan?
+* How can we make our streaming services better? Please share any suggestions to improve the product.
 
 - - - -
 

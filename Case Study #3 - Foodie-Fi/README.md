@@ -324,8 +324,7 @@ To determine the number of customers that upgraded to an annual plan in the year
 Based from the output of the query, it can be observed that a total of 195 customers upgraded to an annual subscription plan in 2020.
 
 - - - -
-<!-- continue here! -->
-9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
+9. How many days on average does it take for a customer to upgrade to an annual plan from the day they join Foodie-Fi?
 #### Query:
 ```sql
 WITH trial_plan AS (
@@ -348,6 +347,7 @@ ON x.customer_id=y.customer_id;
 ```
 
 #### Explanation:
+To determine the average time it takes for a customer to upgrade to an annual plan, 2 CTEs were used. The 1st CTE labeled ```trial_plan``` was employed to display all of Foodie-Fi's customer records pertaining to those that joined the initial 7-day free trial as specified in the ```WHERE``` clause. The 2nd CTE labeled ```annual_plan``` was employed to display all of Foodie-Fi's customer records, this time, pertaining to those that purchased a pro annual subscription plan. The 2 tables produced by both CTEs were then combined through the use of a ```JOIN``` clause based on their related column, ```customer_id``` to calculate the average time it takes for a customer to upgrade to an annual plan from the day they joined Foodie-Fi. The starting date each customer purchased an annual plan is subtracted from the starting date they joined through the initial free trial, and then rounded off to the nearest whole number using the ```ROUND``` function. *Aliases* were also given, i.e. ```x``` for the ```trial_plan``` table, ```y``` for the ```annual_plan``` table, and ```avg_time_upgrade``` for the calculated average, to provide more descriptive column names for the results. 
 
 #### Output:
 | avg_time_upgrade |
@@ -397,7 +397,9 @@ ORDER BY thirty_day_period_upgrade;
 ```
 
 #### Explanation:
-<!-- https://www.sqliz.com/postgresql-ref/width_bucket/ -->
+Building upon the queries and results used in the previous question, to further breakdown the average results into 30-day periods, a ```WIDTH_BUCKET``` function was used. First, the 2 CTEs labeled as ```trial_plan``` and ```annual_plan``` were reused to display the records pertaining to customers that joined the initial free trial plan and those that purchased or upgraded to a pro annual plan. Second, a CTE labeled ```thirty_day_period_plans``` was added to establish the 30-day period buckets using the ```WIDTH_BUCKET``` function. The parameters include the range of 0-365 days throughout the year, which are then to be divided into 12 equal-width buckets, and to calculate the average time it takes for a customer to upgrade to an annual plan from the day they joined Foodie-Fi, the starting date of their initial free trial plan and their pro annual plan were subtracted from each other, and the results were then segregated according to each of the 12 30-day buckets. A ```JOIN``` clause was also used to combine both the ```trial_plan``` table and the ```annual_plan``` table based on their related column, ```customer_id```, to display the ID of the customer, the IDs of their trial and pro plans, and the starting date of their trial and pro plans. *Aliases* were also given, i.e. ```trial_plan_id``` for the first Plan ID, ```trial_plan_start_date``` for the first starting date, ```annual_plan_id_upgrade``` for the second Plan ID, and ```annual_plan_start_date``` for the second starting date. Lastly, an ```ORDER BY``` statement was also used to organize the results by default in ascending order according to the Customer ID.
+
+Followed by this, a ```CONCAT``` function was employed to organize the calculated 30-day period buckets as labels in the first column with an *alias* of ```thirty_day_period_buckets``` and a ```COUNT``` aggregate function was used to count the total number of unique customers that upgraded from an initial free trial plan to an annual plan within each of the 30-day periods. An *alias* of ```customer_count_upgrade``` was also given to provide a more descriptive column name for the results. A ```GROUP BY``` statement was also used to arrange the results into groups according to the 30-day period buckets. An ```ORDER BY``` statement was then used to organize the results by default in ascending order according to the 30-day period buckets as well.
 
 #### Output:
 | thirty_day_period_buckets | customer_count_upgrade |
@@ -437,6 +439,9 @@ WHERE plan_id = 2 AND next_plan = 1;
 ```
 
 #### Explanation:
+To determine the number of customers that downgraded from a pro monthly plan to a basic monthly plan in 2020, first, a CTE labeled ```customer_plans``` was employed to display all of the customers' purchased subscription plans alongside their next purchased plan within the year of 2020. A ```LEAD``` function was used to access each of the customers' succeeding purchased plan. An *alias* of ```next_plan``` was also given to provide a more descriptive column name for the results. A ```WHERE``` clause, together with a ```DATE_PART``` function, was used to filter the records according to the year 2020. 
+
+Followed by this, a ```COUNT``` aggregate function was then used to count the total number of unique customers that downgraded from a pro monthly plan to a basic monthly plan in 2020. An *alias* of ```downgrade_plan_count``` was given to provide a more descriptive column name for the results. Lastly, a ```WHERE``` clause was used to filter the records only according to customers that purchased a pro monthly plan, with an ID of 2, then later downgraded to a basic monthly plan, with an ID of 1.
 
 #### Output:
 | downgrade_plan_count |

@@ -20,56 +20,7 @@ Danny wants to gather insights about his customers, pertaining to their preferre
 4. [Outside The Box Questions](#outside-the-box-questions)
 
 ## Case Study Questions and Answers
-<!--
-CREATE SCHEMA foodie_fi;
-SET search_path = foodie_fi;
 
-CREATE TABLE plans (
-  plan_id INTEGER,
-  plan_name VARCHAR(13),
-  price DECIMAL(5,2)
-);
-
-INSERT INTO plans
-  (plan_id, plan_name, price)
-VALUES
-  ('0', 'trial', '0'),
-  ('1', 'basic monthly', '9.90'),
-  ('2', 'pro monthly', '19.90'),
-  ('3', 'pro annual', '199'),
-  ('4', 'churn', null);
-
-
-CREATE TABLE subscriptions (
-  customer_id INTEGER,
-  plan_id INTEGER,
-  start_date DATE
-);
-
-INSERT INTO subscriptions
-  (customer_id, plan_id, start_date)
-VALUES
-  ('1', '0', '2020-08-01'),
-  ('1', '1', '2020-08-08'),
-  ('2', '0', '2020-09-20'),
-  ('2',	'3', '2020-09-27'),
-  ('11', '0', '2020-11-19'),
-  ('11', '4', '2020-11-26'),
-  ('13', '0', '2020-12-15'),
-  ('13', '1', '2020-12-22'),
-  ('13', '2', '2021-03-29'),
-  ('15', '0', '2020-03-17'),
-  ('15', '2', '2020-03-24'),
-  ('15', '4', '2020-04-29'),
-  ('16', '0', '2020-05-31'),
-  ('16', '1', '2020-06-07'),
-  ('16', '3', '2020-10-21'),
-  ('18', '0', '2020-07-06'),
-  ('18', '2', '2020-07-13'),
-  ('19', '0', '2020-06-22'),
-  ('19', '2', '2020-06-29'),
-  ('19', '3', '2020-08-29');
--->
 ### A. Customer Journey <a href="anchor" id="customer-journey"></a>
 
 Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey. Try to keep it as short as possible - you may also want to run some sort of join to make your explanations a bit easier!
@@ -112,14 +63,7 @@ To get a clear picture of each customer's onboarding journey, a ```JOIN``` claus
 |      19     |     trial     |  0.00  | 2020-06-22T00:00:00.000Z |
 |      19     |  pro monthly  |  19.90 | 2020-06-29T00:00:00.000Z |
 |      19     |   pro annual  | 199.00 | 2020-08-29T00:00:00.000Z |
-trial -> basic monthly = 1 ✓
-trial -> pro annual = 2 ✓
-trial -> churn = 11
-trial -> basic monthly -> pro monthly = 13 ✓
-trial -> pro monthly -> churn = 15
-trial -> basic monthly -> pro annual = 16 ✓
-trial -> pro monthly = 18 ✓
-trial -> pro monthly -> pro annual = 19 ✓
+
 #### Answer:
 Based from the output of the query, it can be observed Customer 1 chose to sign up for an initial 7 day free trial of Foodie-Fi's streaming service on the 1st of August. It appears that Customer 1 was satisified with the streaming service because on the 8th of August, after the 7 day free trial, they immediately opted to purchase a basic monthly plan at the price of $9.90. Customer 2 also signed up for the initial 7 day free trial on the 20th of September and after a week, at the end of the trial, chose to purchase a pro annual subscription at the price of $199. As for Customers 13 and 16, they each signed up for the free trial and after a week, purchased a basic monthly plan. Given that basic monthly customers have limited access to Foodie-Fi's streaming services, both customers decided to upgrade their current subscription plan to a pro monthly plan at the price of $19.90 and a pro annual plan at the price of $199, respectively. Pro plan customers, compared to basic monthly plan customers, have no watch time limits and can also download videos for offline viewing. Both Customers 18 and 19 also subscribed to a pro monthly plan after their 7 day free trial, but Customer 19 further upgraded to a pro annual plan. On the other hand, it can be observed that Customer 15 also subscribed to a pro monthly plan after their 7 day free trial but after a month, they decided to cancel their subscription plan, while Customer 11 immediately churned after their 7 day free trial based on their churn plan records.
 
@@ -162,6 +106,7 @@ ORDER BY month_id;
 ```
 
 #### Explanation:
+To determine the monthly distribution of customers joining Foodie-Fi's trial plan, first, a ```DATE_PART``` function was used to extract the month values from the starting date records of each of the customers in order to set ID numbers for each month. An *alias* of ```month_id``` was given to provide a more descriptive column name for the results. Second, a ```TO_CHAR``` function was used to convert the month values from the starting date records of each of the customers to string in order to display the name of the months. An *alias* of ```month_name``` was given to provide a more descriptive column name for the results. Third, a ```COUNT``` aggregate function, in conjunction with a ```DISTINCT``` statement, was then used to count the total number of unique customers that joined Foodie-Fi's trial plan for each month. An *alias* of ```monthly_distribution``` was given to provide a more descriptive column name for the results. Fourth, a ```JOIN``` clause was used to combine both the ```subscriptions``` table and the ```plans``` table based on their related column, ```plan_id```, to display the extracted months from the starting date records and the total number of customers that joined the trial plan for each month. *Aliases* were also given, i.e. ```x``` for the ```subscriptions``` table and ```y``` for the ```plans``` table. Fifth, a ```WHERE``` clause was also used to filter the results according to only the customers that have joined the trial plan, with a plan ID of 0. Sixth, a ```GROUP BY``` statement was used to arrange the results into groups according to the IDs and the names of the months. Lastly, an ```ORDER BY``` statement was used to organize the results by default in ascending order according the IDs of the month.
 
 #### Output:
 | month_id | month_name | monthly_distribution |
@@ -200,6 +145,7 @@ ORDER BY x.plan_id;
 ```
 
 #### Explanation:
+To determine the event distribution for each plan after the year 2020, first, a ```COUNT``` aggregate function was used to count the total number of events for each plan. Second, a ```JOIN``` clause was used to combine both the ```subscriptions``` table and the ```plans``` table based on their related column, ```plan_id```, to display the IDs and names of Foodie-Fi's subscription plans as well as the event distribution for each plan. *Aliases* were also given, i.e. ```x``` for the ```subscriptions``` table and ```y``` for the ```plans``` table. Third, a ```WHERE``` clause, in conjunction with a ```DATE_PART``` function, was used to extract and filter the records according to the condition that the event occurred after the year 2020. Fourth, a ```GROUP BY``` statement was used to arrange the results into groups according to the IDs and names of the subscription plans. Lastly, an ```ORDER BY``` statement was used to organize the results by default in ascending order according to the IDs of the plans.
 
 #### Output:
 | plan_id |   plan_name   | count_of_events |
@@ -219,16 +165,17 @@ Based from the output, it can be observed that only 8 customers signed up after 
 ```sql
 SELECT
     COUNT(DISTINCT customer_id) AS customer_churn_count,
-    ROUND(100 * (COUNT(DISTINCT customer_id)::NUMERIC) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 2) AS customer_churn_percentage
+    ROUND(100 * (COUNT(DISTINCT customer_id)::NUMERIC) / (SELECT COUNT(DISTINCT customer_id) FROM foodie_fi.subscriptions), 1) AS customer_churn_percentage
 FROM foodie_fi.subscriptions
 WHERE plan_id = 4;
 ```
 #### Explanation:
+To determine the customer count and percentage of those who have churned, first, a ```COUNT``` aggregate function, together with a ```DISTINCT``` statement, was used to count the total number of unique customers that have churned. An *alias* of ```customer_churn_count``` was given to provide a more descriptive column name for the results. Second, the customer churn percentage was calculated by dividing the total number of unique customers that have churned by the overall total number of unique customers of Foodie-Fi, and then multipled by 100. A ```ROUND``` function was also used to round off the results to 1 decimal place. An *alias* of ```customer_churn_percentage``` was given to provide a more descriptive column name for the results. Lastly, a ```WHERE``` clause was used to filter the records according to only customers that have churned which are assigned the Plan ID of 4.
 
 #### Output:
 | customer_churn_count | customer_churn_percentage |
 |:--------------------:|:-------------------------:|
-|          307         |           30.70           |
+|          307         |           30.7            |
 
 #### Answer:
 Based from the output of the query, it can be observed that about 30.70% of customers, which is a total of 307 customers, churned from their subscription plan with Foodie-Fi's streaming service.
@@ -255,9 +202,10 @@ WHERE plan_id = 0 AND next_plan = 4;
 ```
 
 #### Explanation:
-<!--
-https://www.postgresqltutorial.com/postgresql-window-function/postgresql-lead-function/#:~:text=PostgreSQL%20LEAD()%20function%20provide,next%20row%2C%20and%20so%20on.
--->
+To determine the customer count and percentage of those that have churned straight after their initial free trial, first, a CTE labeled ```customer_plan``` was established to show each of the customers current subscription plan followed by their next plan with the use of a ```LEAD``` function. The ```LEAD``` function allows access to the data of next rows at a specified physical offset, so as to determine which of the customers churned straight after their initial free trial plan. An *alias* of ```next_plan``` was also given to provide a more descriptive column name for the results. 
+
+Followed by this, first, a ```COUNT``` aggregate function, together with a ```DISTINCT``` statement, was used to count the total number of unique customers that have churned straight after their initial free trial plan. An *alias* of ```customer_churn_count``` was given to provide a more descriptive column name for the results. Second, to calculate the customer percentage, the total number of unique customers that churned after their trial plan was divided by the overall total number of unique customers of Foodie-Fi, then multipled by 100. A ```ROUND``` function was then used to round off the result to the nearest whole number. An *alias* of ```customer_churn_percentage``` was given to provide a more descriptive column name for the results. Lastly, a ```WHERE``` clause was used to filter the results according to customers that churned straight after their initial free trial plan, with the Plan IDs of 0 and 4.
+
 
 #### Output:
 | customer_churn_count | customer_churn_percentage |
@@ -293,6 +241,9 @@ WHERE previous_plan = 0
 GROUP BY plan_name;
 ```
 #### Explanation:
+To determine the count and percentage of customer plans after their initial free trial, first, a CTE labeled ```customer_previous_plans``` was established to display each of the customers current subscription plan as well as their previous plan with the use of a ```LAG``` function. The ```LAG``` function allows access to the data of previous rows at a specified physical offset. An *alias* of ```previous_plan``` was also given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also used to combine both the ```subscriptions``` table and the ```plans``` table based on their related column, ```plan_id```, to the IDs of the customers, the name of their current and previous subscription plans, as well as the starting date they purchased the plan. *Aliases* were also given, i.e. ```x``` for the ```subscriptions``` table and ```y``` for the ```plans``` table. Lastly, an ```ORDER BY``` statement was used to organize the results by default in ascending order according to the Customer ID.
+
+Followed by this, a ```COUNT``` aggregate function was used to count the total number of unique customers for each plan that initially joined Foodie-Fi's trial plan. An *alias* of ```num_of_customers``` was given to provide a more descriptive column name for the results. Then, to calculate the percentage of customer plans after their initial free trial, the total number of unique customers whose previous plan was the offered free trial divided by the overall total number of unique customers of Foodie-Fi, then multiplied by 100. A ```ROUND``` function was then used to round off the result by 2 decimal places. An *alias* of ```customer_percentage``` was given to provide a more descriptive column name for the results. A ```WHERE``` clause was also used to filter the results according to customers whose previous plan was Foodie-Fi's initial free trial plan. A ```GROUP BY``` statement was used to arrange the results into groups according to the subscription plans.
 
 #### Output:
 |   plan_name   | num_of_customers | customer_percentage |
@@ -359,6 +310,7 @@ WHERE plan_id = 3 AND DATE_PART('Year', start_date) = '2020';
 ```
 
 #### Explanation:
+To determine the number of customers that upgraded to an annual plan in the year 2020, first, a ```COUNT``` aggregate function, in conjunction with a ```DISTINCT``` statement, was used to count the total number of unique customers that upgraded to an annual plan in 2020. An *alias* of ```annual_plan_upgrade_count``` was given to provide a more descriptive column name for the results. Second, a ```WHERE``` clause, together with the ```DATE_PART``` function, was used to filter the records according to those who upgraded to an annual plan, with the ID of 3, in the year 2020.
 
 #### Output:
 | annual_plan_upgrade_count |
@@ -369,7 +321,7 @@ WHERE plan_id = 3 AND DATE_PART('Year', start_date) = '2020';
 Based from the output of the query, it can be observed that a total of 195 customers upgraded to an annual subscription plan in 2020.
 
 - - - -
-
+<!-- continue here! -->
 9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
 #### Query:
 ```sql

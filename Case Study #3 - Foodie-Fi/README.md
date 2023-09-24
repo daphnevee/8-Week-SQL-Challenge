@@ -628,6 +628,7 @@ I think it would be important to analyze customer journeys pertaining to those t
 4. If the Foodie-Fi team were to create an exit survey shown to customers who wish to cancel their subscription, what questions would you include in the survey?
 #### Answer:
 Some of the questions I would include in the exit survey are:
+* How was your onboarding experience?
 * Based on your overall experience, how satisfied are you with Foodie-Fi's streaming platform?
 * How likely will you recommend Foodie-Fi to your friends and colleagues?
 * What issues did you experience with Foodie-Fi's streaming service that prompted you to cancel your subscription plan?
@@ -637,3 +638,4 @@ Some of the questions I would include in the exit survey are:
 
 5. What business levers could the Foodie-Fi team use to reduce the customer churn rate? How would you validate the effectiveness of your ideas?
 #### Answer:
+Some business levers that the Foodie-Fi team could use to reduce the customer churn rate would be to, first, conduct regular surveys of their subscriber base to gain insights on how customers are using their product, what features they would like to be added, and what kind of issues or challenges have they experienced with the platform. Second, send exit surveys via e-mail to customers to gain feedback on their overall experience with the product. This helps the Foodie-Fi team to analyze why the subscriber churn is happening. Third, it would also be useful if the Foodie-Fi team could host product demos or video tutorials to assist customers that are experiencing difficulties with their platform, especially during a customer's onboarding process. It would be helpful on the customer's end to have any documentation or tutorials they can refer to for setting up the product and navigating through the platform. Fourth, in conjunction with the product demos and video tutorials, it would also be effective to have an active customer service that subscribers can reach out for support. Fifth, Foodie-Fi could also employ a loyalty program to offer its most valuable customers rewards, discounts, or other special incentives to encourage repeat business. 

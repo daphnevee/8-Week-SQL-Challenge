@@ -32,14 +32,21 @@ The Data Bank management team, led by Danny, wants to increase their total custo
 1. How many unique nodes are there on the Data Bank system?
 #### Query:
 ```sql
-
+SELECT
+   COUNT(DISTINCT node_id) AS unique_nodes
+FROM data_bank.customer_nodes;
 ```
 
 #### Explanation:
+To determine the number of unique nodes existing in the Data Bank system, a ```COUNT``` aggregate function, together with a ```DISTINCT``` clause, was used to count the total number of unique nodes from the ```customer_nodes``` table records. An *alias* of ```unique_nodes``` was given to provide a more descriptive column name for the results.
 
 #### Output:
+| unique_nodes |
+|:------------:|
+|       5      |
 
 #### Answer: 
+Based from the output of the query, it can be observed that there is a total of 5 unique nodes existing in the Data Bank system.
 
 - - - -
 

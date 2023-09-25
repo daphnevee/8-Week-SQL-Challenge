@@ -53,28 +53,58 @@ Based from the output of the query, it can be observed that there is a total of 
 2. What is the number of nodes per region?
 #### Query:
 ```sql
-
+SELECT
+   y.region_name,
+   COUNT(DISTINCT x.node_id) AS unique_nodes
+FROM data_bank.customer_nodes x
+JOIN data_bank.regions y
+ON x.region_id=y.region_id
+GROUP BY y.region_name;
 ```
 
 #### Explanation:
+To determine the number of nodes per region, first, a ```COUNT``` aggregate function, together with a ```DISTINCT``` clause, was used to count the total number of unique nodes that are available per region. An *alias* of ```unique_nodes``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also used to combine both the ```customer_nodes``` table and the ```regions``` table based on their related column, ```region_id```, to display the names of the regions along with the total count of nodes available per region. *Aliases* were also given, i.e. ```x``` for the ```customer_nodes``` table and ```y``` for the ```regions``` table to make the query more readable. Lastly, a ```GROUP BY``` statement was used to arrange the results into groups according to region.
 
 #### Output:
+| region_name | unique_nodes |
+|:-----------:|:------------:|
+|    Africa   |       5      |
+|   America   |       5      |
+|     Asia    |       5      |
+|  Australia  |       5      |
+|    Europe   |       5      |
 
 #### Answer: 
+Based from the output of the query, it can be observed that each of the 5 regions have a total of 5 unique nodes available.
 
 - - - -
 
 3. How many customers are allocated to each region?
 #### Query:
 ```sql
-
+SELECT
+   y.region_name,
+   COUNT(DISTINCT x.customer_id) AS total_customers
+FROM data_bank.customer_nodes x
+JOIN data_bank.regions y
+ON x.region_id=y.region_id
+GROUP BY y.region_name;
 ```
 
 #### Explanation:
+To determine the total number of customers allocated to each region, first, a ```COUNT``` aggregate function, together with a ```DISTINCT``` clause, was used to count the total number of unique customers from each region. An *alias* of ```total_customers``` was given to provide a more descriptive column name for the results. Second, a ```JOIN``` clause was also used to combine both the ```customer_nodes``` table and the ```regions``` table based on their related column, ```region_id```, to display the names of the regions along with the total count of customers allocated to each region. *Aliases* were also given, i.e. ```x``` for the ```customer_nodes``` table and ```y``` for the ```regions``` table to make the query more readable. Lastly, a ```GROUP BY``` statement was used to arrange the results into groups according to region.
 
 #### Output:
+| region_name | total_customers |
+|:-----------:|:---------------:|
+|    Africa   |       102       |
+|   America   |       105       |
+|     Asia    |        95       |
+|  Australia  |       110       |
+|    Europe   |        88       |
 
 #### Answer: 
+Based from the output of the query, it can be observed that a total of 102 customers are allocated in Africa, 105 customers are allocated in America, 95 customers are allocated in Asia, 110 customers are allocated in Australia, and 88 customers are allocated in Europe.
 
 - - - -
 

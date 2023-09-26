@@ -111,14 +111,33 @@ Based from the output of the query, it can be observed that a total of 102 custo
 4. How many days on average are customers reallocated to a different node?
 #### Query:
 ```sql
+WITH total_node_duration AS (
+  SELECT
+      customer_id,
+      node_id,
+      SUM(end_date - start_date) AS total_node_duration_in_days
+  FROM data_bank.customer_nodes
+  WHERE end_date != '9999-12-31'
+  GROUP BY customer_id, node_id
+)
 
+SELECT
+    ROUND(AVG(total_node_duration_in_days)) AS avg_node_duration_in_days
+FROM total_node_duration;
 ```
 
 #### Explanation:
+To determine how many days on average it takes for customers to be reallocated to a different node, first, a CTE labeled ```total_node_duration``` was formulated to initially calculate the total amount of time in days each customer has been assigned to a particular node before being transferred to another node through the use of a ```SUM``` aggregate function. An *alias* of ```total_node_duration_in_days``` is also given to provide a more descriptive column name for the results. The start and end dates for each record were subtracted to get the duration each customer is assigned to a node. However, a lot of records have their end dates set to an indefinite duration, ```'9999-12-31```, which may drastically affect the average result hence why a ```WHERE``` clause was used to filter out these records for the time being. The results were then arranged into groups using a ```GROUP BY``` statement according to the Customer ID and the Node ID. 
+
+Followed by this, the ```AVG``` aggregate function is then applied on the total result calculated by the ```SUM``` aggregate function in the CTE. This calculates the average timespan (in days) for customer-node reallocation. The ```ROUND``` function is also applied in order to round off the result to the nearest whole number. An *alias* of ```avg_node_duration_in_days``` is also given to provide a more descriptive column name for the results.
 
 #### Output:
+| avg_node_duration_in_days |
+|:-------------------------:|
+|             24            |
 
 #### Answer: 
+Based from the output of the query, it can be observed that it takes an average of 24 days for each customer to be reallocated to a different node.
 
 - - - -
 

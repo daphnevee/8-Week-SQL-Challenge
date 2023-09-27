@@ -111,47 +111,91 @@ Based from the output of the query, it can be observed that a total of 102 custo
 4. How many days on average are customers reallocated to a different node?
 #### Query:
 ```sql
-WITH total_node_duration AS (
+WITH customer_reallocation AS (
   SELECT
       customer_id,
       node_id,
-      SUM(end_date - start_date) AS total_node_duration_in_days
+      start_date,
+      end_date,
+      LEAD(node_id, 1) OVER (PARTITION BY customer_id ORDER BY start_date) AS next_node,
+      LEAD(start_date, 1) OVER (PARTITION BY customer_id ORDER BY start_date) AS next_node_start_date
   FROM data_bank.customer_nodes
-  WHERE end_date != '9999-12-31'
-  GROUP BY customer_id, node_id
 )
 
 SELECT
-    ROUND(AVG(total_node_duration_in_days)) AS avg_node_duration_in_days
-FROM total_node_duration;
+   ROUND(AVG(next_node_start_date - start_date)) AS avg_node_reallocation_in_days
+FROM customer_reallocation
+WHERE node_id != next_node;
 ```
 
 #### Explanation:
-To determine how many days on average it takes for customers to be reallocated to a different node, first, a CTE labeled ```total_node_duration``` was formulated to initially calculate the total amount of time in days each customer has been assigned to a particular node before being transferred to another node through the use of a ```SUM``` aggregate function. An *alias* of ```total_node_duration_in_days``` is also given to provide a more descriptive column name for the results. The start and end dates for each record were subtracted to get the duration each customer is assigned to a node. However, a lot of records have their end dates set to an indefinite duration, ```'9999-12-31```, which may drastically affect the average result hence why a ```WHERE``` clause was used to filter out these records for the time being. The results were then arranged into groups using a ```GROUP BY``` statement according to the Customer ID and the Node ID. 
+To determine the number of days on average it takes for a customer to be reallocated to a different node, first, a CTE labeled ```customer_reallocation``` was established to identify each customer's next assigned node by using the ```LEAD``` function. The ```LEAD``` function allows access to succeeding rows based on a specified index, which in this case is 1 which accesses the following immediate row to identify both the ID and the starting date of the next node. *Aliases* were also given, i.e. ```next_node``` for the next node ID column and ```next_node_start_date``` for the next node starting date column, to display more descriptive column names for the results.
 
-Followed by this, the ```AVG``` aggregate function is then applied on the total result calculated by the ```SUM``` aggregate function in the CTE. This calculates the average timespan (in days) for customer-node reallocation. The ```ROUND``` function is also applied in order to round off the result to the nearest whole number. An *alias* of ```avg_node_duration_in_days``` is also given to provide a more descriptive column name for the results.
+Following that, an ```AVG``` aggregate function was then applied on the resulting difference between the starting date of the customer's current node and the starting date of the next node they are reallocated to. A ```ROUND``` function was also used to round off the result to the nearest whole number. An *alias* of ```avg_node_reallocation_in_days``` was also given to provide a more descriptive column name for the results. Furthermore, a ```WHERE``` clause was used to filter out the records where the next node ID a customer is reallocated to is the same as their previously assigned node. Given the reallocation is done randomly, there is a possibility that they are reassigned to the same node and since we are looking for the average time it takes for a customer to be reallocated to a *different* node, such records are then disregarded for the time being.
 
 #### Output:
-| avg_node_duration_in_days |
-|:-------------------------:|
-|             24            |
+| avg_node_reallocation_in_days |
+|:-----------------------------:|
+|               16              |
 
 #### Answer: 
-Based from the output of the query, it can be observed that it takes an average of 24 days for each customer to be reallocated to a different node.
+Based from the output of the query, it can be observed that it takes an average of 16 days for each customer to be reallocated to a different node.
 
 - - - -
 
 5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
 #### Query:
 ```sql
+WITH customer_reallocation_per_region AS (
+  SELECT
+      x.customer_id,
+      y.region_name,
+      x.node_id,
+      x.start_date,
+      x.end_date,
+      LEAD(x.node_id, 1) OVER (PARTITION BY x.customer_id ORDER BY x.start_date) AS next_node,
+      LEAD(x.start_date, 1) OVER (PARTITION BY x.customer_id ORDER BY x.start_date) AS next_node_start_date
+  FROM data_bank.customer_nodes x
+  JOIN data_bank.regions y
+  ON x.region_id=y.region_id
+),
 
+customer_reallocation_duration AS (
+  SELECT
+      customer_id,
+      region_name,
+      node_id,
+      next_node,
+      (next_node_start_date - start_date) AS node_reallocation_in_days
+  FROM customer_reallocation_per_region
+  WHERE node_id != next_node
+)
+
+SELECT
+    region_name,
+    PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY node_reallocation_in_days) AS node_reallocation_median,
+    PERCENTILE_DISC(0.8) WITHIN GROUP (ORDER BY node_reallocation_in_days) AS node_reallocation_percentile_80,
+    PERCENTILE_DISC(0.95) WITHIN GROUP (ORDER BY node_reallocation_in_days) AS node_reallocation_percentile_95
+FROM customer_reallocation_duration
+GROUP BY region_name;
 ```
 
 #### Explanation:
+To determine the median, 80th percentile, and 95th percentile for the same reallocation days metric per region, 2 CTEs were established. The 1st CTE labeled ```customer_reallocation_per_region``` is similar with the CTE established in the previous question, since this question branches from that, except each customer's region is now identified. A ```JOIN``` clause is used to combine both the ```customer_nodes``` table and ```regions``` table based on their related column, ```region_id```, to display the Customer ID, the name of the region of their location, the Node ID they are currently assigned to, the starting and ending dates of their assignment to the current node, and the succeeding node they are assigned to which is identified using the ```LEAD``` function. *Aliases* were also given, i.e. ```x``` for the ```customer_nodes``` table and ```y``` for the ```regions``` table, to make the query more readable. The 2nd CTE labeled ```customer_reallocation_duration``` then calculates the amount of time (in days) it takes for a customer to be reallocated to a different node by subtracting the starting date of the current node they are assigned to and the starting date of the succeeding node they will be assigned to. An *alias* of ```node_reallocation_in_days``` is also given to provide a more descriptive column name for the results. A ```WHERE``` clause is also used similarly with the previous question in order to filter out the records where the current node that a customer is assigned to is also the same as the next node they are reallocated to. This is because the reallocation operation is done randomly so there is possibility for the customer to be reassigned to the same node. 
+
+Followed by this, to calculate the median, 80th percentile, and 95th percentile, the ```PERCENTILE_DISC``` aggregate function was used. The ```PERCENTILE_DISC``` aggregate function was used as opposed to the ```PERCENTILE_CONT``` function because the former calculates for discrete values while the latter calculates for continuous values. The 1st ```PERCENTILE_DISC``` function accepts a value of ```0.5``` to calculate the median of the amount of time (in days) customer-node reallocation takes per region. The 2nd ```PERCENTILE_DISC``` function accepts a value of ```0.8``` to calculate the 80th percentile of the amount of time (in days) taken for customer-node reallocation per region. The 3rd ```PERCENTILE_DISC``` function accepts a value of ```0.95``` to calculate the 95th percentile of the amount of time (in days) taken for customer-node reallocation per region. *Aliases* were also given, i.e. ```node_reallocation_median``` for the median calculation, ```node_reallocation_percentile_80``` for the 80th percentile calculation, and ```node_reallocation_percentile_95``` for the 95th percentile calculation. Lastly, a ```GROUP BY``` statement was used to arrange the results into groups according to region.
 
 #### Output:
+| region_name | node_reallocation_median | node_reallocation_percentile_80 | node_reallocation_percentile_95 |
+|:-----------:|:------------------------:|:-------------------------------:|:-------------------------------:|
+|    Africa   |            16            |                25               |                29               |
+|   America   |            16            |                24               |                29               |
+|     Asia    |            15            |                24               |                29               |
+|  Australia  |            15            |                24               |                29               |
+|    Europe   |            16            |                26               |                29               |
 
 #### Answer: 
+Based from the output of the query, the amount of time (in days) taken for customer-node reallocation for Africa is at a median of 16 days, with 25 days being the 80th percentile and 29 days being the 95th percentile. As for America, it has a median of 16 days as well, with 24 days being the 80th percentile and 29 days being the 95th percentile. For Asia, it has a median of 15 days, with 24 days being the 80th percentile and 29 days being the 95th percentile. For Australia, it has a median of 15 days, with 24 days being the 80th percentile and 29 days being the 95th percentile. Lastly, for Europe, it has a median of 16 days, with 26 days being the 80th percentile and 29 days being the 95th percentile.
 
 - - - -
 

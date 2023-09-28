@@ -203,14 +203,26 @@ Based from the output of the query, the amount of time (in days) taken for custo
 1. What is the unique count and total amount for each transaction type?
 #### Query:
 ```sql
-
+SELECT
+    txn_type,
+    COUNT(customer_id) AS transaction_count,
+    SUM(txn_amount) AS transaction_total_amount
+FROM data_bank.customer_transactions
+GROUP BY txn_type;
 ```
 
 #### Explanation:
+To determine the unique count and total amount for each transaction type, first, a ```COUNT``` aggregate function was used to count the total number of customer deposits, withdrawals, and purchases made using their Data Bank debit card. An *alias* of ```transaction_count``` was given to provide a more descriptive column name for the results. Second, a ```SUM``` aggregate function was used to calculate the total amount accumulated for each transaction type. An *alias* of ```transaction_total_amount``` was given to provide a more descriptive column name for the results. Lastly, a ```GROUP BY``` statement was used to arrange the results into groups according to the transaction type.
 
 #### Output:
+|  txn_type  | transaction_count | transaction_total_amount |
+|:----------:|:-----------------:|:------------------------:|
+|  purchase  |        1617       |          806537          |
+|   deposit  |        2671       |          1359168         |
+| withdrawal |        1580       |          793003          |
 
 #### Answer: 
+Based from the output of the query, it can be observed that a total number of 1,617 customer purchases were made using their Data Bank debit card, with an accumulated total amount of $806,537 spent. On the other hand, a total number of 2,671 customer deposits were made, with an accumulated total amount of $1,359,168 deposited into their accounts. Lastly, a total number of 1,580 customer withdrawals were made, with an accumulated total amount of $793,003 withdrawn from their accounts.
 
 - - - -
 

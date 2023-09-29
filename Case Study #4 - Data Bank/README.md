@@ -229,14 +229,34 @@ Based from the output of the query, it can be observed that a total number of 1,
 2. What is the average total historical deposit counts and amounts for all customers?
 #### Query:
 ```sql
+WITH customer_deposits AS (
+  SELECT
+      customer_id,
+      COUNT(customer_id) AS customer_deposit_count,
+      AVG(txn_amount) AS average_deposit_amount
+  FROM data_bank.customer_transactions
+  WHERE txn_type = 'deposit'
+  GROUP BY customer_id
+)
 
+SELECT
+    ROUND(AVG(customer_deposit_count)) AS average_total_deposits,
+    ROUND(AVG(average_deposit_amount), 2) AS average_deposit_amount
+FROM customer_deposits;
 ```
 
 #### Explanation:
+To determine the average total historical deposit counts and amounts for all customers, first, a CTE labeled ```customer_deposits``` was utilized to determine the amount of times each customer has made a deposit into their Data Bank accounts and the average amount they have deposited. A ```COUNT``` aggregate function was used to count the occurrences each customer has made a deposit. An *alias* of ```customer_deposit_count``` was given to provide a more descriptive column name for the results. An ```AVG``` aggregate function was used to calculate the average amount each customer has deposited into their Data Bank accounts. An *alias* of ```average_deposit_amount``` was also given to provide a more descriptive column name for the results. A ```WHERE``` clause was used to filter the records based on customers that have historically made a deposit. Lastly, a ```GROUP BY``` statement was also used to arrange the results into groups according to the Customer ID.
+
+Followed by this, the ```AVG``` aggregate function was used twice, the first was to calculate the average total historical deposit counts based from the resulting table of the ```customer_deposits``` CTE, and the second was to calculate the average total amount for all deposits made by customers. A ```ROUND``` function was also utilized to, first, round off the average deposit count to the nearest whole number and second, to round off the average deposit amount to 2 decimal places. *Aliases* were also given, i.e. ```average_total_deposits``` and ```average_deposit_amount``` for each resulting aggregate column, respectively. 
 
 #### Output:
+| average_total_deposits | average_deposit_amount |
+|:----------------------:|:----------------------:|
+|            5           |         508.61         |
 
 #### Answer: 
+Based from the output of the query, it can be observed that an average count of 5 customers make a deposit into their Data Bank accounts and the average amount they typically deposit is around $508.61.
 
 - - - -
 

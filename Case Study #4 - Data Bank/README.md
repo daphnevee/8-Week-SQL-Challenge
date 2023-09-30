@@ -263,14 +263,58 @@ Based from the output of the query, it can be observed that an average count of 
 3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
 #### Query:
 ```sql
+WITH customer_monthly_transactions AS (
+  SELECT
+      customer_id,
+      DATE_PART('Month', txn_date) AS txn_month_id,
+      TO_CHAR(txn_date, 'Month') AS txn_month_name,
+      SUM(
+        CASE
+          WHEN txn_type = 'deposit' THEN 1
+          ELSE 0
+        END
+      ) AS deposit_count,
+      SUM(
+        CASE
+          WHEN txn_type = 'purchase' THEN 1
+          ELSE 0
+        END
+      ) AS purchase_count,
+      SUM(
+        CASE
+          WHEN txn_type = 'withdrawal' THEN 1
+          ELSE 0
+        END
+      ) AS withdrawal_count
+  FROM data_bank.customer_transactions
+  GROUP BY customer_id, txn_month_id, txn_month_name
+  ORDER BY customer_id, txn_month_id
+)
 
+SELECT
+    txn_month_name,
+    COUNT(customer_id) AS total_customers
+FROM customer_monthly_transactions
+WHERE deposit_count > 1 AND (purchase_count = 1 OR withdrawal_count = 1)
+GROUP BY txn_month_id, txn_month_name
+ORDER BY txn_month_id;
 ```
 
 #### Explanation:
+To determine the total number of customers that have made more than 1 deposit and either 1 purchase or 1 withdrawal within a single month, a CTE labeled ```customer_monthly_transactions``` was defined to display the amount of times each customer has made a deposit, purchase, or withdrawal for each month. First, a ```DATE_PART``` function was used to extract the month from the transaction date column and was given an *alias* of ```txn_month_id``` since the ```DATE_PART``` function returns an integer value of the month. Second, a ```TO_CHAR``` function was then used to convert the extracted month value from the transaction date column to a string and was given an *alias* of ```txn_month_name```. The ```TO_CHAR``` function was added to the query to make the results more comprehensible by displaying the month name as opposed to the results of the ```DATE_PART``` function which only displays the month ID. Third, a ```SUM``` aggregate function, in conjunction with a ```CASE``` expression, was used to perform the calculations of counting the amount of times each customer has made a deposit, purchase, or withdrawal within each month. In the first ```CASE``` expression, the initial condition returns a value of ```1``` if the customer has made a deposit. Otherwise, it would return a value of ```0```. The ```SUM``` aggregate function then adds up all of the records that return a value of ```1``` and serves as a counter for the occurrences when the customer has made a deposit. The second ```CASE``` expression performs the same evaluation except this time, it returns a value of ```1``` if the customer has made a purchase. The third ```CASE``` expression returns a value of ```1``` if the customer has made a withdrawal. The ```SUM``` aggregate function is also applied in the second and third ```CASE``` expressions to count the number of occurrences when the customer has made a purchase and a withdrawal, respectively. *Aliases* were also given, i.e. ```deposit_count``` for the first ```CASE``` expression, ```purchase_count``` for the second ```CASE``` expression, and ```withdrawal_count``` for the third ```CASE``` expression. Fourth, a ```GROUP BY``` statement is used to arrange the results into groups according to the Customer ID, the Month ID, and the Month Name. Lastly, an ```ORDER BY``` statement is used to organize the results by default in ascending order according to both the Customer ID and the Month ID to follow a chronological order.
+
+Followed by this,
 
 #### Output:
+| txn_month_name | total_customers |
+|:--------------:|:---------------:|
+|     January    |       115       |
+|    February    |       108       |
+|      March     |       113       |
+|      April     |        50       |
 
 #### Answer: 
+Based from the output of the query, it can be observed that a total number of 115 customers have made more than 1 deposit and either 1 purchase or 1 withdrawal within the month of January, 108 for the month of February, 113 for the month of March, and 50 for the month of April.
 
 - - - -
 

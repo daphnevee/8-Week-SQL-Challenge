@@ -29,16 +29,20 @@ In a single query, perform the following operations and generate a new table in 
 * Add a month_number with the calendar month for each week_date value as the 3rd column
 Add a calendar_year column as the 4th column containing either 2018, 2019 or 2020 values
 * Add a new column called age_band after the original segment column using the following mapping on the number inside the segment value
-| segment | age_band     |
-|---------|--------------|
-| 1       | Young Adults |
-| 2       | Middle Aged  |
-| 3 or 4  | Retirees     |
+
+    | segment | age_band     |
+    |---------|--------------|
+    | 1       | Young Adults |
+    | 2       | Middle Aged  |
+    | 3 or 4  | Retirees     |
+
 * Add a new demographic column using the following mapping for the first letter in the segment values:
-| segment | demographic |
-|---------|-------------|
-| C       | Couples     |
-| F       | Families    |
+
+    | segment | demographic |
+    |---------|-------------|
+    | C       | Couples     |
+    | F       | Families    |
+
 * Ensure all null string values with an "unknown" string value in the original segment column as well as the new age_band and demographic columns
 * Generate a new avg_transaction column as the sales value divided by transactions rounded to 2 decimal places for each record
 
@@ -71,17 +75,17 @@ SELECT
     region,
     platform,
     CASE
-    	WHEN segment IS NULL OR segment = 'null' THEN 'Unknown'
+        WHEN segment IS NULL OR segment = 'null' THEN 'Unknown'
         ELSE segment
     END AS segment,
     CASE
-    	WHEN SUBSTRING(segment, 2, 1) = '1' THEN 'Young Adults'
+        WHEN SUBSTRING(segment, 2, 1) = '1' THEN 'Young Adults'
         WHEN SUBSTRING(segment, 2, 1) = '2' THEN 'Middle Aged'
         WHEN SUBSTRING(segment, 2, 1) IN ('3', '4') THEN 'Retirees'
-      	ELSE 'Unknown'
+        ELSE 'Unknown'
     END AS age_band,
     CASE
-    	WHEN SUBSTRING(segment, 1, 1) = 'C' THEN 'Couples'
+        WHEN SUBSTRING(segment, 1, 1) = 'C' THEN 'Couples'
         WHEN SUBSTRING(segment, 1, 1) = 'F' THEN 'Families'
         ELSE 'Unknown'
     END AS demographic,
@@ -93,16 +97,9 @@ FROM data_mart.weekly_sales;
 ```
 
 #### Explanation:
-To perform the necessary operations for the data cleaning process, first, the ```TO_DATE``` function was used to convert the data type of the ```week_date``` from ```VARCHAR(7)``` or string to a date value based on the given format, ```DD/MM/YY```. Second, to extract the week number, month number, and year from the ```week_date``` column, the ```DATE_PART``` function was used. *Aliases* were also given, i.e. ```week_number``` for the extracted week value, ```month_number``` for the extracted month value, and ```calendar_year``` for the extracted year. Third, a ```CASE``` expression, in conjunction with a ```SUBSTRING``` function, was used to map each value from the ```segment``` column to its equivalent age band. The ```SUBSTRING``` function extracts a string containing a specific number of characters from a particular position of a given string. The first condition checks if the segment value is 1 and maps it to the age band of "Young Adults", a segment value of 2 is then mapped to the age band of "Middle Aged" and lastly, a segment value of either 3 or 4 is mapped to the age band of "Retirees".  Similarly, a ```CASE``` expression along with the ```SUBSTRING``` function was used to map each letter from the ```segment``` column to its equivalent demographic. The first condition checks if the segment letter is C and maps it to the 
+Prior to performing the data cleaning operations, the new table named ```clean_weekly_sales``` is initially generated. First, a ```DROP TABLE IF EXISTS``` statement was used to drop or delete a table named ```clean_weekly_sales``` from the ```data_mart``` database if it exists. Second, a temporary table named ```clean_weekly_orders``` was then created (now checked that there is no available table with the same name) whose structure is based on the already available ```weekly_sales``` table in the database. Temporary tables are useful when processing and manipulating data without affecting the original data. 
 
-* Add a new demographic column using the following mapping for the first letter in the segment values:
-| segment | demographic |
-|---------|-------------|
-| C       | Couples     |
-| F       | Families    |
-* Ensure all null string values with an "unknown" string value in the original segment column as well as the new age_band and demographic columns
-* Generate a new avg_transaction column as the sales value divided by transactions rounded to 2 decimal places for each record
-
+Now to proceed with the necessary operations for the data cleaning process, first, the ```TO_DATE``` function was used to convert the data type of the ```week_date``` from ```VARCHAR(7)``` or string to a date value based on the given format, ```DD/MM/YY```. Second, to extract the week number, month number, and year from the ```week_date``` column, the ```DATE_PART``` function was used. *Aliases* were also given, i.e. ```week_number``` for the extracted week value, ```month_number``` for the extracted month value, and ```calendar_year``` for the extracted year. Third, a ```CASE``` expression, in conjunction with a ```SUBSTRING``` function, was used to map each value from the ```segment``` column to its equivalent age band. The ```SUBSTRING``` function extracts a string containing a specific number of characters from a particular position of a given string. The first condition checks if the segment value is 1 and maps it to the age band of "Young Adults", a segment value of 2 is then mapped to the age band of "Middle Aged" and lastly, a segment value of either 3 or 4 is mapped to the age band of "Retirees". Otherwise, if there is no specified segment value, it would simply equate to "Unknown". Similarly, a ```CASE``` expression along with the ```SUBSTRING``` function was used to map each letter from the ```segment``` column to its equivalent demographic. The first condition checks if the segment letter is C and maps it to the demographic of "Couples" while a segment letter of F is mapped to the demographic of "Families". Otherwise, if there is no specified segment letter, it would equate to "Unknown". For the ```segment``` column, since there are records without a specified value, a ```CASE``` expression is also used to transform all the null values to the string value, "Unknown". This operation was also applied to the newly added columns for ```age_band``` and ```demographic```. Lastly, the values in the ```sales``` column are divided by the values in the ```transactions``` column in order to calculate the average transactions for each record. A ```ROUND``` function is used to round off the result to 2 decimal places. An *alias* of ```avg_transaction``` is assigned as specified in the instructions to provide a more descriptive column name for the results.
 
 #### After Data Cleaning:
 To get a glimpse of the ```clean_weekly_sales``` table after data cleaning, the number of records to be displayed were only limited to 10.
@@ -126,13 +123,21 @@ To get a glimpse of the ```clean_weekly_sales``` table after data cleaning, the 
 1. What day of the week is used for each week_date value?
 #### Query:
 ```sql
-
+SELECT DISTINCT
+    TO_CHAR(week_date, 'Day') AS day_of_the_week
+FROM clean_weekly_sales;
 ```
+
 #### Explanation:
+To determine the day of the week commonly used for each of the records in the ```week_date``` column, first, a ```TO_CHAR``` function was used to convert the timestamp value, in this case the name of the day, to a string according to the specified format. Second, a ```DISTINCT``` keyword was also used to filter out duplicates and return only unique records. An *alias* of ```day_of_the_week``` was also given to provide a more descriptive column name for the results.
 
 #### Output:
+| day_of_the_week |
+|:---------------:|
+|      Monday     |
 
 #### Answer:
+Based from the output of the query, it can be observed that they chose Monday to be the start of every sales week for Data Mart.
 
 - - - -
 

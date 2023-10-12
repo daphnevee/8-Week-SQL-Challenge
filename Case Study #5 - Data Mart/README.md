@@ -20,7 +20,7 @@ Danny wants to analyze the impact of the large scale supply changes he implement
 1. [Data Cleaning](#data-cleaning)
 2. [Data Exploration](#data-exploration)
 3. [Before & After Analysis](#before-after-analysis)
-4. [Bonus Question](#bonus-questions)
+4. [Bonus Question](#bonus-question)
 
 ## Data Cleaning <a href="anchor" id="data-cleaning"></a>
 
@@ -49,14 +49,55 @@ LIMIT 10;
 - - - -
 In a single query, perform the following operations and generate a new table in the data_mart schema named clean_weekly_sales:
 
+To generate a new table in the data_mart schema named ```clean_weekly_sales```, the following query was executed:
+#### Query:
+```sql
+CREATE TEMPORARY TABLE clean_weekly_sales AS
+SELECT *
+FROM data_mart.weekly_sales;
+```
+#### Explanation:
+A temporary table named ```clean_weekly_sales``` was created whose structure is based on the already available ```weekly_sales``` table in the ```data_mart``` schema. Temporary tables are useful when processing and manipulating data without affecting the original data.
+
+- - - -
+The following operations are then performed to clean the data:
+
 1. Convert the week_date to a DATE format
+#### Before Data Cleaning:
+* #### Query for checking data types:
+```sql
+SELECT
+     column_name,
+     data_type
+ FROM
+     information_schema.columns
+ WHERE
+     table_name = 'weekly_sales';
+```
+* #### Output:
+|  column_name  |     data_type     |
+|:-------------:|:-----------------:|
+|  transactions |      integer      |
+|     sales     |      integer      |
+|    platform   | character varying |
+|   week_date   | character varying |
+| customer_type | character varying |
+|    segment    | character varying |
+|     region    | character varying |
+
 #### Query:
 ```sql
 
 ```
+
 #### Explanation:
 
 #### After Data Cleaning:
+* #### Query for checking data types:
+```sql
+
+```
+* #### Output:
 
 - - - -
 

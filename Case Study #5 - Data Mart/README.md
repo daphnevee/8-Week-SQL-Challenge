@@ -144,13 +144,59 @@ Based from the output of the query, it can be observed that they chose Monday to
 2. What range of week numbers are missing from the dataset?
 #### Query:
 ```sql
+WITH week_range_in_sales AS (
+  SELECT DISTINCT week_number
+  FROM clean_weekly_sales
+),
 
+week_count_in_year AS (
+  SELECT GENERATE_SERIES(1, 52) AS week_no
+)
+
+SELECT 
+     y.week_no AS missing_weeks
+FROM week_range_in_sales x
+RIGHT JOIN week_count_in_year y
+ON x.week_number = y.week_no
+WHERE x.week_number IS NULL;
 ```
 #### Explanation:
+To determine the range of week numbers missing from the dataset, 2 CTEs were used. The 1st CTE labeled ```week_range_in_sales``` returns all unique records of week numbers from the ```clean_weekly_sales```. This returns all the week numbers that are currently present in the dataset. On the other hand, the 2nd CTE labeled ```week_count_in_year``` utilizes a ```GENERATE_SERIES``` function. The ```GENERATE_SERIES``` function generates a sequence of numbers within a given interval. This function is then used in the 2nd CTE to produce a result set of the average number of weeks in a normal year based on the interval 1 to 52. In the final query, a ```RIGHT JOIN``` is then used to combine both the resulting tables of the CTEs, returning *all* the records from the ```week_count_in_year``` table and the matching records in the ```week_range_in_sales``` table. Aliases were also given, i.e. ```x``` for ```week_range_in_sales``` table and ```y``` for ```week_count_in_year``` table, to make the query more readable. Lastly, a ```WHERE``` clause was used to filter out all the records of week numbers in the ```week_range_in_sales``` table with a value of ```NULL```. The final result set then displays all the week numbers that were not present in the ```week_range_in_sales``` which are missing week numbers from the dataset.
 
 #### Output:
+| missing_weeks |
+|:-------------:|
+|       1       |
+|       2       |
+|       3       |
+|       4       |
+|       5       |
+|       6       |
+|       7       |
+|       8       |
+|       9       |
+|       10      |
+|       11      |
+|       12      |
+|       37      |
+|       38      |
+|       39      |
+|       40      |
+|       41      |
+|       42      |
+|       43      |
+|       44      |
+|       45      |
+|       46      |
+|       47      |
+|       48      |
+|       49      |
+|       50      |
+|       51      |
+|       52      |
 
 #### Answer:
+Based from the output of the query, it can be observed that a total of 28 week numbers are missing from the dataset, ranging from weeks 1-12 and 37-52.
 
 - - - -
 

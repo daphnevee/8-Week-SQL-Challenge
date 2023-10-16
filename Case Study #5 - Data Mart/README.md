@@ -203,13 +203,26 @@ Based from the output of the query, it can be observed that a total of 28 week n
 3. How many total transactions were there for each year in the dataset?
 #### Query:
 ```sql
-
+SELECT
+    calendar_year,
+    SUM(transactions) AS total_transactions
+FROM clean_weekly_sales
+GROUP BY calendar_year
+ORDER BY calendar_year;
 ```
 #### Explanation:
+To determine the total number of transactions that customers of Data Mart have made per year, a ```SUM``` aggregate function was used to 
+calculate the total count of transactions. A ```GROUP BY``` statement is then used to arrange the results into groups according to each year. Lastly, an ```ORDER BY``` statement is used to sort the results in chronological order.
 
 #### Output:
+| calendar_year | total_transactions |
+|:-------------:|:------------------:|
+|      2018     |      346406460     |
+|      2019     |      365639285     |
+|      2020     |      375813651     |
 
 #### Answer:
+Based from the output of the query, it can be observed that Data Mart had a total number of 346,406,460 transactions in 2018, 365,639,285 in 2019, and 375,813,651 in 2020.
 
 - - - -
 

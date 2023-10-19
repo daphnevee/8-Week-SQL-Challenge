@@ -229,17 +229,77 @@ Based from the output of the query, it can be observed that Data Mart had a tota
 4. What is the total sales for each region for each month?
 #### Query:
 ```sql
-
+SELECT
+     region,
+     TO_CHAR(TO_DATE(month_number::TEXT, 'MM'), 'Month') AS month_name,
+     SUM(sales) AS total_sales
+FROM clean_weekly_sales
+GROUP BY region, month_number
+ORDER BY region, month_number;
 ```
+
 #### Explanation:
+To determine the total sales for each region for each month, first, a ```TO_CHAR``` function, together with a ```TO_DATE``` function, was used to convert the ```month_number``` attribute to its corresponding month name to make the results more easily understandable. An *alias* of ```month_name``` was also given to provide a more descriptive column name for the results. Second, a ```SUM``` aggregate function was then used to calculate the total sales based on the ```sales``` column. Third, a ```GROUP BY``` statement is then used to arrange the results into groups according to the region and the month. Lastly, an ```ORDER BY``` statement was used to sort the results by default in ascending order according to the region name and the month number.
 
 #### Output:
+|     region    | month_name | total_sales |
+|:-------------:|:----------:|:-----------:|
+|     AFRICA    |    March   |  567767480  |
+|     AFRICA    |    April   |  1911783504 |
+|     AFRICA    |     May    |  1647244738 |
+|     AFRICA    |    June    |  1767559760 |
+|     AFRICA    |    July    |  1960219710 |
+|     AFRICA    |   August   |  1809596890 |
+|     AFRICA    |  September |  276320987  |
+|      ASIA     |    March   |  529770793  |
+|      ASIA     |    April   |  1804628707 |
+|      ASIA     |     May    |  1526285399 |
+|      ASIA     |    June    |  1619482889 |
+|      ASIA     |    July    |  1768844756 |
+|      ASIA     |   August   |  1663320609 |
+|      ASIA     |  September |  252836807  |
+|     CANADA    |    March   |  144634329  |
+|     CANADA    |    April   |  484552594  |
+|     CANADA    |     May    |  412378365  |
+|     CANADA    |    June    |  443846698  |
+|     CANADA    |    July    |  477134947  |
+|     CANADA    |   August   |  447073019  |
+|     CANADA    |  September |   69067959  |
+|     EUROPE    |    March   |   35337093  |
+|     EUROPE    |    April   |  127334255  |
+|     EUROPE    |     May    |  109338389  |
+|     EUROPE    |    June    |  122813826  |
+|     EUROPE    |    July    |  136757466  |
+|     EUROPE    |   August   |  122102995  |
+|     EUROPE    |  September |   18877433  |
+|    OCEANIA    |    March   |  783282888  |
+|    OCEANIA    |    April   |  2599767620 |
+|    OCEANIA    |     May    |  2215657304 |
+|    OCEANIA    |    June    |  2371884744 |
+|    OCEANIA    |    July    |  2563459400 |
+|    OCEANIA    |   August   |  2432313652 |
+|    OCEANIA    |  September |  372465518  |
+| SOUTH AMERICA |    March   |   71023109  |
+| SOUTH AMERICA |    April   |  238451531  |
+| SOUTH AMERICA |     May    |  201391809  |
+| SOUTH AMERICA |    June    |  218247455  |
+| SOUTH AMERICA |    July    |  235582776  |
+| SOUTH AMERICA |   August   |  221166052  |
+| SOUTH AMERICA |  September |   34175583  |
+|      USA      |    March   |  225353043  |
+|      USA      |    April   |  759786323  |
+|      USA      |     May    |  655967121  |
+|      USA      |    June    |  703878990  |
+|      USA      |    July    |  760331754  |
+|      USA      |   August   |  712002790  |
+|      USA      |  September |  110532368  |
 
 #### Answer:
+Based from the output of the query, it can be observed that each of the 7 regions (Africa, Asia, Canada, Europe, Oceania, South America, USA) all have records of total sales throughout the months of March to September.
 
 - - - -
 
-5. What is the total count of transactions for each platform
+5. What is the total count of transactions for each platform?
 #### Query:
 ```sql
 

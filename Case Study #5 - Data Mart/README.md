@@ -302,13 +302,24 @@ Based from the output of the query, it can be observed that each of the 7 region
 5. What is the total count of transactions for each platform?
 #### Query:
 ```sql
-
+SELECT
+    platform,
+    COUNT(transactions) AS total_transaction_count
+FROM clean_weekly_sales
+GROUP BY platform;
 ```
+
 #### Explanation:
+To determine the total count of transactions for each platform, a ```COUNT``` aggregate function was used to count the total number of transactions. An *alias* of ```total_transaction_count``` was used to provide a more descriptive column name for the results. A ```GROUP BY``` statement was also used to arrange the results into groups according to the platform.
 
 #### Output:
+| platform | total_transaction_count |
+|:--------:|:-----------------------:|
+|  Shopify |           8549          |
+|  Retail  |           8568          |
 
 #### Answer:
+Based from the output of the query, it can be observed that a total count of 8,549 transactions were made on Data Mart's first platform, Shopify. On the other hand, a total count of 8,568 transactions were made on Data Mart's second platform, Retail.
 
 - - - -
 

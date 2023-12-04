@@ -326,13 +326,66 @@ Based from the output of the query, it can be observed that a total count of 8,5
 6. What is the percentage of sales for Retail vs Shopify for each month?
 #### Query:
 ```sql
-
+WITH total_platform_sales AS (
+  SELECT
+      calendar_year,
+      month_number,
+      SUM(
+        CASE
+            WHEN platform = 'Retail' THEN sales
+            ELSE 0
+        END
+      ) AS total_retail_sales,
+      SUM(
+        CASE
+            WHEN platform = 'Shopify' THEN sales
+            ELSE 0
+        END
+      ) AS total_shopify_sales
+  FROM clean_weekly_sales
+  GROUP BY calendar_year, month_number
+  ORDER BY calendar_year, month_number
+)
+	
+SELECT
+    calendar_year,
+    TO_CHAR(TO_DATE(month_number::TEXT, 'MM'), 'Month') AS month_name,
+    ROUND(100*(total_retail_sales / (total_retail_sales + total_shopify_sales)::NUMERIC), 2) AS retail_sales_percentage,
+    ROUND(100*(total_shopify_sales / (total_retail_sales + total_shopify_sales)::NUMERIC), 2) AS shopify_sales_percentage
+FROM total_platform_sales
+ORDER BY calendar_year, month_number;
 ```
 #### Explanation:
+To determine the monthly sales percentage for each platform, first, a CTE labeled ```total_platform_sales``` was used. In this CTE, 2 ```CASE``` expressions were used, in conjunction with the ```SUM``` aggregate function, to calculate the total monthly sales for each platform. The ```CASE``` expression evaluates to true and displays the total sales based on whether the platform is Retail or Shopify, otherwise it would evaluate to false and displays 0. Aliases are also used, i.e. ```total_retail_sales``` for the 1st ```CASE``` expression and ```total_shopify_sales``` for the 2nd ```CASE``` expression, to make the results more readable. A ```GROUP BY``` statement was used to arrange the results into groups according to the year and the month. An ```ORDER BY``` statement was also used to sort the results by default in ascending order according to the year and the month.
+
+The resulting table of the CTE was then used to calculate the sales percentage for each platform by dividing the total retail sales and the total shopify sales by the overall total sales for that month, multiplied by 100. A ```ROUND``` function is also used to round off the percentage result to 2 decimal places. Aliases were also used, i.e. ```retail_sales_percentage``` for the calculated monthly sales percentage for Retail and ```shopify_sales_percentage``` for the calculated monthly sales percentage for Shopify, to make the results more readable. A ```TO_CHAR``` function, together with a ```TO_DATE``` function, was also used to convert the ```month_number``` attribute to its corresponding month name to make the results more easily understandable. Lastly, an ```ORDER BY``` statement was used to arrange the results by default in ascending order according to the year and month.
 
 #### Output:
+| calendar_year | month_name | retail_sales_percentage | shopify_sales_percentage |
+|:-------------:|:----------:|:-----------------------:|:------------------------:|
+|      2018     |    March   |          97.92          |           2.08           |
+|      2018     |    April   |          97.93          |           2.07           |
+|      2018     |     May    |          97.73          |           2.27           |
+|      2018     |    June    |          97.76          |           2.24           |
+|      2018     |    July    |          97.75          |           2.25           |
+|      2018     |   August   |          97.71          |           2.29           |
+|      2018     |  September |          97.68          |           2.32           |
+|      2019     |    March   |          97.71          |           2.29           |
+|      2019     |    April   |          97.80          |           2.20           |
+|      2019     |     May    |          97.52          |           2.48           |
+|      2019     |    June    |          97.42          |           2.58           |
+|      2019     |    July    |          97.35          |           2.65           |
+|      2019     |   August   |          97.21          |           2.79           |
+|      2019     |  September |          97.09          |           2.91           |
+|      2020     |    March   |          97.30          |           2.70           |
+|      2020     |    April   |          96.96          |           3.04           |
+|      2020     |     May    |          96.71          |           3.29           |
+|      2020     |    June    |          96.80          |           3.20           |
+|      2020     |    July    |          96.67          |           3.33           |
+|      2020     |   August   |          96.51          |           3.49           |
 
 #### Answer:
+Based from the output of the query, it can be observed that Retail takes up a larger percentage of sales for Data Mart consistently for each month as compared to Shopify.
 
 - - - -
 

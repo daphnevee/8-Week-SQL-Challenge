@@ -392,13 +392,54 @@ Based from the output of the query, it can be observed that Retail takes up a la
 7. What is the percentage of sales by demographic for each year in the dataset?
 #### Query:
 ```sql
+WITH total_sales_by_demographic AS (
+  SELECT
+     calendar_year,
+     SUM(
+       CASE
+         WHEN demographic = 'Couples' THEN sales
+         ELSE 0
+       END
+     ) AS total_sales_for_couples,
+     SUM(
+       CASE
+         WHEN demographic = 'Families' THEN sales
+         ELSE 0
+       END
+    ) AS total_sales_for_families,
+     SUM(
+       CASE
+         WHEN demographic = 'Unknown' THEN sales
+         ELSE 0
+       END
+    ) AS total_unknown_sales
+  FROM clean_weekly_sales
+  GROUP BY calendar_year
+  ORDER BY calendar_year
+)
 
+SELECT
+    calendar_year,
+    ROUND(100*(total_sales_for_couples / (total_sales_for_couples + total_sales_for_families + total_unknown_sales)::NUMERIC), 2) AS couples_sales_percentage,
+    ROUND(100*(total_sales_for_families / (total_sales_for_couples + total_sales_for_families + total_unknown_sales)::NUMERIC), 2) AS families_sales_percentage,
+    ROUND(100*(total_unknown_sales / (total_sales_for_couples + total_sales_for_families + total_unknown_sales)::NUMERIC), 2) AS unknown_sales_percentage
+FROM total_sales_by_demographic
+ORDER BY calendar_year;
 ```
 #### Explanation:
+To determine the yearly sales percentage for each demographic group, first, a CTE labeled ```total_sales_by_demographic``` was used. In this CTE, 3 ```CASE``` expressions were used, in conjunction with the ```SUM``` aggregate function, to calculate the total yearly sales for each demographic group. The ```CASE``` expression evaluates to true and displays the total sales based on whether it belongs to the demographic group of Couples or Families, or if the demographic is Unknown, otherwise it would evaluate to false and display 0. Aliases are also used, i.e. ```total_sales_for_couples``` for the 1st ```CASE``` expression and ```total_sales_for_families``` for the 2nd ```CASE``` expression, to make the results more readable. A ```GROUP BY``` statement was used to arrange the results into groups according to the year. An ```ORDER BY``` statement was also used to sort the results by default in ascending order according to the year.
+
+The resulting table of the CTE was then used to calculate the sales percentage for each demographic by dividing the total sales for couples, the total sales for families, and the total sales that belong to the unknown demographic group, by the overall total sales for that year, multipled by 100. A ```ROUND``` function is also used to round off the percentage result to 2 decimal places. Aliases were also used, i.e. ```couples_sales_percentage``` for the calculated yearly sales percentage for the demographic group of Couples, ```families_sales_percentage``` for the calculated yearly sales percentage for the demographic group of Families, and ```unknown_sales_percentage``` for the calculated yearly sales percentage for the unknown demographic group, to make the results more readable. Lastly, an ```ORDER BY``` statement was used to arrange the results by default in ascending order according to the year.
 
 #### Output:
+| calendar_year | couples_sales_percentage | families_sales_percentage | unknown_sales_percentage |
+|:-------------:|:------------------------:|:-------------------------:|:------------------------:|
+|      2018     |           26.38          |           31.99           |           41.63          |
+|      2019     |           27.28          |           32.47           |           40.25          |
+|      2020     |           28.72          |           32.73           |           38.55          |
 
 #### Answer:
+Based from the output of the query, it can be observed that between the two identified demographic groups of customers for Data Mart, families take up a larger percentage of the total sales compared to couples. However, it can also be noted that a greater percentage of the total sales is taken up by an unknown demographic group of customers.
 
 - - - -
 
